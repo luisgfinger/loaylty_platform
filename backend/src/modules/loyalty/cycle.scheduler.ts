@@ -3,6 +3,7 @@ import type {
 } from "fastify";
 
 import {
+  processDailyProgress,
   processExpiredCycles,
 } from "./cycle.service.js";
 
@@ -16,15 +17,20 @@ export function startCycleScheduler(
 ) {
   async function run() {
     try {
+      // Primeiro processa o progresso dos dias
+      // que já terminaram.
+      await processDailyProgress();
+
+      // Depois fecha ciclos vencidos.
       await processExpiredCycles();
 
       logger.info(
-        "Verificação de ciclos concluída"
+        "Processamento de fidelidade concluído"
       );
     } catch (error) {
       logger.error(
         error,
-        "Erro ao processar ciclos"
+        "Erro ao processar fidelidade"
       );
     }
   }
@@ -36,6 +42,8 @@ export function startCycleScheduler(
 
 
   // Depois verifica de hora em hora.
+  // Como somente dias já encerrados são processados,
+  // rodar várias vezes não soma progresso novamente.
   const timer =
     setInterval(
       () => {

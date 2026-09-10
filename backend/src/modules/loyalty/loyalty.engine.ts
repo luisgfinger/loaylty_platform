@@ -58,19 +58,22 @@ export function calculateValueLevel(
 
 
 // =====================================================
-// PROGRESSÃO DO CICLO
+// PROGRESSÃO DIÁRIA
 // =====================================================
 
-export function calculateCycleProgress(
+/**
+ * Calcula o progresso conquistado em um dia elegível.
+ *
+ * A função deve ser chamada somente para um dia em que
+ * o cliente teve pelo menos uma compra.
+ *
+ * A frequência e o valor recebidos representam o estado
+ * acumulado do ciclo até o fim daquele dia.
+ */
+export function calculateDailyProgress(
   frequency: FrequencyLevelType,
-  value: ValueLevelType,
-  purchaseDays: number
+  value: ValueLevelType
 ): number {
-  // Cliente não comprou no ciclo.
-  if (purchaseDays === 0) {
-    return 0;
-  }
-
   // Baixo valor + baixa frequência.
   if (
     frequency === "LOW" &&

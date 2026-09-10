@@ -5,7 +5,7 @@ import type {
 import { prisma } from "../../lib/prisma.js";
 
 import {
-  calculateCycleProgress,
+  calculateDailyProgress,
   calculateFrequencyLevel,
   calculateMedian,
   calculateRegularity,
@@ -111,24 +111,12 @@ function getDayKey(
 /**
  * Calcula a mediana de gasto dos clientes
  * da empresa exatamente dentro da janela
- * de 30 dias do cliente que está sendo avaliado.
+ * informada.
  *
- * Exemplo:
+ * A mesma função é utilizada tanto:
  *
- * ciclo do João:
- * 09/09 -> 09/10
- *
- * Pegamos todas as compras da empresa
- * entre essas mesmas datas.
- *
- * Depois:
- *
- * João    = 700
- * Maria   = 350
- * Carlos  = 900
- * Ana     = 500
- *
- * e calculamos a mediana desses totais.
+ * - no cálculo diário de progresso;
+ * - no fechamento definitivo do ciclo.
  *
  * Clientes sem compra no período
  * não entram no cálculo.
@@ -136,20 +124,20 @@ function getDayKey(
 async function getCompanyMedian(
   tx: Prisma.TransactionClient,
   companyId: number,
-  cycleStart: Date,
-  cycleEnd: Date
+  periodStart: Date,
+  periodEnd: Date
 ): Promise<CompanyMedianResult> {
   // ==================================================
   // BUSCAR TODAS AS COMPRAS DA EMPRESA
-  // NA MESMA JANELA DO CICLO
+  // NA MESMA JANELA
   // ==================================================
 
   const purchases =
     await tx.purchase.findMany({
       where: {
         purchaseDate: {
-          gte: cycleStart,
-          lt: cycleEnd,
+          gte: periodStart,
+          lt: periodEnd,
         },
 
         customer: {
@@ -204,13 +192,6 @@ async function getCompanyMedian(
   }
 
 
-  // ==================================================
-  // REMOVER CLIENTES SEM MOVIMENTO
-  //
-  // Na prática eles já não aparecem no Map,
-  // mas mantemos o filtro por segurança.
-  // ==================================================
-
   const totals =
     Array.from(
       customerTotals.values()
@@ -253,9 +234,6 @@ async function getCompanyMedian(
 
   // ==================================================
   // 1. MEDIANA DINÂMICA
-  //
-  // Só utilizamos diretamente se houver
-  // quantidade suficiente de clientes.
   // ==================================================
 
   if (
@@ -273,10 +251,6 @@ async function getCompanyMedian(
 
   // ==================================================
   // 2. ÚLTIMA MEDIANA CONFIÁVEL
-  //
-  // Se a amostra atual for pequena,
-  // buscamos uma mediana anterior que tenha
-  // sido calculada com amostra suficiente.
   // ==================================================
 
   const lastReliableCycle =
@@ -335,9 +309,6 @@ async function getCompanyMedian(
 
   // ==================================================
   // 3. MEDIANA INICIAL / FALLBACK
-  //
-  // Usada principalmente no começo do sistema,
-  // enquanto ainda não há clientes suficientes.
   // ==================================================
 
   if (
@@ -370,31 +341,30 @@ async function getCompanyMedian(
 
 
 // =====================================================
-// FECHAR CICLO
+// PROCESSAR PROGRESSO DIÁRIO DE UM CICLO
 // =====================================================
 
 /**
- * Fecha um CustomerCycle.
+ * Processa os dias com compra que já terminaram
+ * e ainda não foram contabilizados no ciclo.
  *
- * Aqui acontecem os cálculos:
+ * Não é criada uma tabela diária.
  *
- * - quantidade de dias com compra
- * - valor total
- * - frequência
- * - mediana da empresa
- * - nível de valor
- * - regularidade
- * - progresso conquistado
- * - atualização do CustomerJourney
+ * CustomerCycle.purchaseDays funciona como o número
+ * de dias distintos com compra que já tiveram seu
+ * progresso contabilizado.
+ *
+ * CustomerCycle.progressEarned acumula o progresso
+ * já conquistado naquele ciclo.
+ *
+ * CustomerJourney.progress recebe somente o novo
+ * progresso ainda não contabilizado.
  */
-export async function closeCustomerCycle(
+async function processCycleDailyProgress(
   tx: Prisma.TransactionClient,
-  cycleId: bigint
-): Promise<CustomerCycleRecord> {
-  // ==================================================
-  // BUSCAR CICLO
-  // ==================================================
-
+  cycleId: bigint,
+  referenceDate: Date
+): Promise<void> {
   const cycle =
     await tx.customerCycle.findUnique({
       where: {
@@ -420,15 +390,535 @@ export async function closeCustomerCycle(
   }
 
 
-  // ==================================================
-  // EVITA PROCESSAR DUAS VEZES
-  // ==================================================
-
   if (
     cycle.status ===
     "CLOSED"
   ) {
-    return cycle;
+    return;
+  }
+
+
+  const customerId =
+    cycle
+      .CompanyCustomer_idCompanyCustomer;
+
+
+  const companyId =
+    cycle
+      .customer
+      .companyPerson
+      .Company_idCompany;
+
+
+  // Somente dias já encerrados podem gerar progresso.
+  const todayStart =
+    startOfDay(
+      referenceDate
+    );
+
+
+  const processingEnd =
+    todayStart < cycle.cycleEnd
+      ? todayStart
+      : cycle.cycleEnd;
+
+
+  if (
+    processingEnd <=
+    cycle.cycleStart
+  ) {
+    return;
+  }
+
+
+  // ==================================================
+  // COMPRAS DO CLIENTE ATÉ O FIM DA JANELA PROCESSÁVEL
+  // ==================================================
+
+  const purchases =
+    await tx.purchase.findMany({
+      where: {
+        CompanyCustomer_idCompanyCustomer:
+          customerId,
+
+        purchaseDate: {
+          gte:
+            cycle.cycleStart,
+
+          lt:
+            processingEnd,
+        },
+      },
+
+      orderBy: {
+        purchaseDate:
+          "asc",
+      },
+    });
+
+
+  if (
+    purchases.length === 0
+  ) {
+    return;
+  }
+
+
+  // ==================================================
+  // DIAS DISTINTOS COM COMPRA
+  // ==================================================
+
+  const uniquePurchaseDays:
+    Date[] = [];
+
+  const seenDays =
+    new Set<string>();
+
+
+  for (
+    const purchase
+    of purchases
+  ) {
+    const dayKey =
+      getDayKey(
+        purchase.purchaseDate
+      );
+
+
+    if (
+      seenDays.has(
+        dayKey
+      )
+    ) {
+      continue;
+    }
+
+
+    seenDays.add(
+      dayKey
+    );
+
+    uniquePurchaseDays.push(
+      startOfDay(
+        purchase.purchaseDate
+      )
+    );
+  }
+
+
+  const alreadyProcessedDays =
+    Math.min(
+      cycle.purchaseDays ?? 0,
+      uniquePurchaseDays.length
+    );
+
+
+  if (
+    alreadyProcessedDays >=
+    uniquePurchaseDays.length
+  ) {
+    return;
+  }
+
+
+  // ==================================================
+  // CALCULAR SOMENTE OS NOVOS DIAS
+  // ==================================================
+
+  let purchaseCursor = 0;
+  let cumulativeAmount = 0;
+  let progressToAdd = 0;
+
+  let finalFrequencyLevel:
+    FrequencyLevelType =
+      "LOW";
+
+  let finalValueLevel:
+    ValueLevelType =
+      "LOW";
+
+  let finalMedian:
+    number | null =
+      null;
+
+  let finalMedianPercentage =
+    0;
+
+  let finalMedianSampleSize =
+    0;
+
+
+  for (
+    let index = 0;
+    index < uniquePurchaseDays.length;
+    index += 1
+  ) {
+    const purchaseDay =
+      uniquePurchaseDays[index]!;
+
+    const dayEnd =
+      addDays(
+        purchaseDay,
+        1
+      );
+
+
+    // Soma todas as compras do cliente
+    // desde o início do ciclo até o fim
+    // deste dia.
+    while (
+      purchaseCursor <
+        purchases.length &&
+      purchases[
+        purchaseCursor
+      ]!.purchaseDate < dayEnd
+    ) {
+      cumulativeAmount +=
+        Number(
+          purchases[
+            purchaseCursor
+          ]!.amount
+        );
+
+      purchaseCursor += 1;
+    }
+
+
+    // Os dias anteriores já foram
+    // contabilizados em execuções passadas.
+    if (
+      index <
+      alreadyProcessedDays
+    ) {
+      continue;
+    }
+
+
+    const purchaseDays =
+      index + 1;
+
+
+    const frequencyLevel =
+      calculateFrequencyLevel(
+        purchaseDays
+      );
+
+
+    const medianResult =
+      await getCompanyMedian(
+        tx,
+        companyId,
+        cycle.cycleStart,
+        dayEnd
+      );
+
+
+    if (
+      medianResult.median === null ||
+      medianResult.median <= 0
+    ) {
+      throw new Error(
+        "LOYALTY_MEDIAN_NOT_CONFIGURED"
+      );
+    }
+
+
+    const medianPercentage =
+      (
+        cumulativeAmount /
+        medianResult.median
+      ) * 100;
+
+
+    const valueLevel =
+      calculateValueLevel(
+        medianPercentage
+      );
+
+
+    const dailyProgress =
+      calculateDailyProgress(
+        frequencyLevel,
+        valueLevel
+      );
+
+
+    progressToAdd +=
+      dailyProgress;
+
+
+    finalFrequencyLevel =
+      frequencyLevel;
+
+    finalValueLevel =
+      valueLevel;
+
+    finalMedian =
+      medianResult.median;
+
+    finalMedianPercentage =
+      medianPercentage;
+
+    finalMedianSampleSize =
+      medianResult.sampleSize;
+  }
+
+
+  if (
+    progressToAdd <= 0
+  ) {
+    return;
+  }
+
+
+  const currentCycleProgress =
+    Number(
+      cycle.progressEarned ?? 0
+    );
+
+
+  const updatedCycleProgress =
+    Number(
+      (
+        currentCycleProgress +
+        progressToAdd
+      ).toFixed(2)
+    );
+
+
+  // ==================================================
+  // ATUALIZAR JORNADA
+  // ==================================================
+
+  await tx.customerJourney.upsert({
+    where: {
+      CompanyCustomer_idCompanyCustomer:
+        customerId,
+    },
+
+    create: {
+      CompanyCustomer_idCompanyCustomer:
+        customerId,
+
+      progress:
+        progressToAdd,
+
+      regularity:
+        1,
+    },
+
+    update: {
+      progress: {
+        increment:
+          progressToAdd,
+      },
+    },
+  });
+
+
+  // ==================================================
+  // ATUALIZAR ESTADO DO CICLO
+  // ==================================================
+
+  await tx.customerCycle.update({
+    where: {
+      idCustomerCycle:
+        cycle.idCustomerCycle,
+    },
+
+    data: {
+      purchaseDays:
+        uniquePurchaseDays.length,
+
+      totalAmount:
+        cumulativeAmount,
+
+      frequencyLevel:
+        finalFrequencyLevel,
+
+      valueLevel:
+        finalValueLevel,
+
+      companyMedian:
+        finalMedian,
+
+      medianPercentage:
+        Number(
+          finalMedianPercentage.toFixed(
+            2
+          )
+        ),
+
+      medianSampleSize:
+        finalMedianSampleSize,
+
+      progressEarned:
+        updatedCycleProgress,
+    },
+  });
+}
+
+
+// =====================================================
+// PROCESSAR PROGRESSO DIÁRIO
+// =====================================================
+
+/**
+ * Processa todos os ciclos OPEN.
+ *
+ * O scheduler chama esta função de hora em hora,
+ * porém apenas dias que já terminaram são considerados.
+ *
+ * Como purchaseDays registra quantos dias distintos
+ * já foram contabilizados, execuções repetidas não
+ * voltam a somar os mesmos dias.
+ */
+export async function processDailyProgress():
+  Promise<void> {
+  const now =
+    new Date();
+
+  const todayStart =
+    startOfDay(
+      now
+    );
+
+
+  const openCycles =
+    await prisma.customerCycle.findMany({
+      where: {
+        status:
+          "OPEN",
+
+        cycleStart: {
+          lt:
+            todayStart,
+        },
+      },
+
+      select: {
+        idCustomerCycle:
+          true,
+      },
+    });
+
+
+  for (
+    const cycle
+    of openCycles
+  ) {
+    await prisma.$transaction(
+      async (
+        tx
+      ) => {
+        await processCycleDailyProgress(
+          tx,
+          cycle.idCustomerCycle,
+          now
+        );
+      }
+    );
+  }
+}
+
+
+// =====================================================
+// FECHAR CICLO
+// =====================================================
+
+/**
+ * Fecha um CustomerCycle.
+ *
+ * O progresso já foi conquistado diariamente.
+ * No fechamento calculamos e congelamos:
+ *
+ * - quantidade final de dias com compra;
+ * - valor total final;
+ * - frequência final;
+ * - mediana final da empresa;
+ * - nível de valor final;
+ * - regularidade;
+ * - status CLOSED.
+ *
+ * O fechamento NÃO adiciona progresso novamente.
+ */
+export async function closeCustomerCycle(
+  tx: Prisma.TransactionClient,
+  cycleId: bigint
+): Promise<CustomerCycleRecord> {
+  // ==================================================
+  // BUSCAR CICLO
+  // ==================================================
+
+  const initialCycle =
+    await tx.customerCycle.findUnique({
+      where: {
+        idCustomerCycle:
+          cycleId,
+      },
+
+      include: {
+        customer: {
+          include: {
+            companyPerson:
+              true,
+          },
+        },
+      },
+    });
+
+
+  if (!initialCycle) {
+    throw new Error(
+      "CYCLE_NOT_FOUND"
+    );
+  }
+
+
+  if (
+    initialCycle.status ===
+    "CLOSED"
+  ) {
+    return initialCycle;
+  }
+
+
+  // Antes de fechar, garante que todos os dias
+  // do ciclo tiveram seu progresso processado.
+  // Isso também protege o catch-up feito por
+  // ensureCustomerCycle().
+  await processCycleDailyProgress(
+    tx,
+    cycleId,
+    initialCycle.cycleEnd
+  );
+
+
+  // Rebusca o ciclo porque o processamento diário
+  // pode ter atualizado progressEarned e outras
+  // métricas provisórias.
+  const cycle =
+    await tx.customerCycle.findUnique({
+      where: {
+        idCustomerCycle:
+          cycleId,
+      },
+
+      include: {
+        customer: {
+          include: {
+            companyPerson:
+              true,
+          },
+        },
+      },
+    });
+
+
+  if (!cycle) {
+    throw new Error(
+      "CYCLE_NOT_FOUND"
+    );
   }
 
 
@@ -446,10 +936,6 @@ export async function closeCustomerCycle(
 
   // ==================================================
   // COMPRAS DO CLIENTE NO CICLO
-  //
-  // Intervalo:
-  //
-  // cycleStart <= compra < cycleEnd
   // ==================================================
 
   const purchases =
@@ -521,11 +1007,7 @@ export async function closeCustomerCycle(
 
 
   // ==================================================
-  // FREQUÊNCIA
-  //
-  // 0-4  = LOW
-  // 5-9  = MEDIUM
-  // 10+  = HIGH
+  // FREQUÊNCIA FINAL
   // ==================================================
 
   const frequencyLevel =
@@ -535,7 +1017,7 @@ export async function closeCustomerCycle(
 
 
   // ==================================================
-  // MEDIANA DA EMPRESA
+  // MEDIANA FINAL DA EMPRESA
   // ==================================================
 
   const medianResult =
@@ -548,7 +1030,7 @@ export async function closeCustomerCycle(
 
 
   // ==================================================
-  // NÍVEL DE VALOR
+  // NÍVEL DE VALOR FINAL
   // ==================================================
 
   let medianPercentage =
@@ -560,9 +1042,6 @@ export async function closeCustomerCycle(
       "LOW";
 
 
-  // Se o cliente não comprou nada,
-  // permanece LOW e não precisamos
-  // da mediana para fechar o ciclo.
   if (
     totalAmount > 0
   ) {
@@ -592,10 +1071,6 @@ export async function closeCustomerCycle(
 
   // ==================================================
   // CICLOS ANTERIORES
-  //
-  // Precisamos dos dois anteriores,
-  // porque junto com o atual teremos
-  // os últimos três ciclos.
   // ==================================================
 
   const previousCycles =
@@ -666,8 +1141,6 @@ export async function closeCustomerCycle(
 
   // ==================================================
   // ÚLTIMAS 3 FREQUÊNCIAS
-  //
-  // atual + até 2 ciclos anteriores
   // ==================================================
 
   const recentFrequencies:
@@ -691,7 +1164,6 @@ export async function closeCustomerCycle(
   }
 
 
-  // Garantia de no máximo 3.
   const lastThreeFrequencies =
     recentFrequencies.slice(
       0,
@@ -709,31 +1181,6 @@ export async function closeCustomerCycle(
       previousFrequency,
       frequencyLevel,
       lastThreeFrequencies
-    );
-
-
-  // ==================================================
-  // PROGRESSÃO DO CICLO
-  //
-  // Matriz atual:
-  //
-  //                frequência
-  //
-  // valor       LOW   MED   HIGH
-  //
-  // LOW         0.5    1     1
-  // MEDIUM       1     1    2.5
-  // HIGH         1    2.5   2.5
-  //
-  // Ciclo sem nenhuma compra:
-  // 0 pontos.
-  // ==================================================
-
-  const progressEarned =
-    calculateCycleProgress(
-      frequencyLevel,
-      valueLevel,
-      purchaseDays
     );
 
 
@@ -773,7 +1220,8 @@ export async function closeCustomerCycle(
         medianSampleSize:
           medianResult.sampleSize,
 
-        progressEarned,
+        // progressEarned NÃO é alterado aqui.
+        // Ele já foi acumulado diariamente.
 
         status:
           "CLOSED",
@@ -787,9 +1235,8 @@ export async function closeCustomerCycle(
   // ==================================================
   // ATUALIZAR CUSTOMER JOURNEY
   //
-  // progress nunca diminui.
-  //
-  // regularity pode aumentar ou diminuir.
+  // progress NÃO é alterado no fechamento.
+  // regularity é atualizada somente por ciclo.
   // ==================================================
 
   await tx.customerJourney.upsert({
@@ -803,18 +1250,13 @@ export async function closeCustomerCycle(
         customerId,
 
       progress:
-        progressEarned,
+        0,
 
       regularity:
         regularityLevel,
     },
 
     update: {
-      progress: {
-        increment:
-          progressEarned,
-      },
-
       regularity:
         regularityLevel,
     },
@@ -870,8 +1312,6 @@ export async function ensureCustomerCycle(
   // ==================================================
 
   if (!cycle) {
-    // Descobrimos a primeira compra,
-    // porque ela define o início da jornada.
     const firstPurchase =
       await tx.purchase.findFirst({
         where: {
@@ -931,19 +1371,6 @@ export async function ensureCustomerCycle(
 
   // ==================================================
   // FECHAR CICLOS VENCIDOS
-  //
-  // Exemplo:
-  //
-  // cliente ficou 90 dias sem comprar.
-  //
-  // O sistema fecha:
-  //
-  // ciclo 1
-  // ciclo 2 vazio
-  // ciclo 3 vazio
-  //
-  // até alcançar o ciclo correspondente
-  // à data atual.
   // ==================================================
 
   while (
@@ -956,9 +1383,6 @@ export async function ensureCustomerCycle(
     );
 
 
-    // Tipos explícitos evitam o erro:
-    //
-    // "'nextStart' implicitly has type 'any'..."
     const nextStart:
       Date =
         new Date(
@@ -1004,9 +1428,8 @@ export async function ensureCustomerCycle(
 /**
  * Essa função será chamada pelo scheduler.
  *
- * Ela procura todos os clientes
- * que possuem ciclos vencidos e
- * atualiza cada um deles.
+ * Ela procura todos os clientes que possuem ciclos
+ * vencidos e faz o catch-up até o ciclo atual.
  */
 export async function processExpiredCycles():
   Promise<void> {
@@ -1034,11 +1457,6 @@ export async function processExpiredCycles():
     });
 
 
-  // ==================================================
-  // EVITAR PROCESSAR O MESMO CLIENTE
-  // MAIS DE UMA VEZ
-  // ==================================================
-
   const customerIds =
     Array.from(
       new Set(
@@ -1050,10 +1468,6 @@ export async function processExpiredCycles():
       )
     );
 
-
-  // ==================================================
-  // PROCESSAR CLIENTE POR CLIENTE
-  // ==================================================
 
   for (
     const customerId
@@ -1158,10 +1572,6 @@ export async function listCustomerCycles(
 
   // ==================================================
   // RESPOSTA
-  //
-  // BigInt não pode ser serializado
-  // diretamente em JSON.
-  // Decimal também fica melhor convertido.
   // ==================================================
 
   return {
