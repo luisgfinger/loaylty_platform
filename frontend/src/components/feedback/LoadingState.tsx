@@ -1,0 +1,1 @@
+export function LoadingState({ label, fullPage = false }: { label: string; fullPage?: boolean }) { return <p className={fullPage ? 'loading-state loading-state--page' : 'loading-state'} aria-live="polite">{label}</p> }
