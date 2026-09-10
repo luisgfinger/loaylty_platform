@@ -21,6 +21,24 @@ export const createPurchaseSchema =
         }
       ),
 
+    fiscalDocumentNumber: z
+      .string()
+      .trim()
+      .min(
+        1,
+        {
+          message:
+            "Informe o número da nota ou cupom fiscal",
+        }
+      )
+      .max(
+        60,
+        {
+          message:
+            "O número da nota ou cupom fiscal deve possuir no máximo 60 caracteres",
+        }
+      ),
+
     amount:
       z.coerce
         .number()

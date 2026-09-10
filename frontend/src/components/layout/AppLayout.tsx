@@ -7,6 +7,7 @@ const items = [
   { label: 'Clientes', path: '/app/customers', available: true, primary: false },
   { label: 'Histórico', path: '/app/purchases', available: true, primary: false },
   { label: 'Fidelidade', path: '/app/loyalty', available: true, primary: false },
+  { label: 'Recompensas', path: '/app/rewards', available: true, primary: false },
   { label: 'Funcionários', path: '/app/employees', available: true, primary: false },
   { label: 'Empresa', path: '/app/company', available: true, primary: false },
 ]

@@ -35,6 +35,10 @@ import {
 } from "./modules/auth/auth.routes.js";
 
 import {
+  rewardRoutes,
+} from "./modules/rewards/reward.routes.js";
+
+import {
   requireAdmin,
 } from "./modules/auth/auth.middleware.js";
 
@@ -42,6 +46,10 @@ import {
   startCycleScheduler,
 } from "./modules/loyalty/cycle.scheduler.js";
 
+
+// =====================================================
+// FASTIFY
+// =====================================================
 
 const app =
   Fastify({
@@ -159,6 +167,10 @@ app.register(
 
 app.register(
   cycleRoutes
+);
+
+app.register(
+  rewardRoutes
 );
 
 

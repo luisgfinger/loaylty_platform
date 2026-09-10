@@ -175,6 +175,7 @@ export const PurchaseScalarFieldEnum = {
   idPurchase: 'idPurchase',
   CompanyCustomer_idCompanyCustomer: 'CompanyCustomer_idCompanyCustomer',
   RegisteredByEmployee_idCompanyEmployee: 'RegisteredByEmployee_idCompanyEmployee',
+  fiscalDocumentNumber: 'fiscalDocumentNumber',
   amount: 'amount',
   purchaseDate: 'purchaseDate'
 } as const
@@ -319,6 +320,13 @@ export const UserOrderByRelevanceFieldEnum = {
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+
+
+export const PurchaseOrderByRelevanceFieldEnum = {
+  fiscalDocumentNumber: 'fiscalDocumentNumber'
+} as const
+
+export type PurchaseOrderByRelevanceFieldEnum = (typeof PurchaseOrderByRelevanceFieldEnum)[keyof typeof PurchaseOrderByRelevanceFieldEnum]
 
 
 export const RewardCategoryOrderByRelevanceFieldEnum = {

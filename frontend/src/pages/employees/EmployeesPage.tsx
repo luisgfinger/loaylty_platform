@@ -3,6 +3,8 @@ import { createEmployee, getEmployeeByCpf, getEmployees, updateEmployee } from '
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { CreateEmployeeInput, EmployeeDetail, EmployeeListItem, UpdateEmployeeInput } from '../../types/employee'
+import { formatCpf, getCpfValidationError, normalizeCpf } from '../../utils/cpf'
+import { toast } from 'react-toastify'
 
 type View = 'list' | 'create' | 'detail' | 'edit'
 
@@ -25,8 +27,8 @@ export function EmployeesPage() {
   const [employee, setEmployee] = useState<EmployeeDetail | null>(null)
   const [view, setView] = useState<View>('list')
   const [form, setForm] = useState<EmployeeFormValues>(emptyForm)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [cpfError, setCpfError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [confirmInactivation, setConfirmInactivation] = useState(false)
@@ -51,12 +53,12 @@ export function EmployeesPage() {
 
   function clearFeedback() {
     setError('')
-    setMessage('')
   }
 
   function openCreate() {
     clearFeedback()
     setForm(emptyForm)
+    setCpfError('')
     setEmployee(null)
     setView('create')
   }
@@ -90,8 +92,10 @@ export function EmployeesPage() {
   async function submitEmployee(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     clearFeedback()
-    if (form.cpf.replace(/\D/g, '').length !== 11 && view === 'create') {
-      setError('Informe um CPF com 11 dígitos.')
+    setCpfError('')
+    const validationError = view === 'create' ? getCpfValidationError(form.cpf) : null
+    if (validationError) {
+      setCpfError(validationError)
       return
     }
     if (form.name.trim().length < 2) {
@@ -102,11 +106,11 @@ export function EmployeesPage() {
     setIsSaving(true)
     try {
       if (view === 'create') {
-        const data: CreateEmployeeInput = { cpf: form.cpf.replace(/\D/g, ''), name: form.name.trim(), email: form.email.trim() || undefined, phoneNumber: form.phoneNumber.replace(/\D/g, '') || undefined, dateOfBirth: form.dateOfBirth || undefined, admissionDate: form.admissionDate || undefined, role: form.role.trim() || undefined }
+        const data: CreateEmployeeInput = { cpf: normalizeCpf(form.cpf), name: form.name.trim(), email: form.email.trim() || undefined, phoneNumber: form.phoneNumber.replace(/\D/g, '') || undefined, dateOfBirth: form.dateOfBirth || undefined, admissionDate: form.admissionDate || undefined, role: form.role.trim() || undefined }
         await createEmployee(companyId, data, token)
         await loadEmployees()
         setView('list')
-        setMessage('Funcionário cadastrado com sucesso.')
+        toast.success('Funcionário cadastrado com sucesso.')
       } else if (employee) {
         const data: UpdateEmployeeInput = { name: form.name.trim(), email: form.email.trim() || null, phoneNumber: form.phoneNumber.replace(/\D/g, '') || null, dateOfBirth: form.dateOfBirth || null, admissionDate: form.admissionDate || null, terminationDate: form.terminationDate || null }
         if (!isEditingSelf) data.role = form.role.trim() || null
@@ -114,10 +118,10 @@ export function EmployeesPage() {
         await refreshEmployee(employee.companyPerson.person.cpf)
         await loadEmployees()
         setView('detail')
-        setMessage('Dados do funcionário atualizados.')
+        toast.success('Funcionário atualizado com sucesso.')
       }
     } catch (requestError) {
-      setError(getEmployeeError(requestError, view === 'create' ? 'create' : 'update'))
+      toast.error(getEmployeeError(requestError, view === 'create' ? 'create' : 'update'))
     } finally {
       setIsSaving(false)
     }
@@ -136,9 +140,11 @@ export function EmployeesPage() {
       await updateEmployee(companyId, employee.companyPerson.person.cpf, { isActive: nextIsActive }, token)
       await refreshEmployee(employee.companyPerson.person.cpf)
       await loadEmployees()
-      setMessage(nextIsActive ? 'Funcionário ativado com sucesso.' : 'Funcionário inativado com sucesso.')
+      toast.success(nextIsActive ? 'Funcionário ativado com sucesso.' : 'Funcionário inativado com sucesso.')
     } catch (requestError) {
-      setError(getEmployeeError(requestError, 'status'))
+      const message = getEmployeeError(requestError, 'status')
+      if (isEditingSelf && !nextIsActive) toast.warning(message)
+      else toast.error(message)
     } finally {
       setIsSaving(false)
       setConfirmInactivation(false)
@@ -148,11 +154,10 @@ export function EmployeesPage() {
   if (isLoading && view === 'list') return <section className="employees-page"><p className="loading-state" role="status">Carregando funcionários…</p></section>
 
   return <section className="employees-page" aria-labelledby="employees-title">
-    {message && <p className="form-success" role="status">{message}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
 
     {view === 'list' && <EmployeeList employees={employees} onCreate={openCreate} onOpen={openDetail} />}
-    {view === 'create' && <EmployeeForm title="Cadastrar funcionário" submitLabel="Cadastrar funcionário" form={form} isSaving={isSaving} onChange={updateForm} onSubmit={submitEmployee} onCancel={() => setView('list')} />}
+    {view === 'create' && <EmployeeForm title="Cadastrar funcionário" submitLabel="Cadastrar funcionário" form={form} isSaving={isSaving} cpfError={cpfError} onChange={updateForm} onSubmit={submitEmployee} onCancel={() => setView('list')} />}
     {view === 'detail' && employee && <EmployeeDetails employee={employee} isSaving={isSaving} isEditingSelf={isEditingSelf} isConfirmingInactivation={confirmInactivation} onBack={() => setView('list')} onEdit={openEdit} onRequestInactivation={() => setConfirmInactivation(true)} onCancelInactivation={() => setConfirmInactivation(false)} onChangeStatus={changeStatus} />}
     {view === 'edit' && employee && <EmployeeForm title="Editar funcionário" submitLabel="Salvar alterações" form={form} isSaving={isSaving} disableCpf disableRole={isEditingSelf} showTermination selfRoleMessage={isEditingSelf ? 'Seu próprio cargo ADMIN não pode ser removido.' : undefined} onChange={updateForm} onSubmit={submitEmployee} onCancel={() => setView('detail')} />}
   </section>
@@ -167,26 +172,18 @@ function EmployeeDetails({ employee, isSaving, isEditingSelf, isConfirmingInacti
   return <><div className="page-intro page-intro--with-action"><div><p className="eyebrow">Funcionário</p><h1 id="employees-title">{person.name}</h1><p>{formatCpf(person.cpf)}</p></div><button className="secondary-button" type="button" onClick={onBack}>Voltar para lista</button></div><article className="employee-card"><div className="employee-card-header"><div><p className={employee.isActive ? 'status-badge' : 'status-badge status-badge--inactive'}>{employee.isActive ? 'Ativo' : 'Inativo'}</p></div><div className="employee-actions"><button className="secondary-button" type="button" onClick={onEdit} disabled={isSaving}>Editar funcionário</button>{employee.isActive ? <button className="danger-button" type="button" onClick={onRequestInactivation} disabled={isSaving || isEditingSelf}>Inativar funcionário</button> : <button className="secondary-button" type="button" onClick={onChangeStatus} disabled={isSaving}>Ativar funcionário</button>}</div></div>{isEditingSelf && <p className="employee-note">Você não pode inativar seu próprio usuário administrador.</p>}{isConfirmingInactivation && <section className="employee-confirmation" aria-labelledby="employee-confirmation-title"><h2 id="employee-confirmation-title">Inativar funcionário?</h2><p>Deseja continuar?</p><div className="form-actions"><button className="danger-button" type="button" onClick={onChangeStatus} disabled={isSaving}>{isSaving ? 'Salvando…' : 'Confirmar inativação'}</button><button className="secondary-button" type="button" onClick={onCancelInactivation} disabled={isSaving}>Cancelar</button></div></section>}<dl className="employee-details"><Detail label="E-mail" value={person.email ?? 'Não informado'} /><Detail label="Telefone" value={person.phoneNumber ?? 'Não informado'} /><Detail label="Cargo" value={employee.role?.role ?? 'Não informado'} /><Detail label="Admissão" value={formatDate(employee.admissionDate)} /><Detail label="Desligamento" value={formatDate(employee.terminationDate)} /><Detail label="Também é cliente" value={employee.companyPerson.customer ? 'Sim' : 'Não'} /></dl></article></>
 }
 
-function EmployeeForm({ title, submitLabel, form, isSaving, disableCpf = false, disableRole = false, showTermination = false, selfRoleMessage, onChange, onSubmit, onCancel }: { title: string; submitLabel: string; form: EmployeeFormValues; isSaving: boolean; disableCpf?: boolean; disableRole?: boolean; showTermination?: boolean; selfRoleMessage?: string; onChange: <K extends keyof EmployeeFormValues>(key: K, value: EmployeeFormValues[K]) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onCancel: () => void }) {
-  return <form className="employee-form" onSubmit={onSubmit} noValidate><div><p className="eyebrow">Administração</p><h1 id="employees-title">{title}</h1><p className="form-description">Campos marcados com * são obrigatórios.</p></div><div className="employee-form-grid"><Field id="employee-cpf" label="CPF *" value={form.cpf} disabled={isSaving || disableCpf} onChange={(value) => onChange('cpf', formatCpfInput(value))} /><Field id="employee-name" label="Nome completo *" value={form.name} disabled={isSaving} onChange={(value) => onChange('name', value)} /><Field id="employee-email" label="E-mail" type="email" value={form.email} disabled={isSaving} onChange={(value) => onChange('email', value)} /><Field id="employee-phone" label="Telefone" type="tel" value={form.phoneNumber} disabled={isSaving} onChange={(value) => onChange('phoneNumber', value)} /><Field id="employee-birthdate" label="Data de nascimento" type="date" value={form.dateOfBirth} disabled={isSaving} onChange={(value) => onChange('dateOfBirth', value)} /><Field id="employee-admission" label="Data de admissão" type="date" value={form.admissionDate} disabled={isSaving} onChange={(value) => onChange('admissionDate', value)} />{showTermination && <Field id="employee-termination" label="Data de desligamento" type="date" value={form.terminationDate} disabled={isSaving} onChange={(value) => onChange('terminationDate', value)} />}<Field id="employee-role" label="Cargo" value={form.role} disabled={isSaving || disableRole} onChange={(value) => onChange('role', value)} />{selfRoleMessage && <p className="employee-note">{selfRoleMessage}</p>}</div><div className="form-actions"><button className="primary-button" type="submit" disabled={isSaving}>{isSaving ? 'Salvando…' : submitLabel}</button><button className="secondary-button" type="button" onClick={onCancel} disabled={isSaving}>Cancelar</button></div></form>
+function EmployeeForm({ title, submitLabel, form, isSaving, cpfError, disableCpf = false, disableRole = false, showTermination = false, selfRoleMessage, onChange, onSubmit, onCancel }: { title: string; submitLabel: string; form: EmployeeFormValues; isSaving: boolean; cpfError?: string; disableCpf?: boolean; disableRole?: boolean; showTermination?: boolean; selfRoleMessage?: string; onChange: <K extends keyof EmployeeFormValues>(key: K, value: EmployeeFormValues[K]) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onCancel: () => void }) {
+  return <form className="employee-form" onSubmit={onSubmit} noValidate><div><p className="eyebrow">Administração</p><h1 id="employees-title">{title}</h1><p className="form-description">Campos marcados com * são obrigatórios.</p></div><div className="employee-form-grid"><Field id="employee-cpf" label="CPF *" value={form.cpf} disabled={isSaving || disableCpf} error={cpfError} onChange={(value) => onChange('cpf', formatCpf(value))} /><Field id="employee-name" label="Nome completo *" value={form.name} disabled={isSaving} onChange={(value) => onChange('name', value)} /><Field id="employee-email" label="E-mail" type="email" value={form.email} disabled={isSaving} onChange={(value) => onChange('email', value)} /><Field id="employee-phone" label="Telefone" type="tel" value={form.phoneNumber} disabled={isSaving} onChange={(value) => onChange('phoneNumber', value)} /><Field id="employee-birthdate" label="Data de nascimento" type="date" value={form.dateOfBirth} disabled={isSaving} onChange={(value) => onChange('dateOfBirth', value)} /><Field id="employee-admission" label="Data de admissão" type="date" value={form.admissionDate} disabled={isSaving} onChange={(value) => onChange('admissionDate', value)} />{showTermination && <Field id="employee-termination" label="Data de desligamento" type="date" value={form.terminationDate} disabled={isSaving} onChange={(value) => onChange('terminationDate', value)} />}<Field id="employee-role" label="Cargo" value={form.role} disabled={isSaving || disableRole} onChange={(value) => onChange('role', value)} />{selfRoleMessage && <p className="employee-note">{selfRoleMessage}</p>}</div><div className="form-actions"><button className="primary-button" type="submit" disabled={isSaving}>{isSaving ? 'Salvando…' : submitLabel}</button><button className="secondary-button" type="button" onClick={onCancel} disabled={isSaving}>Cancelar</button></div></form>
 }
 
-function Field({ id, label, type = 'text', value, disabled, onChange }: { id: string; label: string; type?: string; value: string; disabled: boolean; onChange: (value: string) => void }) {
-  return <div className="form-field"><label htmlFor={id}>{label}</label><input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} disabled={disabled} required={label.endsWith('*')} /></div>
+function Field({ id, label, type = 'text', value, disabled, error, onChange }: { id: string; label: string; type?: string; value: string; disabled: boolean; error?: string; onChange: (value: string) => void }) {
+  return <div className="form-field"><label htmlFor={id}>{label}</label><input id={id} type={type} value={value} onChange={(event) => onChange(event.target.value)} disabled={disabled} required={label.endsWith('*')} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} />{error && <p className="form-field-error" id={`${id}-error`}>{error}</p>}</div>
 }
 
 function Detail({ label, value }: { label: string; value: string }) {
   return <div><dt>{label}</dt><dd>{value}</dd></div>
 }
 
-function formatCpfInput(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 11)
-  return digits.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-}
-
-function formatCpf(value: string) {
-  return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-}
 
 function dateInput(value: string | null) {
   return value ? value.slice(0, 10) : ''

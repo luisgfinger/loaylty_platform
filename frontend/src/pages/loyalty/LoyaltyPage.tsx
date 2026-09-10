@@ -5,6 +5,8 @@ import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Customer } from '../../types/customer'
 import type { CustomerCycle, CustomerCyclesResponse, LoyaltyLevel, LoyaltySettings } from '../../types/loyalty'
+import { formatCpf, getCpfValidationError } from '../../utils/cpf'
+import { toast } from 'react-toastify'
 
 type Area = 'overview' | 'customer' | 'settings'
 
@@ -23,7 +25,6 @@ export function LoyaltyPage() {
   const [settingsMissing, setSettingsMissing] = useState(false)
   const [isLoadingSettings, setIsLoadingSettings] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
-  const [settingsMessage, setSettingsMessage] = useState('')
   const [settingsError, setSettingsError] = useState('')
 
   async function openArea(nextArea: Area) {
@@ -33,7 +34,6 @@ export function LoyaltyPage() {
 
   async function loadSettings() {
     setSettingsError('')
-    setSettingsMessage('')
     setIsLoadingSettings(true)
     try {
       const result = await getLoyaltySettings(companyId, token)
@@ -61,7 +61,6 @@ export function LoyaltyPage() {
   async function submitSettings(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setSettingsError('')
-    setSettingsMessage('')
     const minimumMedianCustomers = Number(settingsForm.minimumMedianCustomers)
     const fallbackMedian = Number(settingsForm.fallbackMedian.replace(',', '.'))
     if (!Number.isInteger(minimumMedianCustomers) || minimumMedianCustomers < 1) {
@@ -76,9 +75,9 @@ export function LoyaltyPage() {
     try {
       applySettings(await saveLoyaltySettings(companyId, { minimumMedianCustomers, fallbackMedian }, token))
       setSettingsMissing(false)
-      setSettingsMessage('Configurações de fidelidade salvas com sucesso.')
+      toast.success('Configurações de fidelidade salvas com sucesso.')
     } catch (requestError) {
-      setSettingsError(getLoyaltyError(requestError, 'settings'))
+      toast.error(getLoyaltyError(requestError, 'settings'))
     } finally {
       setIsSavingSettings(false)
     }
@@ -89,7 +88,7 @@ export function LoyaltyPage() {
     <nav className="loyalty-navigation" aria-label="Áreas de fidelidade"><button type="button" className={area === 'overview' ? 'is-active' : ''} aria-current={area === 'overview' ? 'page' : undefined} onClick={() => void openArea('overview')}>Visão geral</button><button type="button" className={area === 'customer' ? 'is-active' : ''} aria-current={area === 'customer' ? 'page' : undefined} onClick={() => void openArea('customer')}>Cliente</button><button type="button" className={area === 'settings' ? 'is-active' : ''} aria-current={area === 'settings' ? 'page' : undefined} onClick={() => void openArea('settings')}>Configurações</button></nav>
     {area === 'overview' && <Overview onOpenCustomer={() => void openArea('customer')} />}
     {area === 'customer' && <CustomerLoyalty companyId={companyId} token={token} />}
-    {area === 'settings' && <SettingsPanel form={settingsForm} settings={settings} isLoading={isLoadingSettings} isSaving={isSavingSettings} isMissing={settingsMissing} message={settingsMessage} error={settingsError} onChange={(key, value) => setSettingsForm((current) => ({ ...current, [key]: value }))} onSubmit={submitSettings} onRetry={() => void loadSettings()} />}
+    {area === 'settings' && <SettingsPanel form={settingsForm} settings={settings} isLoading={isLoadingSettings} isSaving={isSavingSettings} isMissing={settingsMissing} error={settingsError} onChange={(key, value) => setSettingsForm((current) => ({ ...current, [key]: value }))} onSubmit={submitSettings} onRetry={() => void loadSettings()} />}
   </section>
 }
 
@@ -103,12 +102,15 @@ function CustomerLoyalty({ companyId, token }: { companyId: number; token: strin
   const [cycleData, setCycleData] = useState<CustomerCyclesResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [cpfError, setCpfError] = useState('')
 
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
-    if (cpf.replace(/\D/g, '').length !== 11) {
-      setError('Informe um CPF com 11 dígitos.')
+    setCpfError('')
+    const validationError = getCpfValidationError(cpf)
+    if (validationError) {
+      setCpfError(validationError)
       return
     }
     setIsLoading(true)
@@ -127,7 +129,7 @@ function CustomerLoyalty({ companyId, token }: { companyId: number; token: strin
 
   const openCycle = cycleData?.cycles.find((cycle) => cycle.status === 'OPEN') ?? null
   const closedCycles = cycleData?.cycles.filter((cycle) => cycle.status === 'CLOSED') ?? []
-  return <section className="loyalty-customer" aria-labelledby="loyalty-customer-title"><div><p className="eyebrow">Consulta individual</p><h2 id="loyalty-customer-title">Jornada do cliente</h2><p>Localize um cliente pelo CPF para consultar os ciclos calculados pelo programa.</p></div>{error && <p className="form-error" role="alert">{error}</p>}<form className="loyalty-search" onSubmit={search} noValidate><div className="form-field"><label htmlFor="loyalty-cpf">CPF do cliente</label><input id="loyalty-cpf" value={cpf} onChange={(event) => { setCpf(formatCpfInput(event.target.value)); setError(''); setCustomer(null); setCycleData(null) }} inputMode="numeric" placeholder="000.000.000-00" disabled={isLoading} required /></div><button className="primary-button" type="submit" disabled={isLoading}>{isLoading ? 'Consultando…' : 'Consultar fidelidade'}</button></form>{isLoading && <p className="loading-state" role="status">Carregando jornada do cliente…</p>}{customer && cycleData && <><article className="loyalty-customer-summary" aria-labelledby="loyalty-customer-name"><p className="eyebrow">Cliente</p><h3 id="loyalty-customer-name">{cycleData.customer.name}</h3><p>{formatCpf(cycleData.customer.cpf)}</p><dl><div><dt>Progresso acumulado</dt><dd>{customer.journey?.progress ?? 'Não disponível'}</dd></div><div><dt>Regularidade atual</dt><dd>{customer.journey?.regularity ?? 'Não disponível'}</dd></div></dl></article><CurrentCycle cycle={openCycle} /><CycleHistory cycles={closedCycles} customerName={cycleData.customer.name} /></>}</section>
+  return <section className="loyalty-customer" aria-labelledby="loyalty-customer-title"><div><p className="eyebrow">Consulta individual</p><h2 id="loyalty-customer-title">Jornada do cliente</h2><p>Localize um cliente pelo CPF para consultar os ciclos calculados pelo programa.</p></div>{error && <p className="form-error" role="alert">{error}</p>}<form className="loyalty-search" onSubmit={search} noValidate><div className="form-field"><label htmlFor="loyalty-cpf">CPF do cliente</label><input id="loyalty-cpf" value={cpf} onChange={(event) => { setCpf(formatCpf(event.target.value)); setCpfError(''); setError(''); setCustomer(null); setCycleData(null) }} inputMode="numeric" placeholder="000.000.000-00" disabled={isLoading} required aria-invalid={Boolean(cpfError)} aria-describedby={cpfError ? 'loyalty-cpf-error' : undefined} />{cpfError && <p className="form-field-error" id="loyalty-cpf-error">{cpfError}</p>}</div><button className="primary-button" type="submit" disabled={isLoading}>{isLoading ? 'Consultando…' : 'Consultar fidelidade'}</button></form>{isLoading && <p className="loading-state" role="status">Carregando jornada do cliente…</p>}{customer && cycleData && <><article className="loyalty-customer-summary" aria-labelledby="loyalty-customer-name"><p className="eyebrow">Cliente</p><h3 id="loyalty-customer-name">{cycleData.customer.name}</h3><p>{formatCpf(cycleData.customer.cpf)}</p><dl><div><dt>Progresso acumulado</dt><dd>{customer.journey?.progress ?? 'Não disponível'}</dd></div><div><dt>Regularidade atual</dt><dd>{customer.journey?.regularity ?? 'Não disponível'}</dd></div></dl></article><CurrentCycle cycle={openCycle} /><CycleHistory cycles={closedCycles} customerName={cycleData.customer.name} /></>}</section>
 }
 
 function CurrentCycle({ cycle }: { cycle: CustomerCycle | null }) {
@@ -139,14 +141,12 @@ function CycleHistory({ cycles, customerName }: { cycles: CustomerCycle[]; custo
   return <section className="loyalty-history" aria-labelledby="loyalty-history-title"><h3 id="loyalty-history-title">Histórico de ciclos</h3>{cycles.length === 0 ? <p className="empty-state">Este cliente ainda não possui ciclos fechados.</p> : <div className="loyalty-table-wrapper"><table><caption>Ciclos fechados de {customerName}</caption><thead><tr><th scope="col">Período</th><th scope="col">Dias com compra</th><th scope="col">Total</th><th scope="col">Frequência</th><th scope="col">Valor</th><th scope="col">Regularidade</th><th scope="col">Progresso</th></tr></thead><tbody>{cycles.map((cycle) => <tr key={cycle.idCustomerCycle}><td><time dateTime={cycle.cycleStart}>{formatDate(cycle.cycleStart)}</time><span aria-hidden="true"> – </span><time dateTime={cycle.cycleEnd}>{formatDate(cycle.cycleEnd)}</time></td><td>{cycle.purchaseDays ?? 'Não disponível'}</td><td>{cycle.totalAmount === null ? 'Não disponível' : formatCurrency(cycle.totalAmount)}</td><td>{formatFrequency(cycle.frequencyLevel)}</td><td>{formatValue(cycle.valueLevel)}</td><td>{cycle.regularityLevel ?? 'Não disponível'}</td><td>{cycle.progressEarned ?? 'Não disponível'}</td></tr>)}</tbody></table></div>}</section>
 }
 
-function SettingsPanel({ form, settings, isLoading, isSaving, isMissing, message, error, onChange, onSubmit, onRetry }: { form: SettingsForm; settings: LoyaltySettings | null; isLoading: boolean; isSaving: boolean; isMissing: boolean; message: string; error: string; onChange: (key: keyof SettingsForm, value: string) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onRetry: () => void }) {
+function SettingsPanel({ form, settings, isLoading, isSaving, isMissing, error, onChange, onSubmit, onRetry }: { form: SettingsForm; settings: LoyaltySettings | null; isLoading: boolean; isSaving: boolean; isMissing: boolean; error: string; onChange: (key: keyof SettingsForm, value: string) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onRetry: () => void }) {
   if (isLoading) return <section className="loyalty-settings"><p className="loading-state" role="status">Carregando configurações…</p></section>
   if (error) return <section className="loyalty-settings"><p className="form-error" role="alert">{error}</p><button className="secondary-button" type="button" onClick={onRetry}>Tentar novamente</button></section>
-  return <section className="loyalty-settings" aria-labelledby="loyalty-settings-title"><div><p className="eyebrow">Configurações</p><h2 id="loyalty-settings-title">Regras da mediana</h2><p>Esses parâmetros orientam os cálculos realizados pelo servidor. Revise os valores antes de salvar.</p></div>{isMissing && <p className="loyalty-notice" role="status">Nenhuma configuração foi registrada ainda. Informe os valores para criar a configuração da empresa.</p>}{message && <p className="form-success" role="status">{message}</p>}<form className="loyalty-settings-form" onSubmit={onSubmit} noValidate><div className="form-field"><label htmlFor="minimum-median-customers">Quantidade mínima de clientes</label><input id="minimum-median-customers" type="number" min="1" step="1" inputMode="numeric" value={form.minimumMedianCustomers} onChange={(event) => onChange('minimumMedianCustomers', event.target.value)} disabled={isSaving} required aria-describedby="minimum-median-customers-help" /><small id="minimum-median-customers-help">Quantidade mínima necessária para usar a mediana calculada da empresa.</small></div><div className="form-field"><label htmlFor="fallback-median">Mediana de referência (R$)</label><input id="fallback-median" inputMode="decimal" value={form.fallbackMedian} onChange={(event) => onChange('fallbackMedian', event.target.value)} disabled={isSaving} required aria-describedby="fallback-median-help" /><small id="fallback-median-help">Valor de referência usado quando não houver uma mediana confiável disponível.</small></div><div className="form-actions"><button className="primary-button" type="submit" disabled={isSaving}>{isSaving ? 'Salvando…' : settings ? 'Salvar configurações' : 'Criar configurações'}</button></div></form></section>
+  return <section className="loyalty-settings" aria-labelledby="loyalty-settings-title"><div><p className="eyebrow">Configurações</p><h2 id="loyalty-settings-title">Regras da mediana</h2><p>Esses parâmetros orientam os cálculos realizados pelo servidor. Revise os valores antes de salvar.</p></div>{isMissing && <p className="loyalty-notice" role="status">Nenhuma configuração foi registrada ainda. Informe os valores para criar a configuração da empresa.</p>}<form className="loyalty-settings-form" onSubmit={onSubmit} noValidate><div className="form-field"><label htmlFor="minimum-median-customers">Quantidade mínima de clientes</label><input id="minimum-median-customers" type="number" min="1" step="1" inputMode="numeric" value={form.minimumMedianCustomers} onChange={(event) => onChange('minimumMedianCustomers', event.target.value)} disabled={isSaving} required aria-describedby="minimum-median-customers-help" /><small id="minimum-median-customers-help">Quantidade mínima necessária para usar a mediana calculada da empresa.</small></div><div className="form-field"><label htmlFor="fallback-median">Mediana de referência (R$)</label><input id="fallback-median" inputMode="decimal" value={form.fallbackMedian} onChange={(event) => onChange('fallbackMedian', event.target.value)} disabled={isSaving} required aria-describedby="fallback-median-help" /><small id="fallback-median-help">Valor de referência usado quando não houver uma mediana confiável disponível.</small></div><div className="form-actions"><button className="primary-button" type="submit" disabled={isSaving}>{isSaving ? 'Salvando…' : settings ? 'Salvar configurações' : 'Criar configurações'}</button></div></form></section>
 }
 
-function formatCpfInput(value: string) { const digits = value.replace(/\D/g, '').slice(0, 11); return digits.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2') }
-function formatCpf(value: string) { return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') }
 function formatDate(value: string) { const date = value.slice(0, 10); return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`)) }
 function formatCurrency(value: string) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value)) }
 function formatFrequency(value: LoyaltyLevel | null) { return value === 'LOW' ? 'Baixa' : value === 'MEDIUM' ? 'Média' : value === 'HIGH' ? 'Alta' : 'Não disponível' }

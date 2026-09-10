@@ -4,33 +4,39 @@ import { getCustomerPurchases, registerPurchase } from '../../api/purchases.api'
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Customer } from '../../types/customer'
-import type { CreatedPurchase, CustomerPurchaseHistory } from '../../types/purchase'
+import type { CustomerPurchaseHistory } from '../../types/purchase'
+import { formatCpf, getCpfValidationError } from '../../utils/cpf'
+import { toast } from 'react-toastify'
 
 export function PurchaseRegistrationPage() {
   const { session } = useAuth()
   const [cpf, setCpf] = useState('')
   const [amount, setAmount] = useState('')
+  const [fiscalDocumentNumber, setFiscalDocumentNumber] = useState('')
   const [customer, setCustomer] = useState<Customer | null>(null)
-  const [success, setSuccess] = useState<CreatedPurchase | null>(null)
   const [error, setError] = useState('')
+  const [cpfError, setCpfError] = useState('')
+  const [fiscalDocumentError, setFiscalDocumentError] = useState('')
+  const [amountError, setAmountError] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const companyId = session?.company.idCompany ?? 0
   const token = session?.token ?? ''
 
   function changeCpf(value: string) {
-    setCpf(formatCpfInput(value))
+    setCpf(formatCpf(value))
+    setCpfError('')
     setCustomer(null)
-    setSuccess(null)
     setError('')
   }
 
   async function searchCustomer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
-    setSuccess(null)
-    if (cpf.replace(/\D/g, '').length !== 11) {
-      setError('Informe um CPF com 11 dígitos.')
+    setCpfError('')
+    const validationError = getCpfValidationError(cpf)
+    if (validationError) {
+      setCpfError(validationError)
       return
     }
 
@@ -49,20 +55,31 @@ export function PurchaseRegistrationPage() {
     event.preventDefault()
     if (!customer) return
     setError('')
-    setSuccess(null)
+    setFiscalDocumentError('')
+    setAmountError('')
+    const normalizedFiscalDocumentNumber = fiscalDocumentNumber.trim()
+    if (!normalizedFiscalDocumentNumber) {
+      setFiscalDocumentError('Informe o número da nota ou cupom fiscal.')
+      return
+    }
+    if (normalizedFiscalDocumentNumber.length > 60) {
+      setFiscalDocumentError('O número da nota ou cupom fiscal deve possuir no máximo 60 caracteres.')
+      return
+    }
     const purchaseAmount = amountToNumber(amount)
     if (purchaseAmount <= 0) {
-      setError('Informe um valor de compra maior que zero.')
+      setAmountError('Informe um valor de compra maior que zero.')
       return
     }
 
     setIsSubmitting(true)
     try {
-      const purchase = await registerPurchase(companyId, { cpf: customer.person.cpf, amount: purchaseAmount }, token)
-      setSuccess(purchase)
+      const purchase = await registerPurchase(companyId, { cpf: customer.person.cpf, fiscalDocumentNumber: normalizedFiscalDocumentNumber, amount: purchaseAmount }, token)
+      toast.success(`Compra registrada com sucesso. Nota/cupom: ${purchase.fiscalDocumentNumber ?? 'Não informado'}.`)
       setAmount('')
+      setFiscalDocumentNumber('')
     } catch (requestError) {
-      setError(getPurchaseError(requestError, 'create'))
+      toast.error(getPurchaseError(requestError, 'create'))
     } finally {
       setIsSubmitting(false)
     }
@@ -74,13 +91,13 @@ export function PurchaseRegistrationPage() {
       <p>Localize o cliente, confirme sua identidade e informe o valor.</p>
     </div>
 
-    {success && <PurchaseSuccess purchase={success} />}
     {error && <p className="form-error" role="alert">{error}</p>}
 
     <form className="purchase-search" onSubmit={searchCustomer} noValidate>
       <div className="form-field">
         <label htmlFor="purchase-cpf">CPF do cliente</label>
-        <input id="purchase-cpf" value={cpf} onChange={(event) => changeCpf(event.target.value)} inputMode="numeric" placeholder="000.000.000-00" disabled={isSearching || isSubmitting} required />
+        <input id="purchase-cpf" value={cpf} onChange={(event) => changeCpf(event.target.value)} inputMode="numeric" placeholder="000.000.000-00" disabled={isSearching || isSubmitting} required aria-invalid={Boolean(cpfError)} aria-describedby={cpfError ? 'purchase-cpf-error' : undefined} />
+        {cpfError && <p className="form-field-error" id="purchase-cpf-error">{cpfError}</p>}
       </div>
       <button className="primary-button" type="submit" disabled={isSearching || isSubmitting}>{isSearching ? 'Consultando…' : 'Localizar cliente'}</button>
     </form>
@@ -94,9 +111,15 @@ export function PurchaseRegistrationPage() {
 
       <form className="purchase-form" onSubmit={submitPurchase} noValidate>
         <div className="form-field">
+          <label htmlFor="purchase-fiscal-document">Nº da nota ou cupom fiscal</label>
+          <input id="purchase-fiscal-document" value={fiscalDocumentNumber} onChange={(event) => { setFiscalDocumentNumber(event.target.value); setFiscalDocumentError('') }} disabled={isSubmitting} required aria-invalid={Boolean(fiscalDocumentError)} aria-describedby={fiscalDocumentError ? 'purchase-fiscal-document-error' : undefined} />
+          {fiscalDocumentError && <p className="form-field-error" id="purchase-fiscal-document-error">{fiscalDocumentError}</p>}
+        </div>
+        <div className="form-field">
           <label htmlFor="purchase-amount">Valor da compra</label>
-          <div className="currency-field"><span aria-hidden="true">R$</span><input id="purchase-amount" value={amount} onChange={(event) => setAmount(formatAmountInput(event.target.value))} inputMode="decimal" placeholder="0,00" disabled={isSubmitting} required aria-describedby="purchase-amount-help" /></div>
+          <div className="currency-field"><span aria-hidden="true">R$</span><input id="purchase-amount" value={amount} onChange={(event) => { setAmount(formatAmountInput(event.target.value)); setAmountError('') }} inputMode="decimal" placeholder="0,00" disabled={isSubmitting} required aria-invalid={Boolean(amountError)} aria-describedby={amountError ? 'purchase-amount-help purchase-amount-error' : 'purchase-amount-help'} /></div>
           <small id="purchase-amount-help">O valor será registrado para {customer.person.name}.</small>
+          {amountError && <p className="form-field-error" id="purchase-amount-error">{amountError}</p>}
         </div>
         <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? 'Registrando compra…' : 'Registrar compra'}</button>
       </form>
@@ -111,6 +134,7 @@ export function PurchaseHistoryPage() {
   const [cpf, setCpf] = useState('')
   const [history, setHistory] = useState<CustomerPurchaseHistory | null>(null)
   const [error, setError] = useState('')
+  const [cpfError, setCpfError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const companyId = session?.company.idCompany ?? 0
   const token = session?.token ?? ''
@@ -118,8 +142,10 @@ export function PurchaseHistoryPage() {
   async function searchHistory(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
-    if (cpf.replace(/\D/g, '').length !== 11) {
-      setError('Informe um CPF com 11 dígitos.')
+    setCpfError('')
+    const validationError = getCpfValidationError(cpf)
+    if (validationError) {
+      setCpfError(validationError)
       return
     }
 
@@ -145,20 +171,13 @@ export function PurchaseHistoryPage() {
     <form className="purchase-search" onSubmit={searchHistory} noValidate>
       <div className="form-field">
         <label htmlFor="purchase-history-cpf">CPF do cliente</label>
-        <input id="purchase-history-cpf" value={cpf} onChange={(event) => { setCpf(formatCpfInput(event.target.value)); setHistory(null); setError('') }} inputMode="numeric" placeholder="000.000.000-00" disabled={isLoading} required />
+        <input id="purchase-history-cpf" value={cpf} onChange={(event) => { setCpf(formatCpf(event.target.value)); setCpfError(''); setHistory(null); setError('') }} inputMode="numeric" placeholder="000.000.000-00" disabled={isLoading} required aria-invalid={Boolean(cpfError)} aria-describedby={cpfError ? 'purchase-history-cpf-error' : undefined} />
+        {cpfError && <p className="form-field-error" id="purchase-history-cpf-error">{cpfError}</p>}
       </div>
       <button className="primary-button" type="submit" disabled={isLoading}>{isLoading ? 'Consultando…' : 'Consultar histórico'}</button>
     </form>
 
     <PurchaseHistory history={history} isLoading={isLoading} />
-  </section>
-}
-
-function PurchaseSuccess({ purchase }: { purchase: CreatedPurchase }) {
-  return <section className="purchase-success form-success" aria-labelledby="purchase-success-title" role="status">
-    <h2 id="purchase-success-title">Compra registrada com sucesso.</h2>
-    <p>{purchase.customer.name} recebeu uma compra de {formatCurrency(purchase.amount)} em <time dateTime={purchase.purchaseDate}>{formatDateTime(purchase.purchaseDate)}</time>.</p>
-    <p>Registrada por {purchase.registeredBy.name}.</p>
   </section>
 }
 
@@ -169,18 +188,10 @@ function PurchaseHistory({ history, isLoading }: { history: CustomerPurchaseHist
   return <section className="purchase-history" aria-labelledby="purchase-history-title">
     <div><p className="eyebrow">Cliente</p><h2 id="purchase-history-title">{history.customer.name}</h2><p>{formatCpf(history.customer.cpf)}</p></div>
     {history.purchases.length === 0 && <p className="empty-state">Este cliente ainda não possui compras registradas.</p>}
-    {history.purchases.length > 0 && <div className="purchase-table-wrapper"><table><caption>Compras de {history.customer.name}</caption><thead><tr><th scope="col">Data</th><th scope="col">Valor</th><th scope="col">Registrada por</th></tr></thead><tbody>{history.purchases.map((purchase) => <tr key={purchase.idPurchase}><td><time dateTime={purchase.purchaseDate}>{formatDateTime(purchase.purchaseDate)}</time></td><td>{formatCurrency(purchase.amount)}</td><td>{purchase.registeredBy?.name ?? 'Não informado'}</td></tr>)}</tbody></table></div>}
+    {history.purchases.length > 0 && <div className="purchase-table-wrapper"><table><caption>Compras de {history.customer.name}</caption><thead><tr><th scope="col">Data</th><th scope="col">Nota/Cupom</th><th scope="col">Valor</th><th scope="col">Registrada por</th></tr></thead><tbody>{history.purchases.map((purchase) => <tr key={purchase.idPurchase}><td><time dateTime={purchase.purchaseDate}>{formatDateTime(purchase.purchaseDate)}</time></td><td>{purchase.fiscalDocumentNumber ?? 'Não informado'}</td><td>{formatCurrency(purchase.amount)}</td><td>{purchase.registeredBy?.name ?? 'Não informado'}</td></tr>)}</tbody></table></div>}
   </section>
 }
 
-function formatCpfInput(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 11)
-  return digits.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-}
-
-function formatCpf(value: string) {
-  return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
-}
 
 function formatAmountInput(value: string) {
   const digits = value.replace(/\D/g, '')

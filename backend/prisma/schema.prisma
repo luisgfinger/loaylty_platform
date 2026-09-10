@@ -200,12 +200,12 @@ model User {
 model Purchase {
   idPurchase BigInt @id @default(autoincrement()) @db.UnsignedBigInt
 
-  CompanyCustomer_idCompanyCustomer Int @db.UnsignedInt
-
+  CompanyCustomer_idCompanyCustomer      Int  @db.UnsignedInt
   RegisteredByEmployee_idCompanyEmployee Int? @db.UnsignedInt
 
-  amount       Decimal  @db.Decimal(12, 2)
-  purchaseDate DateTime @default(now())
+  fiscalDocumentNumber String?  @db.VarChar(60)
+  amount               Decimal  @db.Decimal(12, 2)
+  purchaseDate         DateTime @default(now())
 
   customer CompanyCustomer @relation(fields: [CompanyCustomer_idCompanyCustomer], references: [idCompanyCustomer])
 

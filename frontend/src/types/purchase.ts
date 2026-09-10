@@ -12,6 +12,7 @@ export interface PurchaseRegisteredBy {
 
 export interface Purchase {
   idPurchase: string
+  fiscalDocumentNumber: string | null
   amount: string
   purchaseDate: string
   registeredBy: PurchaseRegisteredBy | null
@@ -35,5 +36,6 @@ export interface CustomerPurchaseHistory {
 
 export interface CreatePurchaseInput {
   cpf: string
+  fiscalDocumentNumber: string
   amount: number
 }

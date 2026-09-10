@@ -1,2 +1,47 @@
-:root { color-scheme: light; --background: #f7f8fa; --surface: #ffffff; --surface-muted: #f1f3f5; --text: #17212b; --text-muted: #65717e; --border: #dce1e6; --brand-primary: #176b5b; --brand-primary-hover: #105447; --brand-primary-active: #0b4037; --brand-primary-subtle: #e3f2ee; --brand-secondary: #315b70; --brand-secondary-subtle: #e8f0f4; --brand-accent: #9a5a18; --brand-accent-subtle: #fff0dd; --brand-on-primary: #ffffff; --brand-on-secondary: #ffffff; --brand-focus: #1b8a74; --danger: #b42318; --danger-background: #fef3f2; --shadow: 0 12px 28px rgb(21 35 48 / 7%); --radius: 10px; }
-:root[data-theme='dark'] { color-scheme: dark; --background: #11181e; --surface: #182229; --surface-muted: #202c34; --text: #edf3f4; --text-muted: #aab9bd; --border: #324149; --brand-primary: #50b69f; --brand-primary-hover: #72c8b4; --brand-primary-active: #3e9f89; --brand-primary-subtle: #193d35; --brand-secondary: #9ac2d4; --brand-secondary-subtle: #253b45; --brand-accent: #ffbc78; --brand-accent-subtle: #47341e; --brand-on-primary: #09261f; --brand-on-secondary: #10242c; --brand-focus: #76d5c1; --danger: #ffb4aa; --danger-background: #452522; --shadow: 0 12px 28px rgb(0 0 0 / 20%); }
+:root {
+  color-scheme: light;
+  --background: #f7f8fa;
+  --surface: #ffffff;
+  --surface-muted: #f1f3f5;
+  --text: #17212b;
+  --text-muted: #65717e;
+  --border: #dce1e6;
+  --brand-primary: #176b5b;
+  --brand-primary-hover: #105447;
+  --brand-primary-active: #0b4037;
+  --brand-primary-subtle: #e3f2ee;
+  --brand-secondary: #315b70;
+  --brand-secondary-subtle: #e8f0f4;
+  --brand-accent: #9a5a18;
+  --brand-accent-subtle: #fff0dd;
+  --brand-on-primary: #ffffff;
+  --brand-on-secondary: #ffffff;
+  --brand-focus: #1b8a74;
+  --danger: #b42318;
+  --danger-background: #fef3f2;
+  --shadow: 0 12px 28px rgb(21 35 48 / 7%);
+  --radius: 10px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #11181e;
+  --surface: #182229;
+  --surface-muted: #202c34;
+  --text: #edf3f4;
+  --text-muted: #aab9bd;
+  --border: #324149;
+  --brand-primary: #50b69f;
+  --brand-primary-hover: #72c8b4;
+  --brand-primary-active: #3e9f89;
+  --brand-primary-subtle: #193d35;
+  --brand-secondary: #9ac2d4;
+  --brand-secondary-subtle: #253b45;
+  --brand-accent: #ffbc78;
+  --brand-accent-subtle: #47341e;
+  --brand-on-primary: #09261f;
+  --brand-on-secondary: #10242c;
+  --brand-focus: #76d5c1;
+  --danger: #ffb4aa;
+  --danger-background: #452522;
+  --shadow: 0 12px 28px rgb(0 0 0 / 20%);
+}

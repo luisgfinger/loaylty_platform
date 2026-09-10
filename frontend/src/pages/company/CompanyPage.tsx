@@ -3,6 +3,7 @@ import { getCompany, updateCompany } from '../../api/companies.api'
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Company, UpdateCompanyInput } from '../../types/company'
+import { toast } from 'react-toastify'
 
 interface CompanyFormValues {
   name: string
@@ -24,7 +25,6 @@ export function CompanyPage() {
   const [savedForm, setSavedForm] = useState<CompanyFormValues>(emptyForm)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
   const loadCompany = useCallback(async () => {
@@ -57,7 +57,6 @@ export function CompanyPage() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
-    setMessage('')
     if (!company || !isDirty) return
 
     const data = changedCompanyData(form, savedForm)
@@ -73,9 +72,9 @@ export function CompanyPage() {
     setIsSaving(true)
     try {
       applyCompany(await updateCompany(companyId, data, token))
-      setMessage('Dados da empresa atualizados com sucesso.')
+      toast.success('Dados da empresa atualizados com sucesso.')
     } catch (requestError) {
-      setError(getCompanyError(requestError))
+      toast.error(getCompanyError(requestError))
     } finally {
       setIsSaving(false)
     }
@@ -90,7 +89,6 @@ export function CompanyPage() {
       <p>Consulte e mantenha os dados da sua empresa.</p>
     </header>
 
-    {message && <p className="form-success" role="status">{message}</p>}
     {error && <p className="form-error" role="alert">{error}</p>}
 
     {!company ? <section className="company-unavailable" aria-labelledby="company-unavailable-title"><h2 id="company-unavailable-title">Não foi possível carregar a empresa.</h2><p>Verifique sua conexão e tente novamente.</p><button className="secondary-button" type="button" onClick={() => { setError(''); void loadCompany() }}>Tentar novamente</button></section> : <form className="company-form" onSubmit={submit} noValidate>

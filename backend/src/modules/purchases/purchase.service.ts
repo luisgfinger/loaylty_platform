@@ -122,6 +122,10 @@ export async function createPurchase(
             RegisteredByEmployee_idCompanyEmployee:
               employeeId,
 
+            fiscalDocumentNumber:
+              data
+                .fiscalDocumentNumber,
+
             amount:
               data.amount,
           },
@@ -153,6 +157,10 @@ export async function createPurchase(
           purchase
             .idPurchase
             .toString(),
+
+        fiscalDocumentNumber:
+          purchase
+            .fiscalDocumentNumber,
 
         amount:
           purchase
@@ -351,6 +359,10 @@ export async function listCustomerPurchases(
             purchase
               .idPurchase
               .toString(),
+
+          fiscalDocumentNumber:
+            purchase
+              .fiscalDocumentNumber,
 
           amount:
             purchase

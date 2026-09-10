@@ -1,12 +1,13 @@
 import { request } from './client'
 import type { CreatePurchaseInput, CreatedPurchase, CustomerPurchaseHistory } from '../types/purchase'
+import { normalizeCpf } from '../utils/cpf'
 
 function purchasePath(companyId: number) {
   return `/companies/${companyId}/purchases`
 }
 
 function customerPurchasePath(companyId: number, cpf: string) {
-  return `/companies/${companyId}/customers/${encodeURIComponent(cpf.replace(/\D/g, ''))}/purchases`
+  return `/companies/${companyId}/customers/${encodeURIComponent(normalizeCpf(cpf))}/purchases`
 }
 
 export function registerPurchase(companyId: number, data: CreatePurchaseInput, token: string) {

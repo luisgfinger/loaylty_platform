@@ -1,12 +1,13 @@
 import { request } from './client'
 import type { CustomerCyclesResponse, LoyaltySettings, LoyaltySettingsInput } from '../types/loyalty'
+import { normalizeCpf } from '../utils/cpf'
 
 function companyPath(companyId: number) {
   return `/companies/${companyId}`
 }
 
 export function getCustomerCycles(companyId: number, cpf: string, token: string) {
-  return request<CustomerCyclesResponse>(`${companyPath(companyId)}/customers/${encodeURIComponent(cpf.replace(/\D/g, ''))}/cycles`, { token })
+  return request<CustomerCyclesResponse>(`${companyPath(companyId)}/customers/${encodeURIComponent(normalizeCpf(cpf))}/cycles`, { token })
 }
 
 export function getLoyaltySettings(companyId: number, token: string) {

@@ -1,9 +1,10 @@
 import { request } from './client'
 import type { CreateEmployeeInput, EmployeeDetail, EmployeeListItem, UpdateEmployeeInput } from '../types/employee'
+import { normalizeCpf } from '../utils/cpf'
 
 function employeePath(companyId: number, cpf?: string) {
   const basePath = `/companies/${companyId}/employees`
-  return cpf ? `${basePath}/${encodeURIComponent(cpf.replace(/\D/g, ''))}` : basePath
+  return cpf ? `${basePath}/${encodeURIComponent(normalizeCpf(cpf))}` : basePath
 }
 
 export function getEmployees(companyId: number, token: string) {

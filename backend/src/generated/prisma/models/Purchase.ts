@@ -44,6 +44,7 @@ export type PurchaseMinAggregateOutputType = {
   idPurchase: bigint | null
   CompanyCustomer_idCompanyCustomer: number | null
   RegisteredByEmployee_idCompanyEmployee: number | null
+  fiscalDocumentNumber: string | null
   amount: runtime.Decimal | null
   purchaseDate: Date | null
 }
@@ -52,6 +53,7 @@ export type PurchaseMaxAggregateOutputType = {
   idPurchase: bigint | null
   CompanyCustomer_idCompanyCustomer: number | null
   RegisteredByEmployee_idCompanyEmployee: number | null
+  fiscalDocumentNumber: string | null
   amount: runtime.Decimal | null
   purchaseDate: Date | null
 }
@@ -60,6 +62,7 @@ export type PurchaseCountAggregateOutputType = {
   idPurchase: number
   CompanyCustomer_idCompanyCustomer: number
   RegisteredByEmployee_idCompanyEmployee: number
+  fiscalDocumentNumber: number
   amount: number
   purchaseDate: number
   _all: number
@@ -84,6 +87,7 @@ export type PurchaseMinAggregateInputType = {
   idPurchase?: true
   CompanyCustomer_idCompanyCustomer?: true
   RegisteredByEmployee_idCompanyEmployee?: true
+  fiscalDocumentNumber?: true
   amount?: true
   purchaseDate?: true
 }
@@ -92,6 +96,7 @@ export type PurchaseMaxAggregateInputType = {
   idPurchase?: true
   CompanyCustomer_idCompanyCustomer?: true
   RegisteredByEmployee_idCompanyEmployee?: true
+  fiscalDocumentNumber?: true
   amount?: true
   purchaseDate?: true
 }
@@ -100,6 +105,7 @@ export type PurchaseCountAggregateInputType = {
   idPurchase?: true
   CompanyCustomer_idCompanyCustomer?: true
   RegisteredByEmployee_idCompanyEmployee?: true
+  fiscalDocumentNumber?: true
   amount?: true
   purchaseDate?: true
   _all?: true
@@ -195,6 +201,7 @@ export type PurchaseGroupByOutputType = {
   idPurchase: bigint
   CompanyCustomer_idCompanyCustomer: number
   RegisteredByEmployee_idCompanyEmployee: number | null
+  fiscalDocumentNumber: string | null
   amount: runtime.Decimal
   purchaseDate: Date
   _count: PurchaseCountAggregateOutputType | null
@@ -226,6 +233,7 @@ export type PurchaseWhereInput = {
   idPurchase?: Prisma.BigIntFilter<"Purchase"> | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"Purchase"> | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"Purchase"> | number | null
+  fiscalDocumentNumber?: Prisma.StringNullableFilter<"Purchase"> | string | null
   amount?: Prisma.DecimalFilter<"Purchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFilter<"Purchase"> | Date | string
   customer?: Prisma.XOR<Prisma.CompanyCustomerScalarRelationFilter, Prisma.CompanyCustomerWhereInput>
@@ -236,10 +244,12 @@ export type PurchaseOrderByWithRelationInput = {
   idPurchase?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RegisteredByEmployee_idCompanyEmployee?: Prisma.SortOrderInput | Prisma.SortOrder
+  fiscalDocumentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   purchaseDate?: Prisma.SortOrder
   customer?: Prisma.CompanyCustomerOrderByWithRelationInput
   registeredByEmployee?: Prisma.CompanyEmployeeOrderByWithRelationInput
+  _relevance?: Prisma.PurchaseOrderByRelevanceInput
 }
 
 export type PurchaseWhereUniqueInput = Prisma.AtLeast<{
@@ -249,6 +259,7 @@ export type PurchaseWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PurchaseWhereInput | Prisma.PurchaseWhereInput[]
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"Purchase"> | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"Purchase"> | number | null
+  fiscalDocumentNumber?: Prisma.StringNullableFilter<"Purchase"> | string | null
   amount?: Prisma.DecimalFilter<"Purchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFilter<"Purchase"> | Date | string
   customer?: Prisma.XOR<Prisma.CompanyCustomerScalarRelationFilter, Prisma.CompanyCustomerWhereInput>
@@ -259,6 +270,7 @@ export type PurchaseOrderByWithAggregationInput = {
   idPurchase?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RegisteredByEmployee_idCompanyEmployee?: Prisma.SortOrderInput | Prisma.SortOrder
+  fiscalDocumentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
   purchaseDate?: Prisma.SortOrder
   _count?: Prisma.PurchaseCountOrderByAggregateInput
@@ -275,12 +287,14 @@ export type PurchaseScalarWhereWithAggregatesInput = {
   idPurchase?: Prisma.BigIntWithAggregatesFilter<"Purchase"> | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntWithAggregatesFilter<"Purchase"> | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.IntNullableWithAggregatesFilter<"Purchase"> | number | null
+  fiscalDocumentNumber?: Prisma.StringNullableWithAggregatesFilter<"Purchase"> | string | null
   amount?: Prisma.DecimalWithAggregatesFilter<"Purchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeWithAggregatesFilter<"Purchase"> | Date | string
 }
 
 export type PurchaseCreateInput = {
   idPurchase?: bigint | number
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
   customer: Prisma.CompanyCustomerCreateNestedOneWithoutPurchasesInput
@@ -291,12 +305,14 @@ export type PurchaseUncheckedCreateInput = {
   idPurchase?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
   RegisteredByEmployee_idCompanyEmployee?: number | null
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
 
 export type PurchaseUpdateInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutPurchasesNestedInput
@@ -307,6 +323,7 @@ export type PurchaseUncheckedUpdateInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -315,12 +332,14 @@ export type PurchaseCreateManyInput = {
   idPurchase?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
   RegisteredByEmployee_idCompanyEmployee?: number | null
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
 
 export type PurchaseUpdateManyMutationInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -329,6 +348,7 @@ export type PurchaseUncheckedUpdateManyInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -343,10 +363,17 @@ export type PurchaseOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type PurchaseOrderByRelevanceInput = {
+  fields: Prisma.PurchaseOrderByRelevanceFieldEnum | Prisma.PurchaseOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
+}
+
 export type PurchaseCountOrderByAggregateInput = {
   idPurchase?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RegisteredByEmployee_idCompanyEmployee?: Prisma.SortOrder
+  fiscalDocumentNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   purchaseDate?: Prisma.SortOrder
 }
@@ -362,6 +389,7 @@ export type PurchaseMaxOrderByAggregateInput = {
   idPurchase?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RegisteredByEmployee_idCompanyEmployee?: Prisma.SortOrder
+  fiscalDocumentNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   purchaseDate?: Prisma.SortOrder
 }
@@ -370,6 +398,7 @@ export type PurchaseMinOrderByAggregateInput = {
   idPurchase?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RegisteredByEmployee_idCompanyEmployee?: Prisma.SortOrder
+  fiscalDocumentNumber?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   purchaseDate?: Prisma.SortOrder
 }
@@ -483,6 +512,7 @@ export type DecimalFieldUpdateOperationsInput = {
 
 export type PurchaseCreateWithoutRegisteredByEmployeeInput = {
   idPurchase?: bigint | number
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
   customer: Prisma.CompanyCustomerCreateNestedOneWithoutPurchasesInput
@@ -491,6 +521,7 @@ export type PurchaseCreateWithoutRegisteredByEmployeeInput = {
 export type PurchaseUncheckedCreateWithoutRegisteredByEmployeeInput = {
   idPurchase?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
@@ -528,12 +559,14 @@ export type PurchaseScalarWhereInput = {
   idPurchase?: Prisma.BigIntFilter<"Purchase"> | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"Purchase"> | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"Purchase"> | number | null
+  fiscalDocumentNumber?: Prisma.StringNullableFilter<"Purchase"> | string | null
   amount?: Prisma.DecimalFilter<"Purchase"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFilter<"Purchase"> | Date | string
 }
 
 export type PurchaseCreateWithoutCustomerInput = {
   idPurchase?: bigint | number
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
   registeredByEmployee?: Prisma.CompanyEmployeeCreateNestedOneWithoutRegisteredPurchasesInput
@@ -542,6 +575,7 @@ export type PurchaseCreateWithoutCustomerInput = {
 export type PurchaseUncheckedCreateWithoutCustomerInput = {
   idPurchase?: bigint | number
   RegisteredByEmployee_idCompanyEmployee?: number | null
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
@@ -575,12 +609,14 @@ export type PurchaseUpdateManyWithWhereWithoutCustomerInput = {
 export type PurchaseCreateManyRegisteredByEmployeeInput = {
   idPurchase?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
 
 export type PurchaseUpdateWithoutRegisteredByEmployeeInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutPurchasesNestedInput
@@ -589,6 +625,7 @@ export type PurchaseUpdateWithoutRegisteredByEmployeeInput = {
 export type PurchaseUncheckedUpdateWithoutRegisteredByEmployeeInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -596,6 +633,7 @@ export type PurchaseUncheckedUpdateWithoutRegisteredByEmployeeInput = {
 export type PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -603,12 +641,14 @@ export type PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeInput = {
 export type PurchaseCreateManyCustomerInput = {
   idPurchase?: bigint | number
   RegisteredByEmployee_idCompanyEmployee?: number | null
+  fiscalDocumentNumber?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Date | string
 }
 
 export type PurchaseUpdateWithoutCustomerInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredByEmployee?: Prisma.CompanyEmployeeUpdateOneWithoutRegisteredPurchasesNestedInput
@@ -617,6 +657,7 @@ export type PurchaseUpdateWithoutCustomerInput = {
 export type PurchaseUncheckedUpdateWithoutCustomerInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -624,6 +665,7 @@ export type PurchaseUncheckedUpdateWithoutCustomerInput = {
 export type PurchaseUncheckedUpdateManyWithoutCustomerInput = {
   idPurchase?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   RegisteredByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fiscalDocumentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   purchaseDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -634,6 +676,7 @@ export type PurchaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   idPurchase?: boolean
   CompanyCustomer_idCompanyCustomer?: boolean
   RegisteredByEmployee_idCompanyEmployee?: boolean
+  fiscalDocumentNumber?: boolean
   amount?: boolean
   purchaseDate?: boolean
   customer?: boolean | Prisma.CompanyCustomerDefaultArgs<ExtArgs>
@@ -646,11 +689,12 @@ export type PurchaseSelectScalar = {
   idPurchase?: boolean
   CompanyCustomer_idCompanyCustomer?: boolean
   RegisteredByEmployee_idCompanyEmployee?: boolean
+  fiscalDocumentNumber?: boolean
   amount?: boolean
   purchaseDate?: boolean
 }
 
-export type PurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idPurchase" | "CompanyCustomer_idCompanyCustomer" | "RegisteredByEmployee_idCompanyEmployee" | "amount" | "purchaseDate", ExtArgs["result"]["purchase"]>
+export type PurchaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idPurchase" | "CompanyCustomer_idCompanyCustomer" | "RegisteredByEmployee_idCompanyEmployee" | "fiscalDocumentNumber" | "amount" | "purchaseDate", ExtArgs["result"]["purchase"]>
 export type PurchaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CompanyCustomerDefaultArgs<ExtArgs>
   registeredByEmployee?: boolean | Prisma.Purchase$registeredByEmployeeArgs<ExtArgs>
@@ -666,6 +710,7 @@ export type $PurchasePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     idPurchase: bigint
     CompanyCustomer_idCompanyCustomer: number
     RegisteredByEmployee_idCompanyEmployee: number | null
+    fiscalDocumentNumber: string | null
     amount: runtime.Decimal
     purchaseDate: Date
   }, ExtArgs["result"]["purchase"]>
@@ -1042,6 +1087,7 @@ export interface PurchaseFieldRefs {
   readonly idPurchase: Prisma.FieldRef<"Purchase", 'BigInt'>
   readonly CompanyCustomer_idCompanyCustomer: Prisma.FieldRef<"Purchase", 'Int'>
   readonly RegisteredByEmployee_idCompanyEmployee: Prisma.FieldRef<"Purchase", 'Int'>
+  readonly fiscalDocumentNumber: Prisma.FieldRef<"Purchase", 'String'>
   readonly amount: Prisma.FieldRef<"Purchase", 'Decimal'>
   readonly purchaseDate: Prisma.FieldRef<"Purchase", 'DateTime'>
 }

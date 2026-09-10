@@ -11,6 +11,8 @@ import type {
   Customer,
   UpdateCustomerInput,
 } from "../../types/customer";
+import { formatCpf, getCpfValidationError, normalizeCpf } from "../../utils/cpf";
+import { toast } from "react-toastify";
 
 type View = "search" | "create" | "edit";
 const emptyForm: CreateCustomerInput = {
@@ -30,13 +32,12 @@ export function CustomersPage() {
   const [form, setForm] = useState<CreateCustomerInput>(emptyForm);
   const [isSearching, setIsSearching] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [cpfError, setCpfError] = useState("");
   const companyId = session?.company.idCompany ?? 0;
   const token = session?.token ?? "";
   function resetFeedback() {
     setError("");
-    setMessage("");
   }
   function updateForm<K extends keyof CreateCustomerInput>(
     key: K,
@@ -47,8 +48,10 @@ export function CustomersPage() {
   async function search(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     resetFeedback();
-    if (cpf.replace(/\D/g, "").length !== 11) {
-      setError("Informe um CPF com 11 dígitos.");
+    setCpfError("");
+    const validationError = getCpfValidationError(cpf);
+    if (validationError) {
+      setCpfError(validationError);
       return;
     }
     setIsSearching(true);
@@ -64,7 +67,8 @@ export function CustomersPage() {
   function openCreate() {
     resetFeedback();
     setCustomer(null);
-    setForm({ ...emptyForm, cpf: cpf.replace(/\D/g, "") });
+    setCpfError("");
+    setForm({ ...emptyForm, cpf: normalizeCpf(cpf) });
     setView("create");
   }
   function openEdit() {
@@ -83,8 +87,10 @@ export function CustomersPage() {
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     resetFeedback();
-    if (view === "create" && form.cpf.replace(/\D/g, "").length !== 11) {
-      setError("Informe um CPF com 11 dígitos.");
+    setCpfError("");
+    const validationError = view === "create" ? getCpfValidationError(form.cpf) : null;
+    if (validationError) {
+      setCpfError(validationError);
       return;
     }
     if (form.name.trim().length < 2) {
@@ -99,7 +105,7 @@ export function CustomersPage() {
         const created = await getCustomerByCpf(companyId, form.cpf, token);
         setCustomer(created);
         setCpf(created.person.cpf);
-        setMessage("Cliente cadastrado com sucesso.");
+        toast.success("Cliente cadastrado com sucesso.");
         setView("search");
       } else if (customer) {
         const update: UpdateCustomerInput = {
@@ -113,13 +119,11 @@ export function CustomersPage() {
         setCustomer(
           await getCustomerByCpf(companyId, customer.person.cpf, token),
         );
-        setMessage("Dados do cliente atualizados.");
+        toast.success("Cliente atualizado com sucesso.");
         setView("search");
       }
     } catch (requestError) {
-      setError(
-        getMessage(requestError, view === "create" ? "create" : "update"),
-      );
+      toast.error(getMessage(requestError, view === "create" ? "create" : "update"));
     } finally {
       setIsSaving(false);
     }
@@ -139,13 +143,9 @@ export function CustomersPage() {
       setCustomer(
         await getCustomerByCpf(companyId, customer.person.cpf, token),
       );
-      setMessage(
-        nextIsActive
-          ? "Cliente ativado com sucesso."
-          : "Cliente inativado com sucesso.",
-      );
+      toast.success(nextIsActive ? "Cliente ativado com sucesso." : "Cliente inativado com sucesso.");
     } catch (requestError) {
-      setError(getMessage(requestError, "update"));
+      toast.error(getMessage(requestError, "update"));
     } finally {
       setIsSaving(false);
     }
@@ -162,11 +162,6 @@ export function CustomersPage() {
           Cadastrar cliente
         </button>
       </div>
-      {message && (
-        <p className="form-success" role="status">
-          {message}
-        </p>
-      )}
       {error && (
         <p className="form-error" role="alert">
           {error}
@@ -180,12 +175,15 @@ export function CustomersPage() {
               <input
                 id="customer-cpf"
                 value={cpf}
-                onChange={(event) => setCpf(event.target.value)}
+                onChange={(event) => { setCpf(formatCpf(event.target.value)); setCpfError(""); }}
                 inputMode="numeric"
                 placeholder="000.000.000-00"
                 disabled={isSearching}
                 required
+                aria-invalid={Boolean(cpfError)}
+                aria-describedby={cpfError ? "customer-cpf-error" : undefined}
               />
+              {cpfError && <p className="form-field-error" id="customer-cpf-error">{cpfError}</p>}
             </div>
             <button
               className="primary-button"
@@ -210,6 +208,7 @@ export function CustomersPage() {
           form={form}
           isSaving={isSaving}
           isEdit={view === "edit"}
+          cpfError={cpfError}
           onChange={updateForm}
           onSubmit={save}
           onCancel={() => {
@@ -312,6 +311,7 @@ function CustomerForm({
   form,
   isSaving,
   isEdit,
+  cpfError,
   onChange,
   onSubmit,
   onCancel,
@@ -319,6 +319,7 @@ function CustomerForm({
   form: CreateCustomerInput;
   isSaving: boolean;
   isEdit: boolean;
+  cpfError: string;
   onChange: <K extends keyof CreateCustomerInput>(
     key: K,
     value: CreateCustomerInput[K],
@@ -342,8 +343,9 @@ function CustomerForm({
           id="form-cpf"
           label="CPF *"
           value={form.cpf}
-          onChange={(value) => onChange("cpf", value)}
+          onChange={(value) => onChange("cpf", formatCpf(value))}
           disabled={isSaving || isEdit}
+          error={cpfError}
         />
         <Field
           id="form-name"
@@ -416,6 +418,7 @@ function Field({
   value,
   onChange,
   disabled,
+  error,
 }: {
   id: string;
   label: string;
@@ -423,6 +426,7 @@ function Field({
   value: string;
   onChange: (value: string) => void;
   disabled: boolean;
+  error?: string;
 }) {
   return (
     <div className="form-field">
@@ -434,14 +438,17 @@ function Field({
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
         required={label.endsWith("*")}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
       />
+      {error && <p className="form-field-error" id={`${id}-error`}>{error}</p>}
     </div>
   );
 }
 function normalized(form: CreateCustomerInput): CreateCustomerInput {
   return {
     ...form,
-    cpf: form.cpf.replace(/\D/g, ""),
+    cpf: normalizeCpf(form.cpf),
     name: form.name.trim(),
     email: form.email?.trim() || undefined,
     phoneNumber: form.phoneNumber?.replace(/\D/g, "") || undefined,
@@ -457,9 +464,6 @@ function formatDate(value: string | null) {
         new Date(value),
       )
     : "Não informado";
-}
-function formatCpf(value: string) {
-  return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 }
 function getMessage(error: unknown, action: "search" | "create" | "update") {
   if (error instanceof ApiError) {
