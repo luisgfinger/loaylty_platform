@@ -150,6 +150,14 @@ export const createRewardSchema =
         )
         .nullable()
         .optional(),
+
+    costAmount:
+      z.coerce
+        .number()
+        .finite()
+        .nonnegative(
+          "O custo da recompensa não pode ser negativo."
+        ),
   });
 
 
@@ -183,6 +191,15 @@ export const updateRewardSchema =
           "A descrição deve possuir no máximo 255 caracteres."
         )
         .nullable()
+        .optional(),
+
+    costAmount:
+      z.coerce
+        .number()
+        .finite()
+        .nonnegative(
+          "O custo da recompensa não pode ser negativo."
+        )
         .optional(),
 
     isActive:

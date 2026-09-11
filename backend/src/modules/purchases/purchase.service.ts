@@ -10,6 +10,11 @@ import {
   ensureCustomerCycle,
 } from "../loyalty/cycle.service.js";
 
+import {
+  calculateRewardFundContribution,
+  creditRewardFund,
+} from "../rewards/reward.fund.service.js";
+
 
 // =====================================================
 // CRIAR COMPRA / VENDA
@@ -60,6 +65,24 @@ export async function createPurchase(
       "CUSTOMER_NOT_FOUND"
     );
   }
+
+
+  // ==================================================
+  // CALCULAR CONTRIBUIÇÃO PARA O FUNDO
+  //
+  // 0,5% do valor da venda.
+  //
+  // Exemplo:
+  //
+  // R$ 250,00
+  // x 0,005
+  // = R$ 1,2500
+  // ==================================================
+
+  const rewardFundContribution =
+    calculateRewardFundContribution(
+      data.amount
+    );
 
 
   // ==================================================
@@ -128,8 +151,28 @@ export async function createPurchase(
 
             amount:
               data.amount,
+
+            rewardFundContribution,
           },
         });
+
+
+      // ===============================================
+      // CREDITAR 0,5% NO FUNDO DE RECOMPENSAS
+      //
+      // Está dentro da mesma transação da compra.
+      //
+      // Portanto:
+      //
+      // compra + fundo são confirmados juntos
+      // ou ambos sofrem rollback.
+      // ===============================================
+
+      await creditRewardFund(
+        tx,
+        companyId,
+        rewardFundContribution
+      );
 
 
       // ===============================================
@@ -165,6 +208,11 @@ export async function createPurchase(
         amount:
           purchase
             .amount
+            .toString(),
+
+        rewardFundContribution:
+          purchase
+            .rewardFundContribution
             .toString(),
 
         purchaseDate:
@@ -367,6 +415,11 @@ export async function listCustomerPurchases(
           amount:
             purchase
               .amount
+              .toString(),
+
+          rewardFundContribution:
+            purchase
+              .rewardFundContribution
               .toString(),
 
           purchaseDate:

@@ -30,12 +30,14 @@ export type RewardAvgAggregateOutputType = {
   idReward: number | null
   Company_idCompany: number | null
   RewardCategory_idRewardCategory: number | null
+  costAmount: runtime.Decimal | null
 }
 
 export type RewardSumAggregateOutputType = {
   idReward: number | null
   Company_idCompany: number | null
   RewardCategory_idRewardCategory: number | null
+  costAmount: runtime.Decimal | null
 }
 
 export type RewardMinAggregateOutputType = {
@@ -44,6 +46,7 @@ export type RewardMinAggregateOutputType = {
   RewardCategory_idRewardCategory: number | null
   name: string | null
   description: string | null
+  costAmount: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
 }
@@ -54,6 +57,7 @@ export type RewardMaxAggregateOutputType = {
   RewardCategory_idRewardCategory: number | null
   name: string | null
   description: string | null
+  costAmount: runtime.Decimal | null
   isActive: boolean | null
   createdAt: Date | null
 }
@@ -64,6 +68,7 @@ export type RewardCountAggregateOutputType = {
   RewardCategory_idRewardCategory: number
   name: number
   description: number
+  costAmount: number
   isActive: number
   createdAt: number
   _all: number
@@ -74,12 +79,14 @@ export type RewardAvgAggregateInputType = {
   idReward?: true
   Company_idCompany?: true
   RewardCategory_idRewardCategory?: true
+  costAmount?: true
 }
 
 export type RewardSumAggregateInputType = {
   idReward?: true
   Company_idCompany?: true
   RewardCategory_idRewardCategory?: true
+  costAmount?: true
 }
 
 export type RewardMinAggregateInputType = {
@@ -88,6 +95,7 @@ export type RewardMinAggregateInputType = {
   RewardCategory_idRewardCategory?: true
   name?: true
   description?: true
+  costAmount?: true
   isActive?: true
   createdAt?: true
 }
@@ -98,6 +106,7 @@ export type RewardMaxAggregateInputType = {
   RewardCategory_idRewardCategory?: true
   name?: true
   description?: true
+  costAmount?: true
   isActive?: true
   createdAt?: true
 }
@@ -108,6 +117,7 @@ export type RewardCountAggregateInputType = {
   RewardCategory_idRewardCategory?: true
   name?: true
   description?: true
+  costAmount?: true
   isActive?: true
   createdAt?: true
   _all?: true
@@ -205,6 +215,7 @@ export type RewardGroupByOutputType = {
   RewardCategory_idRewardCategory: number | null
   name: string
   description: string | null
+  costAmount: runtime.Decimal
   isActive: boolean
   createdAt: Date
   _count: RewardCountAggregateOutputType | null
@@ -238,6 +249,7 @@ export type RewardWhereInput = {
   RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"Reward"> | number | null
   name?: Prisma.StringFilter<"Reward"> | string
   description?: Prisma.StringNullableFilter<"Reward"> | string | null
+  costAmount?: Prisma.DecimalFilter<"Reward"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Reward"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Reward"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -251,6 +263,7 @@ export type RewardOrderByWithRelationInput = {
   RewardCategory_idRewardCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
@@ -268,6 +281,7 @@ export type RewardWhereUniqueInput = Prisma.AtLeast<{
   RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"Reward"> | number | null
   name?: Prisma.StringFilter<"Reward"> | string
   description?: Prisma.StringNullableFilter<"Reward"> | string | null
+  costAmount?: Prisma.DecimalFilter<"Reward"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Reward"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Reward"> | Date | string
   company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
@@ -281,6 +295,7 @@ export type RewardOrderByWithAggregationInput = {
   RewardCategory_idRewardCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.RewardCountOrderByAggregateInput
@@ -299,6 +314,7 @@ export type RewardScalarWhereWithAggregatesInput = {
   RewardCategory_idRewardCategory?: Prisma.IntNullableWithAggregatesFilter<"Reward"> | number | null
   name?: Prisma.StringWithAggregatesFilter<"Reward"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Reward"> | string | null
+  costAmount?: Prisma.DecimalWithAggregatesFilter<"Reward"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolWithAggregatesFilter<"Reward"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Reward"> | Date | string
 }
@@ -306,6 +322,7 @@ export type RewardScalarWhereWithAggregatesInput = {
 export type RewardCreateInput = {
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutRewardsInput
@@ -319,6 +336,7 @@ export type RewardUncheckedCreateInput = {
   RewardCategory_idRewardCategory?: number | null
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutRewardInput
@@ -327,6 +345,7 @@ export type RewardUncheckedCreateInput = {
 export type RewardUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutRewardsNestedInput
@@ -340,6 +359,7 @@ export type RewardUncheckedUpdateInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutRewardNestedInput
@@ -351,6 +371,7 @@ export type RewardCreateManyInput = {
   RewardCategory_idRewardCategory?: number | null
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
 }
@@ -358,6 +379,7 @@ export type RewardCreateManyInput = {
 export type RewardUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -368,6 +390,7 @@ export type RewardUncheckedUpdateManyInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -394,6 +417,7 @@ export type RewardCountOrderByAggregateInput = {
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -402,6 +426,7 @@ export type RewardAvgOrderByAggregateInput = {
   idReward?: Prisma.SortOrder
   Company_idCompany?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
 }
 
 export type RewardMaxOrderByAggregateInput = {
@@ -410,6 +435,7 @@ export type RewardMaxOrderByAggregateInput = {
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -420,6 +446,7 @@ export type RewardMinOrderByAggregateInput = {
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -428,6 +455,7 @@ export type RewardSumOrderByAggregateInput = {
   idReward?: Prisma.SortOrder
   Company_idCompany?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
+  costAmount?: Prisma.SortOrder
 }
 
 export type RewardNullableScalarRelationFilter = {
@@ -538,6 +566,7 @@ export type RewardUpdateOneWithoutCustomerRewardsNestedInput = {
 export type RewardCreateWithoutCompanyInput = {
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   category?: Prisma.RewardCategoryCreateNestedOneWithoutRewardsInput
@@ -549,6 +578,7 @@ export type RewardUncheckedCreateWithoutCompanyInput = {
   RewardCategory_idRewardCategory?: number | null
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutRewardInput
@@ -589,6 +619,7 @@ export type RewardScalarWhereInput = {
   RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"Reward"> | number | null
   name?: Prisma.StringFilter<"Reward"> | string
   description?: Prisma.StringNullableFilter<"Reward"> | string | null
+  costAmount?: Prisma.DecimalFilter<"Reward"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFilter<"Reward"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Reward"> | Date | string
 }
@@ -596,6 +627,7 @@ export type RewardScalarWhereInput = {
 export type RewardCreateWithoutCategoryInput = {
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutRewardsInput
@@ -607,6 +639,7 @@ export type RewardUncheckedCreateWithoutCategoryInput = {
   Company_idCompany: number
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutRewardInput
@@ -641,6 +674,7 @@ export type RewardUpdateManyWithWhereWithoutCategoryInput = {
 export type RewardCreateWithoutCustomerRewardsInput = {
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
   company: Prisma.CompanyCreateNestedOneWithoutRewardsInput
@@ -653,6 +687,7 @@ export type RewardUncheckedCreateWithoutCustomerRewardsInput = {
   RewardCategory_idRewardCategory?: number | null
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
 }
@@ -676,6 +711,7 @@ export type RewardUpdateToOneWithWhereWithoutCustomerRewardsInput = {
 export type RewardUpdateWithoutCustomerRewardsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutRewardsNestedInput
@@ -688,6 +724,7 @@ export type RewardUncheckedUpdateWithoutCustomerRewardsInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -697,6 +734,7 @@ export type RewardCreateManyCompanyInput = {
   RewardCategory_idRewardCategory?: number | null
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
 }
@@ -704,6 +742,7 @@ export type RewardCreateManyCompanyInput = {
 export type RewardUpdateWithoutCompanyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.RewardCategoryUpdateOneWithoutRewardsNestedInput
@@ -715,6 +754,7 @@ export type RewardUncheckedUpdateWithoutCompanyInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutRewardNestedInput
@@ -725,6 +765,7 @@ export type RewardUncheckedUpdateManyWithoutCompanyInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -734,6 +775,7 @@ export type RewardCreateManyCategoryInput = {
   Company_idCompany: number
   name: string
   description?: string | null
+  costAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: boolean
   createdAt?: Date | string
 }
@@ -741,6 +783,7 @@ export type RewardCreateManyCategoryInput = {
 export type RewardUpdateWithoutCategoryInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   company?: Prisma.CompanyUpdateOneRequiredWithoutRewardsNestedInput
@@ -752,6 +795,7 @@ export type RewardUncheckedUpdateWithoutCategoryInput = {
   Company_idCompany?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutRewardNestedInput
@@ -762,6 +806,7 @@ export type RewardUncheckedUpdateManyWithoutCategoryInput = {
   Company_idCompany?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  costAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -803,6 +848,7 @@ export type RewardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   RewardCategory_idRewardCategory?: boolean
   name?: boolean
   description?: boolean
+  costAmount?: boolean
   isActive?: boolean
   createdAt?: boolean
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
@@ -819,11 +865,12 @@ export type RewardSelectScalar = {
   RewardCategory_idRewardCategory?: boolean
   name?: boolean
   description?: boolean
+  costAmount?: boolean
   isActive?: boolean
   createdAt?: boolean
 }
 
-export type RewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idReward" | "Company_idCompany" | "RewardCategory_idRewardCategory" | "name" | "description" | "isActive" | "createdAt", ExtArgs["result"]["reward"]>
+export type RewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idReward" | "Company_idCompany" | "RewardCategory_idRewardCategory" | "name" | "description" | "costAmount" | "isActive" | "createdAt", ExtArgs["result"]["reward"]>
 export type RewardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   category?: boolean | Prisma.Reward$categoryArgs<ExtArgs>
@@ -844,6 +891,7 @@ export type $RewardPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     RewardCategory_idRewardCategory: number | null
     name: string
     description: string | null
+    costAmount: runtime.Decimal
     isActive: boolean
     createdAt: Date
   }, ExtArgs["result"]["reward"]>
@@ -1223,6 +1271,7 @@ export interface RewardFieldRefs {
   readonly RewardCategory_idRewardCategory: Prisma.FieldRef<"Reward", 'Int'>
   readonly name: Prisma.FieldRef<"Reward", 'String'>
   readonly description: Prisma.FieldRef<"Reward", 'String'>
+  readonly costAmount: Prisma.FieldRef<"Reward", 'Decimal'>
   readonly isActive: Prisma.FieldRef<"Reward", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Reward", 'DateTime'>
 }

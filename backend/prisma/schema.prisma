@@ -64,7 +64,8 @@ model Person {
 // =====================================================
 
 model Company {
-  idCompany   Int     @id @default(autoincrement()) @db.UnsignedInt
+  idCompany Int @id @default(autoincrement()) @db.UnsignedInt
+
   name        String  @db.VarChar(150)
   cnpj        String  @unique @db.Char(14)
   address     String? @db.VarChar(255)
@@ -73,6 +74,13 @@ model Company {
   phoneNumber String? @db.VarChar(20)
 
   isActive Boolean @default(true)
+
+  // Fundo acumulado disponível para recompensas.
+  rewardFundBalance Decimal @default(0) @db.Decimal(14, 4)
+
+  // Total histórico já gerado pelas vendas.
+  // Este valor não diminui quando recompensas forem concedidas.
+  rewardFundTotalContributed Decimal @default(0) @db.Decimal(14, 4)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,12 +211,16 @@ model Purchase {
   CompanyCustomer_idCompanyCustomer      Int  @db.UnsignedInt
   RegisteredByEmployee_idCompanyEmployee Int? @db.UnsignedInt
 
-  fiscalDocumentNumber String?  @db.VarChar(60)
-  amount               Decimal  @db.Decimal(12, 2)
-  purchaseDate         DateTime @default(now())
+  fiscalDocumentNumber String? @db.VarChar(60)
 
-  customer CompanyCustomer @relation(fields: [CompanyCustomer_idCompanyCustomer], references: [idCompanyCustomer])
+  amount Decimal @db.Decimal(12, 2)
 
+  // 0,5% desta venda destinado ao fundo de recompensas.
+  rewardFundContribution Decimal @default(0) @db.Decimal(14, 4)
+
+  purchaseDate DateTime @default(now())
+
+  customer             CompanyCustomer  @relation(fields: [CompanyCustomer_idCompanyCustomer], references: [idCompanyCustomer])
   registeredByEmployee CompanyEmployee? @relation("PurchaseRegisteredBy", fields: [RegisteredByEmployee_idCompanyEmployee], references: [idCompanyEmployee])
 
   @@index([CompanyCustomer_idCompanyCustomer])
@@ -277,6 +289,7 @@ model CustomerCycle {
   medianPercentage Decimal? @db.Decimal(8, 2)
   medianSampleSize Int?
 
+  // Soma de todo o progresso diário gerado dentro deste ciclo.
   progressEarned Decimal? @db.Decimal(4, 2)
 
   status CustomerCycleStatus @default(OPEN)
@@ -327,6 +340,9 @@ model Reward {
   name        String  @db.VarChar(100)
   description String? @db.VarChar(255)
 
+  // Custo financeiro atual da recompensa para a empresa.
+  costAmount Decimal @default(0) @db.Decimal(10, 2)
+
   isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
@@ -355,6 +371,17 @@ model CustomerReward {
   rewardType CustomerRewardType
 
   status CustomerRewardStatus @default(AVAILABLE)
+
+  // Custo congelado no momento em que a recompensa
+  // for atribuída ao cliente.
+  //
+  // Exemplo:
+  // Reward.costAmount hoje = R$ 20
+  // cliente recebe → snapshot = R$ 20
+  //
+  // Se depois Reward.costAmount mudar para R$ 25,
+  // o histórico deste cliente continua em R$ 20.
+  costAmountSnapshot Decimal? @db.Decimal(10, 2)
 
   earnedAt DateTime @default(now())
 

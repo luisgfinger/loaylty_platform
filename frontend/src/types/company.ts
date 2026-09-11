@@ -6,6 +6,7 @@ export interface Company {
   email: string | null
   ie: string | null
   phoneNumber: string | null
+  rewardFundBalance: string
 }
 
 export interface UpdateCompanyInput {

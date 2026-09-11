@@ -31,6 +31,7 @@ export type CustomerRewardAvgAggregateOutputType = {
   CompanyCustomer_idCompanyCustomer: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
+  costAmountSnapshot: runtime.Decimal | null
 }
 
 export type CustomerRewardSumAggregateOutputType = {
@@ -38,6 +39,7 @@ export type CustomerRewardSumAggregateOutputType = {
   CompanyCustomer_idCompanyCustomer: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
+  costAmountSnapshot: runtime.Decimal | null
 }
 
 export type CustomerRewardMinAggregateOutputType = {
@@ -47,6 +49,7 @@ export type CustomerRewardMinAggregateOutputType = {
   Reward_idReward: number | null
   rewardType: $Enums.CustomerRewardType | null
   status: $Enums.CustomerRewardStatus | null
+  costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date | null
   selectedAt: Date | null
   redeemedAt: Date | null
@@ -60,6 +63,7 @@ export type CustomerRewardMaxAggregateOutputType = {
   Reward_idReward: number | null
   rewardType: $Enums.CustomerRewardType | null
   status: $Enums.CustomerRewardStatus | null
+  costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date | null
   selectedAt: Date | null
   redeemedAt: Date | null
@@ -73,6 +77,7 @@ export type CustomerRewardCountAggregateOutputType = {
   Reward_idReward: number
   rewardType: number
   status: number
+  costAmountSnapshot: number
   earnedAt: number
   selectedAt: number
   redeemedAt: number
@@ -86,6 +91,7 @@ export type CustomerRewardAvgAggregateInputType = {
   CompanyCustomer_idCompanyCustomer?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
+  costAmountSnapshot?: true
 }
 
 export type CustomerRewardSumAggregateInputType = {
@@ -93,6 +99,7 @@ export type CustomerRewardSumAggregateInputType = {
   CompanyCustomer_idCompanyCustomer?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
+  costAmountSnapshot?: true
 }
 
 export type CustomerRewardMinAggregateInputType = {
@@ -102,6 +109,7 @@ export type CustomerRewardMinAggregateInputType = {
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  costAmountSnapshot?: true
   earnedAt?: true
   selectedAt?: true
   redeemedAt?: true
@@ -115,6 +123,7 @@ export type CustomerRewardMaxAggregateInputType = {
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  costAmountSnapshot?: true
   earnedAt?: true
   selectedAt?: true
   redeemedAt?: true
@@ -128,6 +137,7 @@ export type CustomerRewardCountAggregateInputType = {
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  costAmountSnapshot?: true
   earnedAt?: true
   selectedAt?: true
   redeemedAt?: true
@@ -228,6 +238,7 @@ export type CustomerRewardGroupByOutputType = {
   Reward_idReward: number | null
   rewardType: $Enums.CustomerRewardType
   status: $Enums.CustomerRewardStatus
+  costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date
   selectedAt: Date | null
   redeemedAt: Date | null
@@ -264,6 +275,7 @@ export type CustomerRewardWhereInput = {
   Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
   selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
@@ -280,6 +292,7 @@ export type CustomerRewardOrderByWithRelationInput = {
   Reward_idReward?: Prisma.SortOrderInput | Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   redeemedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -299,6 +312,7 @@ export type CustomerRewardWhereUniqueInput = Prisma.AtLeast<{
   Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
   selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
@@ -315,6 +329,7 @@ export type CustomerRewardOrderByWithAggregationInput = {
   Reward_idReward?: Prisma.SortOrderInput | Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   redeemedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -336,6 +351,7 @@ export type CustomerRewardScalarWhereWithAggregatesInput = {
   Reward_idReward?: Prisma.IntNullableWithAggregatesFilter<"CustomerReward"> | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeWithAggregatesFilter<"CustomerReward"> | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusWithAggregatesFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerReward"> | Date | string
   selectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
@@ -346,6 +362,7 @@ export type CustomerRewardCreateInput = {
   idCustomerReward?: bigint | number
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -362,6 +379,7 @@ export type CustomerRewardUncheckedCreateInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -372,6 +390,7 @@ export type CustomerRewardUpdateInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -388,6 +407,7 @@ export type CustomerRewardUncheckedUpdateInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -401,6 +421,7 @@ export type CustomerRewardCreateManyInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -411,6 +432,7 @@ export type CustomerRewardUpdateManyMutationInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -424,6 +446,7 @@ export type CustomerRewardUncheckedUpdateManyInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -447,6 +470,7 @@ export type CustomerRewardCountOrderByAggregateInput = {
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
@@ -458,6 +482,7 @@ export type CustomerRewardAvgOrderByAggregateInput = {
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrder
 }
 
 export type CustomerRewardMaxOrderByAggregateInput = {
@@ -467,6 +492,7 @@ export type CustomerRewardMaxOrderByAggregateInput = {
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
@@ -480,6 +506,7 @@ export type CustomerRewardMinOrderByAggregateInput = {
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
@@ -491,6 +518,7 @@ export type CustomerRewardSumOrderByAggregateInput = {
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
+  costAmountSnapshot?: Prisma.SortOrder
 }
 
 export type CustomerRewardCreateNestedManyWithoutCustomerInput = {
@@ -631,6 +659,7 @@ export type CustomerRewardCreateWithoutCustomerInput = {
   idCustomerReward?: bigint | number
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -645,6 +674,7 @@ export type CustomerRewardUncheckedCreateWithoutCustomerInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -687,6 +717,7 @@ export type CustomerRewardScalarWhereInput = {
   Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
   selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
@@ -697,6 +728,7 @@ export type CustomerRewardCreateWithoutRewardCategoryInput = {
   idCustomerReward?: bigint | number
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -711,6 +743,7 @@ export type CustomerRewardUncheckedCreateWithoutRewardCategoryInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -747,6 +780,7 @@ export type CustomerRewardCreateWithoutRewardInput = {
   idCustomerReward?: bigint | number
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -761,6 +795,7 @@ export type CustomerRewardUncheckedCreateWithoutRewardInput = {
   RewardCategory_idRewardCategory?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -799,6 +834,7 @@ export type CustomerRewardCreateManyCustomerInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -809,6 +845,7 @@ export type CustomerRewardUpdateWithoutCustomerInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -823,6 +860,7 @@ export type CustomerRewardUncheckedUpdateWithoutCustomerInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -835,6 +873,7 @@ export type CustomerRewardUncheckedUpdateManyWithoutCustomerInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -847,6 +886,7 @@ export type CustomerRewardCreateManyRewardCategoryInput = {
   Reward_idReward?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -857,6 +897,7 @@ export type CustomerRewardUpdateWithoutRewardCategoryInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -871,6 +912,7 @@ export type CustomerRewardUncheckedUpdateWithoutRewardCategoryInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -883,6 +925,7 @@ export type CustomerRewardUncheckedUpdateManyWithoutRewardCategoryInput = {
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -895,6 +938,7 @@ export type CustomerRewardCreateManyRewardInput = {
   RewardCategory_idRewardCategory?: number | null
   rewardType: $Enums.CustomerRewardType
   status?: $Enums.CustomerRewardStatus
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
@@ -905,6 +949,7 @@ export type CustomerRewardUpdateWithoutRewardInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -919,6 +964,7 @@ export type CustomerRewardUncheckedUpdateWithoutRewardInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -931,6 +977,7 @@ export type CustomerRewardUncheckedUpdateManyWithoutRewardInput = {
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -946,6 +993,7 @@ export type CustomerRewardSelect<ExtArgs extends runtime.Types.Extensions.Intern
   Reward_idReward?: boolean
   rewardType?: boolean
   status?: boolean
+  costAmountSnapshot?: boolean
   earnedAt?: boolean
   selectedAt?: boolean
   redeemedAt?: boolean
@@ -964,13 +1012,14 @@ export type CustomerRewardSelectScalar = {
   Reward_idReward?: boolean
   rewardType?: boolean
   status?: boolean
+  costAmountSnapshot?: boolean
   earnedAt?: boolean
   selectedAt?: boolean
   redeemedAt?: boolean
   expiresAt?: boolean
 }
 
-export type CustomerRewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCustomerReward" | "CompanyCustomer_idCompanyCustomer" | "RewardCategory_idRewardCategory" | "Reward_idReward" | "rewardType" | "status" | "earnedAt" | "selectedAt" | "redeemedAt" | "expiresAt", ExtArgs["result"]["customerReward"]>
+export type CustomerRewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCustomerReward" | "CompanyCustomer_idCompanyCustomer" | "RewardCategory_idRewardCategory" | "Reward_idReward" | "rewardType" | "status" | "costAmountSnapshot" | "earnedAt" | "selectedAt" | "redeemedAt" | "expiresAt", ExtArgs["result"]["customerReward"]>
 export type CustomerRewardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CompanyCustomerDefaultArgs<ExtArgs>
   rewardCategory?: boolean | Prisma.CustomerReward$rewardCategoryArgs<ExtArgs>
@@ -991,6 +1040,7 @@ export type $CustomerRewardPayload<ExtArgs extends runtime.Types.Extensions.Inte
     Reward_idReward: number | null
     rewardType: $Enums.CustomerRewardType
     status: $Enums.CustomerRewardStatus
+    costAmountSnapshot: runtime.Decimal | null
     earnedAt: Date
     selectedAt: Date | null
     redeemedAt: Date | null
@@ -1373,6 +1423,7 @@ export interface CustomerRewardFieldRefs {
   readonly Reward_idReward: Prisma.FieldRef<"CustomerReward", 'Int'>
   readonly rewardType: Prisma.FieldRef<"CustomerReward", 'CustomerRewardType'>
   readonly status: Prisma.FieldRef<"CustomerReward", 'CustomerRewardStatus'>
+  readonly costAmountSnapshot: Prisma.FieldRef<"CustomerReward", 'Decimal'>
   readonly earnedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
   readonly selectedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
   readonly redeemedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>

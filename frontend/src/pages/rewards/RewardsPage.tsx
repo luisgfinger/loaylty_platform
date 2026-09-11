@@ -9,10 +9,10 @@ type Tab = 'rewards' | 'categories'
 type View = 'list' | 'create' | 'detail' | 'edit'
 type StatusTarget = { type: Tab; id: number; name: string; nextIsActive: boolean }
 
-interface RewardFormValues { name: string; description: string; categoryId: string }
+interface RewardFormValues { name: string; description: string; categoryId: string; costAmount: string }
 interface CategoryFormValues { name: string; description: string }
 
-const emptyRewardForm: RewardFormValues = { name: '', description: '', categoryId: '' }
+const emptyRewardForm: RewardFormValues = { name: '', description: '', categoryId: '', costAmount: '' }
 const emptyCategoryForm: CategoryFormValues = { name: '', description: '' }
 
 export function RewardsPage() {
@@ -82,7 +82,7 @@ export function RewardsPage() {
 
   function openRewardEdit(item: Reward) {
     setReward(item)
-    setRewardForm({ name: item.name, description: item.description ?? '', categoryId: item.category?.idRewardCategory.toString() ?? '' })
+    setRewardForm({ name: item.name, description: item.description ?? '', categoryId: item.category?.idRewardCategory.toString() ?? '', costAmount: formatAmountInput(item.costAmount) })
     setFieldErrors({})
     setStatusTarget(null)
     setView('edit')
@@ -96,27 +96,30 @@ export function RewardsPage() {
     setView('edit')
   }
 
-  function validate(name: string, description: string, kind: Tab) {
+  function validate(name: string, description: string, kind: Tab, costAmount?: string) {
     const errors: Record<string, string> = {}
     if (!name.trim()) errors.name = kind === 'rewards' ? 'Informe o nome da recompensa.' : 'Informe o nome da categoria.'
     else if (name.trim().length > 100) errors.name = 'O nome deve possuir no máximo 100 caracteres.'
     if (description.trim().length > 255) errors.description = 'A descrição deve possuir no máximo 255 caracteres.'
+    if (kind === 'rewards' && parseCostAmount(costAmount ?? '') === null) errors.costAmount = 'Informe um custo válido, igual ou maior que zero.'
     setFieldErrors(errors)
     return Object.keys(errors).length === 0
   }
 
   async function submitReward(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!validate(rewardForm.name, rewardForm.description, 'rewards')) return
+    if (!validate(rewardForm.name, rewardForm.description, 'rewards', rewardForm.costAmount)) return
+    const costAmount = parseCostAmount(rewardForm.costAmount)
+    if (costAmount === null) return
     setIsSaving(true)
     try {
       if (view === 'create') {
-        const data: CreateRewardInput = { name: rewardForm.name.trim(), description: rewardForm.description.trim() || null, categoryId: rewardForm.categoryId ? Number(rewardForm.categoryId) : null }
+        const data: CreateRewardInput = { name: rewardForm.name.trim(), description: rewardForm.description.trim() || null, categoryId: rewardForm.categoryId ? Number(rewardForm.categoryId) : null, costAmount }
         await createReward(companyId, data, token)
         toast.success('Recompensa criada com sucesso.')
         setView('list')
       } else if (reward) {
-        const data: UpdateRewardInput = { name: rewardForm.name.trim(), description: rewardForm.description.trim() || null }
+        const data: UpdateRewardInput = { name: rewardForm.name.trim(), description: rewardForm.description.trim() || null, costAmount }
         const currentCategoryId = reward.category?.idRewardCategory.toString() ?? ''
         if (rewardForm.categoryId !== currentCategoryId) data.categoryId = rewardForm.categoryId ? Number(rewardForm.categoryId) : null
         const updated = await updateReward(companyId, reward.idReward, data, token)
@@ -208,7 +211,7 @@ export function RewardsPage() {
 }
 
 function RewardList({ rewards, categories, onCreate, onOpen, onEdit, onStatus }: { rewards: Reward[]; categories: RewardCategory[]; onCreate: () => void; onOpen: (id: number) => void; onEdit: (reward: Reward) => void; onStatus: (type: Tab, id: number, name: string, next: boolean) => void }) {
-  return <section className="rewards-section"><div className="page-section-heading"><div><h2>Recompensas</h2><p>Benefícios que podem ser disponibilizados no programa.</p></div><button className="primary-button" type="button" onClick={onCreate}>Nova recompensa</button></div>{rewards.length === 0 ? <EmptyState title="Nenhuma recompensa cadastrada." action="Criar primeira recompensa" onAction={onCreate} /> : <div className="rewards-table-wrapper"><table className="rewards-table"><caption>Recompensas da empresa</caption><thead><tr><th scope="col">Nome</th><th scope="col">Categoria</th><th scope="col">Descrição</th><th scope="col">Status</th><th scope="col"><span className="visually-hidden">Ações</span></th></tr></thead><tbody>{rewards.map((item) => { const categoryInactive = item.category ? categories.find((category) => category.idRewardCategory === item.category?.idRewardCategory)?.isActive === false : false; return <tr key={item.idReward}><td><strong>{item.name}</strong></td><td>{item.category ? <>{item.category.name}{categoryInactive && <small className="reward-category-inactive">Inativa</small>}</> : 'Sem categoria'}</td><td>{item.description ?? 'Não informada'}</td><td><StatusBadge active={item.isActive} /></td><td className="rewards-actions"><button className="secondary-button" type="button" onClick={() => onOpen(item.idReward)}>Ver detalhes</button><button className="secondary-button" type="button" onClick={() => onEdit(item)}>Editar</button><button className={item.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('rewards', item.idReward, item.name, !item.isActive)}>{item.isActive ? 'Inativar' : 'Reativar'}</button></td></tr> })}</tbody></table></div>}</section>
+  return <section className="rewards-section"><div className="page-section-heading"><div><h2>Recompensas</h2><p>Benefícios que podem ser disponibilizados no programa.</p></div><button className="primary-button" type="button" onClick={onCreate}>Nova recompensa</button></div>{rewards.length === 0 ? <EmptyState title="Nenhuma recompensa cadastrada." action="Criar primeira recompensa" onAction={onCreate} /> : <div className="rewards-table-wrapper"><table className="rewards-table"><caption>Recompensas da empresa</caption><thead><tr><th scope="col">Nome</th><th scope="col">Categoria</th><th scope="col">Descrição</th><th scope="col">Custo para a empresa</th><th scope="col">Status</th><th scope="col"><span className="visually-hidden">Ações</span></th></tr></thead><tbody>{rewards.map((item) => { const categoryInactive = item.category ? categories.find((category) => category.idRewardCategory === item.category?.idRewardCategory)?.isActive === false : false; return <tr key={item.idReward}><td><strong>{item.name}</strong></td><td>{item.category ? <>{item.category.name}{categoryInactive && <small className="reward-category-inactive">Inativa</small>}</> : 'Sem categoria'}</td><td>{item.description ?? 'Não informada'}</td><td>{formatCurrency(item.costAmount)}</td><td><StatusBadge active={item.isActive} /></td><td className="rewards-actions"><button className="secondary-button" type="button" onClick={() => onOpen(item.idReward)}>Ver detalhes</button><button className="secondary-button" type="button" onClick={() => onEdit(item)}>Editar</button><button className={item.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('rewards', item.idReward, item.name, !item.isActive)}>{item.isActive ? 'Inativar' : 'Reativar'}</button></td></tr> })}</tbody></table></div>}</section>
 }
 
 function CategoryList({ categories, onCreate, onEdit, onStatus }: { categories: RewardCategory[]; onCreate: () => void; onEdit: (category: RewardCategory) => void; onStatus: (type: Tab, id: number, name: string, next: boolean) => void }) {
@@ -216,13 +219,13 @@ function CategoryList({ categories, onCreate, onEdit, onStatus }: { categories: 
 }
 
 function RewardDetails({ reward, categoryInactive, isSaving, onBack, onEdit, onStatus }: { reward: Reward; categoryInactive: boolean; isSaving: boolean; onBack: () => void; onEdit: () => void; onStatus: (type: Tab, id: number, name: string, next: boolean) => void }) {
-  return <section className="reward-details"><div className="page-section-heading"><div><p className="eyebrow">Recompensa</p><h2>{reward.name}</h2></div><button className="secondary-button" type="button" onClick={onBack}>Voltar para lista</button></div><div className="reward-details-actions"><button className="secondary-button" type="button" onClick={onEdit} disabled={isSaving}>Editar recompensa</button><button className={reward.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('rewards', reward.idReward, reward.name, !reward.isActive)} disabled={isSaving}>{reward.isActive ? 'Inativar recompensa' : 'Reativar recompensa'}</button></div><dl><div><dt>Status</dt><dd><StatusBadge active={reward.isActive} /></dd></div><div><dt>Categoria</dt><dd>{reward.category ? <>{reward.category.name}{categoryInactive && <small className="reward-category-inactive">Inativa</small>}</> : 'Sem categoria'}</dd></div><div><dt>Descrição</dt><dd>{reward.description ?? 'Não informada'}</dd></div></dl></section>
+  return <section className="reward-details"><div className="page-section-heading"><div><p className="eyebrow">Recompensa</p><h2>{reward.name}</h2></div><button className="secondary-button" type="button" onClick={onBack}>Voltar para lista</button></div><div className="reward-details-actions"><button className="secondary-button" type="button" onClick={onEdit} disabled={isSaving}>Editar recompensa</button><button className={reward.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('rewards', reward.idReward, reward.name, !reward.isActive)} disabled={isSaving}>{reward.isActive ? 'Inativar recompensa' : 'Reativar recompensa'}</button></div><dl><div><dt>Status</dt><dd><StatusBadge active={reward.isActive} /></dd></div><div><dt>Categoria</dt><dd>{reward.category ? <>{reward.category.name}{categoryInactive && <small className="reward-category-inactive">Inativa</small>}</> : 'Sem categoria'}</dd></div><div><dt>Custo para a empresa</dt><dd>{formatCurrency(reward.costAmount)}</dd></div><div><dt>Descrição</dt><dd>{reward.description ?? 'Não informada'}</dd></div></dl></section>
 }
 
 function RewardForm({ title, submitLabel, form, categories, currentCategory, fieldErrors, isSaving, onChange, onSubmit, onCancel }: { title: string; submitLabel: string; form: RewardFormValues; categories: RewardCategory[]; currentCategory?: Reward['category']; fieldErrors: Record<string, string>; isSaving: boolean; onChange: (key: keyof RewardFormValues, value: string) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onCancel: () => void }) {
   const availableCategories = categories.filter((item) => item.isActive || item.idRewardCategory === currentCategory?.idRewardCategory)
   const currentIsInactive = currentCategory && categories.find((item) => item.idRewardCategory === currentCategory.idRewardCategory)?.isActive === false
-  return <form className="reward-form" onSubmit={onSubmit} noValidate><div><p className="eyebrow">Catálogo</p><h2>{title}</h2><p className="form-description">Campos marcados com * são obrigatórios.</p></div><div className="reward-form-grid"><TextField id="reward-name" label="Nome da recompensa *" value={form.name} error={fieldErrors.name} disabled={isSaving} onChange={(value) => onChange('name', value)} /><div className="form-field"><label htmlFor="reward-category">Categoria</label><select id="reward-category" value={form.categoryId} disabled={isSaving} onChange={(event) => onChange('categoryId', event.target.value)}><option value="">Sem categoria</option>{availableCategories.map((item) => <option key={item.idRewardCategory} value={item.idRewardCategory}>{item.name}{!item.isActive ? ' (Inativa)' : ''}</option>)}</select>{currentIsInactive && <small>Esta categoria está inativa e só é mantida para preservar a associação atual.</small>}</div><TextAreaField id="reward-description" label="Descrição" value={form.description} error={fieldErrors.description} disabled={isSaving} onChange={(value) => onChange('description', value)} /></div><FormActions isSaving={isSaving} submitLabel={submitLabel} onCancel={onCancel} /></form>
+  return <form className="reward-form" onSubmit={onSubmit} noValidate><div><p className="eyebrow">Catálogo</p><h2>{title}</h2><p className="form-description">Campos marcados com * são obrigatórios.</p></div><div className="reward-form-grid"><TextField id="reward-name" label="Nome da recompensa *" value={form.name} error={fieldErrors.name} disabled={isSaving} onChange={(value) => onChange('name', value)} /><CurrencyField id="reward-cost-amount" label="Custo para a empresa *" value={form.costAmount} error={fieldErrors.costAmount} disabled={isSaving} onChange={(value) => onChange('costAmount', value)} /><div className="form-field"><label htmlFor="reward-category">Categoria</label><select id="reward-category" value={form.categoryId} disabled={isSaving} onChange={(event) => onChange('categoryId', event.target.value)}><option value="">Sem categoria</option>{availableCategories.map((item) => <option key={item.idRewardCategory} value={item.idRewardCategory}>{item.name}{!item.isActive ? ' (Inativa)' : ''}</option>)}</select>{currentIsInactive && <small>Esta categoria está inativa e só é mantida para preservar a associação atual.</small>}</div><TextAreaField id="reward-description" label="Descrição" value={form.description} error={fieldErrors.description} disabled={isSaving} onChange={(value) => onChange('description', value)} /></div><FormActions isSaving={isSaving} submitLabel={submitLabel} onCancel={onCancel} /></form>
 }
 
 function CategoryForm({ title, submitLabel, form, fieldErrors, isSaving, onChange, onSubmit, onCancel }: { title: string; submitLabel: string; form: CategoryFormValues; fieldErrors: Record<string, string>; isSaving: boolean; onChange: (key: keyof CategoryFormValues, value: string) => void; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onCancel: () => void }) {
@@ -230,11 +233,28 @@ function CategoryForm({ title, submitLabel, form, fieldErrors, isSaving, onChang
 }
 
 function TextField({ id, label, value, error, disabled, onChange }: { id: string; label: string; value: string; error?: string; disabled: boolean; onChange: (value: string) => void }) { return <div className="form-field"><label htmlFor={id}>{label}</label><input id={id} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} />{error && <p className="form-field-error" id={`${id}-error`}>{error}</p>}</div> }
+function CurrencyField({ id, label, value, error, disabled, onChange }: { id: string; label: string; value: string; error?: string; disabled: boolean; onChange: (value: string) => void }) { return <div className="form-field"><label htmlFor={id}>{label}</label><div className="currency-field"><span aria-hidden="true">R$</span><input id={id} value={value} disabled={disabled} inputMode="decimal" placeholder="0,00" onChange={(event) => onChange(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} /></div>{error && <p className="form-field-error" id={`${id}-error`}>{error}</p>}</div> }
 function TextAreaField({ id, label, value, error, disabled, onChange }: { id: string; label: string; value: string; error?: string; disabled: boolean; onChange: (value: string) => void }) { return <div className="form-field"><label htmlFor={id}>{label}</label><textarea id={id} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-error` : undefined} />{error && <p className="form-field-error" id={`${id}-error`}>{error}</p>}</div> }
 function FormActions({ isSaving, submitLabel, onCancel }: { isSaving: boolean; submitLabel: string; onCancel: () => void }) { return <div className="form-actions"><button className="primary-button" type="submit" disabled={isSaving}>{isSaving ? 'Salvando…' : submitLabel}</button><button className="secondary-button" type="button" onClick={onCancel} disabled={isSaving}>Cancelar</button></div> }
 function EmptyState({ title, action, onAction }: { title: string; action: string; onAction: () => void }) { return <section className="rewards-empty"><h3>{title}</h3><button className="primary-button" type="button" onClick={onAction}>{action}</button></section> }
 function StatusBadge({ active }: { active: boolean }) { return <span className={active ? 'status-badge' : 'status-badge status-badge--inactive'}>{active ? 'Ativa' : 'Inativa'}</span> }
 function StatusConfirmation({ target, isSaving, onCancel, onConfirm }: { target: StatusTarget; isSaving: boolean; onCancel: () => void; onConfirm: () => void }) { const action = target.nextIsActive ? 'Reativar' : 'Inativar'; const label = target.type === 'rewards' ? 'recompensa' : 'categoria'; return <section className="reward-confirmation" aria-labelledby="reward-confirmation-title"><h2 id="reward-confirmation-title">{action} {label}?</h2><p>{target.nextIsActive ? `Deseja reativar “${target.name}”?` : `“${target.name}” deixará de estar disponível para novas utilizações. Deseja continuar?`}</p><div className="form-actions"><button className={target.nextIsActive ? 'primary-button' : 'danger-button'} type="button" onClick={onConfirm} disabled={isSaving}>{isSaving ? 'Salvando…' : `Confirmar ${target.nextIsActive ? 'reativação' : 'inativação'}`}</button><button className="secondary-button" type="button" onClick={onCancel} disabled={isSaving}>Cancelar</button></div></section> }
+
+function parseCostAmount(value: string) {
+  const normalizedValue = value.trim()
+  if (!/^\d+(?:[,.]\d{1,2})?$/.test(normalizedValue)) return null
+  const costAmount = Number(normalizedValue.replace(',', '.'))
+  return Number.isFinite(costAmount) && costAmount >= 0 ? costAmount : null
+}
+
+function formatAmountInput(value: string) {
+  const amount = Number(value)
+  return Number.isFinite(amount) ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) : ''
+}
+
+function formatCurrency(value: string) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value))
+}
 
 function getRewardsError(error: unknown, action: 'load' | 'detail' | 'createReward' | 'updateReward' | 'createCategory' | 'updateCategory' | 'status') {
   if (error instanceof ApiError) {

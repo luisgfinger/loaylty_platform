@@ -373,6 +373,9 @@ export async function createReward(
         description:
           data.description ??
           null,
+
+        costAmount:
+          data.costAmount,
       },
 
       include: {
@@ -394,6 +397,11 @@ export async function createReward(
     description:
       reward
         .description,
+
+    costAmount:
+      reward
+        .costAmount
+        .toString(),
 
     isActive:
       reward
@@ -474,6 +482,11 @@ export async function listRewards(
         reward
           .description,
 
+      costAmount:
+        reward
+          .costAmount
+          .toString(),
+
       isActive:
         reward
           .isActive,
@@ -545,6 +558,11 @@ export async function findRewardById(
     description:
       reward
         .description,
+
+    costAmount:
+      reward
+        .costAmount
+        .toString(),
 
     isActive:
       reward
@@ -640,6 +658,13 @@ export async function updateReward(
             }
           : {}),
 
+        ...(data.costAmount !== undefined
+          ? {
+              costAmount:
+                data.costAmount,
+            }
+          : {}),
+
         ...(data.isActive !== undefined
           ? {
               isActive:
@@ -667,6 +692,11 @@ export async function updateReward(
     description:
       updatedReward
         .description,
+
+    costAmount:
+      updatedReward
+        .costAmount
+        .toString(),
 
     isActive:
       updatedReward

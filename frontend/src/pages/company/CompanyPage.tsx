@@ -92,6 +92,10 @@ export function CompanyPage() {
     {error && <p className="form-error" role="alert">{error}</p>}
 
     {!company ? <section className="company-unavailable" aria-labelledby="company-unavailable-title"><h2 id="company-unavailable-title">Não foi possível carregar a empresa.</h2><p>Verifique sua conexão e tente novamente.</p><button className="secondary-button" type="button" onClick={() => { setError(''); void loadCompany() }}>Tentar novamente</button></section> : <form className="company-form" onSubmit={submit} noValidate>
+      <section className="company-fund" aria-labelledby="company-fund-title">
+        <div><p className="eyebrow">Fidelidade</p><h2 id="company-fund-title">Fundo disponível para recompensas</h2><p>Saldo disponível para o programa de fidelidade da empresa.</p></div>
+        <dl><div><dt>Saldo disponível</dt><dd>{formatCurrency(company.rewardFundBalance)}</dd></div></dl>
+      </section>
       <fieldset>
         <legend>Informações gerais</legend>
         <div className="company-form-grid">
@@ -159,6 +163,10 @@ function formatCnpj(value: string) {
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, '').slice(0, 11)
   return digits.replace(/^(\d{2})(\d)/, '($1) $2').replace(/(\d)(\d{4})$/, '$1-$2')
+}
+
+function formatCurrency(value: string) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value))
 }
 
 function getCompanyError(error: unknown) {

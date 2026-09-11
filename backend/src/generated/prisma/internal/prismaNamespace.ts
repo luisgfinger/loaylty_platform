@@ -1416,6 +1416,8 @@ export const CompanyScalarFieldEnum = {
   ie: 'ie',
   phoneNumber: 'phoneNumber',
   isActive: 'isActive',
+  rewardFundBalance: 'rewardFundBalance',
+  rewardFundTotalContributed: 'rewardFundTotalContributed',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1487,6 +1489,7 @@ export const PurchaseScalarFieldEnum = {
   RegisteredByEmployee_idCompanyEmployee: 'RegisteredByEmployee_idCompanyEmployee',
   fiscalDocumentNumber: 'fiscalDocumentNumber',
   amount: 'amount',
+  rewardFundContribution: 'rewardFundContribution',
   purchaseDate: 'purchaseDate'
 } as const
 
@@ -1556,6 +1559,7 @@ export const RewardScalarFieldEnum = {
   RewardCategory_idRewardCategory: 'RewardCategory_idRewardCategory',
   name: 'name',
   description: 'description',
+  costAmount: 'costAmount',
   isActive: 'isActive',
   createdAt: 'createdAt'
 } as const
@@ -1570,6 +1574,7 @@ export const CustomerRewardScalarFieldEnum = {
   Reward_idReward: 'Reward_idReward',
   rewardType: 'rewardType',
   status: 'status',
+  costAmountSnapshot: 'costAmountSnapshot',
   earnedAt: 'earnedAt',
   selectedAt: 'selectedAt',
   redeemedAt: 'redeemedAt',
@@ -1690,16 +1695,16 @@ export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
 
 
 /**
- * Reference to a field of type 'BigInt'
+ * Reference to a field of type 'Decimal'
  */
-export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
     
 
 
 /**
- * Reference to a field of type 'Decimal'
+ * Reference to a field of type 'BigInt'
  */
-export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
     
 
 

@@ -28,10 +28,14 @@ export type AggregateCompany = {
 
 export type CompanyAvgAggregateOutputType = {
   idCompany: number | null
+  rewardFundBalance: runtime.Decimal | null
+  rewardFundTotalContributed: runtime.Decimal | null
 }
 
 export type CompanySumAggregateOutputType = {
   idCompany: number | null
+  rewardFundBalance: runtime.Decimal | null
+  rewardFundTotalContributed: runtime.Decimal | null
 }
 
 export type CompanyMinAggregateOutputType = {
@@ -43,6 +47,8 @@ export type CompanyMinAggregateOutputType = {
   ie: string | null
   phoneNumber: string | null
   isActive: boolean | null
+  rewardFundBalance: runtime.Decimal | null
+  rewardFundTotalContributed: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +62,8 @@ export type CompanyMaxAggregateOutputType = {
   ie: string | null
   phoneNumber: string | null
   isActive: boolean | null
+  rewardFundBalance: runtime.Decimal | null
+  rewardFundTotalContributed: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +77,8 @@ export type CompanyCountAggregateOutputType = {
   ie: number
   phoneNumber: number
   isActive: number
+  rewardFundBalance: number
+  rewardFundTotalContributed: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -77,10 +87,14 @@ export type CompanyCountAggregateOutputType = {
 
 export type CompanyAvgAggregateInputType = {
   idCompany?: true
+  rewardFundBalance?: true
+  rewardFundTotalContributed?: true
 }
 
 export type CompanySumAggregateInputType = {
   idCompany?: true
+  rewardFundBalance?: true
+  rewardFundTotalContributed?: true
 }
 
 export type CompanyMinAggregateInputType = {
@@ -92,6 +106,8 @@ export type CompanyMinAggregateInputType = {
   ie?: true
   phoneNumber?: true
   isActive?: true
+  rewardFundBalance?: true
+  rewardFundTotalContributed?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +121,8 @@ export type CompanyMaxAggregateInputType = {
   ie?: true
   phoneNumber?: true
   isActive?: true
+  rewardFundBalance?: true
+  rewardFundTotalContributed?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +136,8 @@ export type CompanyCountAggregateInputType = {
   ie?: true
   phoneNumber?: true
   isActive?: true
+  rewardFundBalance?: true
+  rewardFundTotalContributed?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +238,8 @@ export type CompanyGroupByOutputType = {
   ie: string | null
   phoneNumber: string | null
   isActive: boolean
+  rewardFundBalance: runtime.Decimal
+  rewardFundTotalContributed: runtime.Decimal
   createdAt: Date
   updatedAt: Date
   _count: CompanyCountAggregateOutputType | null
@@ -254,6 +276,8 @@ export type CompanyWhereInput = {
   ie?: Prisma.StringNullableFilter<"Company"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"Company"> | string | null
   isActive?: Prisma.BoolFilter<"Company"> | boolean
+  rewardFundBalance?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   companyPeople?: Prisma.CompanyPersonListRelationFilter
@@ -271,6 +295,8 @@ export type CompanyOrderByWithRelationInput = {
   ie?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   companyPeople?: Prisma.CompanyPersonOrderByRelationAggregateInput
@@ -292,6 +318,8 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   ie?: Prisma.StringNullableFilter<"Company"> | string | null
   phoneNumber?: Prisma.StringNullableFilter<"Company"> | string | null
   isActive?: Prisma.BoolFilter<"Company"> | boolean
+  rewardFundBalance?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   companyPeople?: Prisma.CompanyPersonListRelationFilter
@@ -309,6 +337,8 @@ export type CompanyOrderByWithAggregationInput = {
   ie?: Prisma.SortOrderInput | Prisma.SortOrder
   phoneNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CompanyCountOrderByAggregateInput
@@ -330,6 +360,8 @@ export type CompanyScalarWhereWithAggregatesInput = {
   ie?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   phoneNumber?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Company"> | boolean
+  rewardFundBalance?: Prisma.DecimalWithAggregatesFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalWithAggregatesFilter<"Company"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
 }
@@ -342,6 +374,8 @@ export type CompanyCreateInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonCreateNestedManyWithoutCompanyInput
@@ -359,6 +393,8 @@ export type CompanyUncheckedCreateInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedCreateNestedManyWithoutCompanyInput
@@ -375,6 +411,8 @@ export type CompanyUpdateInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUpdateManyWithoutCompanyNestedInput
@@ -392,6 +430,8 @@ export type CompanyUncheckedUpdateInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedUpdateManyWithoutCompanyNestedInput
@@ -409,6 +449,8 @@ export type CompanyCreateManyInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -421,6 +463,8 @@ export type CompanyUpdateManyMutationInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -434,6 +478,8 @@ export type CompanyUncheckedUpdateManyInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -453,12 +499,16 @@ export type CompanyCountOrderByAggregateInput = {
   ie?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CompanyAvgOrderByAggregateInput = {
   idCompany?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
 }
 
 export type CompanyMaxOrderByAggregateInput = {
@@ -470,6 +520,8 @@ export type CompanyMaxOrderByAggregateInput = {
   ie?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -483,12 +535,16 @@ export type CompanyMinOrderByAggregateInput = {
   ie?: Prisma.SortOrder
   phoneNumber?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CompanySumOrderByAggregateInput = {
   idCompany?: Prisma.SortOrder
+  rewardFundBalance?: Prisma.SortOrder
+  rewardFundTotalContributed?: Prisma.SortOrder
 }
 
 export type CompanyScalarRelationFilter = {
@@ -498,6 +554,14 @@ export type CompanyScalarRelationFilter = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type DecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
 export type CompanyCreateNestedOneWithoutCompanyPeopleInput = {
@@ -564,6 +628,8 @@ export type CompanyCreateWithoutCompanyPeopleInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   rewardCategories?: Prisma.RewardCategoryCreateNestedManyWithoutCompanyInput
@@ -580,6 +646,8 @@ export type CompanyUncheckedCreateWithoutCompanyPeopleInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   rewardCategories?: Prisma.RewardCategoryUncheckedCreateNestedManyWithoutCompanyInput
@@ -611,6 +679,8 @@ export type CompanyUpdateWithoutCompanyPeopleInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rewardCategories?: Prisma.RewardCategoryUpdateManyWithoutCompanyNestedInput
@@ -627,6 +697,8 @@ export type CompanyUncheckedUpdateWithoutCompanyPeopleInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   rewardCategories?: Prisma.RewardCategoryUncheckedUpdateManyWithoutCompanyNestedInput
@@ -642,6 +714,8 @@ export type CompanyCreateWithoutLoyaltySettingsInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonCreateNestedManyWithoutCompanyInput
@@ -658,6 +732,8 @@ export type CompanyUncheckedCreateWithoutLoyaltySettingsInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedCreateNestedManyWithoutCompanyInput
@@ -689,6 +765,8 @@ export type CompanyUpdateWithoutLoyaltySettingsInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUpdateManyWithoutCompanyNestedInput
@@ -705,6 +783,8 @@ export type CompanyUncheckedUpdateWithoutLoyaltySettingsInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedUpdateManyWithoutCompanyNestedInput
@@ -720,6 +800,8 @@ export type CompanyCreateWithoutRewardCategoriesInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonCreateNestedManyWithoutCompanyInput
@@ -736,6 +818,8 @@ export type CompanyUncheckedCreateWithoutRewardCategoriesInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedCreateNestedManyWithoutCompanyInput
@@ -767,6 +851,8 @@ export type CompanyUpdateWithoutRewardCategoriesInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUpdateManyWithoutCompanyNestedInput
@@ -783,6 +869,8 @@ export type CompanyUncheckedUpdateWithoutRewardCategoriesInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedUpdateManyWithoutCompanyNestedInput
@@ -798,6 +886,8 @@ export type CompanyCreateWithoutRewardsInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonCreateNestedManyWithoutCompanyInput
@@ -814,6 +904,8 @@ export type CompanyUncheckedCreateWithoutRewardsInput = {
   ie?: string | null
   phoneNumber?: string | null
   isActive?: boolean
+  rewardFundBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedCreateNestedManyWithoutCompanyInput
@@ -845,6 +937,8 @@ export type CompanyUpdateWithoutRewardsInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUpdateManyWithoutCompanyNestedInput
@@ -861,6 +955,8 @@ export type CompanyUncheckedUpdateWithoutRewardsInput = {
   ie?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rewardFundBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  rewardFundTotalContributed?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   companyPeople?: Prisma.CompanyPersonUncheckedUpdateManyWithoutCompanyNestedInput
@@ -926,6 +1022,8 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   ie?: boolean
   phoneNumber?: boolean
   isActive?: boolean
+  rewardFundBalance?: boolean
+  rewardFundTotalContributed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   companyPeople?: boolean | Prisma.Company$companyPeopleArgs<ExtArgs>
@@ -946,11 +1044,13 @@ export type CompanySelectScalar = {
   ie?: boolean
   phoneNumber?: boolean
   isActive?: boolean
+  rewardFundBalance?: boolean
+  rewardFundTotalContributed?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCompany" | "name" | "cnpj" | "address" | "email" | "ie" | "phoneNumber" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCompany" | "name" | "cnpj" | "address" | "email" | "ie" | "phoneNumber" | "isActive" | "rewardFundBalance" | "rewardFundTotalContributed" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   companyPeople?: boolean | Prisma.Company$companyPeopleArgs<ExtArgs>
   rewardCategories?: boolean | Prisma.Company$rewardCategoriesArgs<ExtArgs>
@@ -976,6 +1076,8 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     ie: string | null
     phoneNumber: string | null
     isActive: boolean
+    rewardFundBalance: runtime.Decimal
+    rewardFundTotalContributed: runtime.Decimal
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["company"]>
@@ -1359,6 +1461,8 @@ export interface CompanyFieldRefs {
   readonly ie: Prisma.FieldRef<"Company", 'String'>
   readonly phoneNumber: Prisma.FieldRef<"Company", 'String'>
   readonly isActive: Prisma.FieldRef<"Company", 'Boolean'>
+  readonly rewardFundBalance: Prisma.FieldRef<"Company", 'Decimal'>
+  readonly rewardFundTotalContributed: Prisma.FieldRef<"Company", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Company", 'DateTime'>
 }
