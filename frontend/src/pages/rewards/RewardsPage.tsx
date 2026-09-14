@@ -4,8 +4,11 @@ import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { CreateRewardCategoryInput, CreateRewardInput, Reward, RewardCategory, UpdateRewardInput } from '../../types/reward'
 import { toast } from 'react-toastify'
+import { approveCustomerReward, denyCustomerReward, getPendingCustomerRewards } from '../../api/customer-rewards.api'
+import type { ApproveCustomerRewardInput, PendingCustomerReward, RewardTier, RewardType, RedemptionTiming } from '../../types/customer-reward'
+import { formatCpf } from '../../utils/cpf'
 
-type Tab = 'rewards' | 'categories'
+type Tab = 'rewards' | 'categories' | 'pending'
 type View = 'list' | 'create' | 'detail' | 'edit'
 type StatusTarget = { type: Tab; id: number; name: string; nextIsActive: boolean }
 
@@ -194,8 +197,9 @@ export function RewardsPage() {
     <div className="rewards-tabs" role="tablist" aria-label="Seções de recompensas">
       <button type="button" role="tab" id="rewards-tab" aria-selected={tab === 'rewards'} aria-controls="rewards-panel" className={tab === 'rewards' ? 'is-active' : ''} onClick={() => selectTab('rewards')}>Recompensas</button>
       <button type="button" role="tab" id="categories-tab" aria-selected={tab === 'categories'} aria-controls="categories-panel" className={tab === 'categories' ? 'is-active' : ''} onClick={() => selectTab('categories')}>Categorias</button>
+      <button type="button" role="tab" id="pending-tab" aria-selected={tab === 'pending'} aria-controls="pending-panel" className={tab === 'pending' ? 'is-active' : ''} onClick={() => selectTab('pending')}>Pendentes</button>
     </div>
-    {loadError ? <section className="rewards-unavailable" role="alert"><h2>Não foi possível carregar o catálogo.</h2><p>{loadError}</p><button className="secondary-button" type="button" onClick={() => void loadCatalog()}>Tentar novamente</button></section> : isLoading && view === 'list' ? <p className="loading-state" role="status">Carregando recompensas…</p> : <div role="tabpanel" id={tab === 'rewards' ? 'rewards-panel' : 'categories-panel'} aria-labelledby={tab === 'rewards' ? 'rewards-tab' : 'categories-tab'}>
+    {tab === 'pending' ? <div role="tabpanel" id="pending-panel" aria-labelledby="pending-tab"><PendingRewards companyId={companyId} token={token} /></div> : loadError ? <section className="rewards-unavailable" role="alert"><h2>Não foi possível carregar o catálogo.</h2><p>{loadError}</p><button className="secondary-button" type="button" onClick={() => void loadCatalog()}>Tentar novamente</button></section> : isLoading && view === 'list' ? <p className="loading-state" role="status">Carregando recompensas…</p> : <div role="tabpanel" id={tab === 'rewards' ? 'rewards-panel' : 'categories-panel'} aria-labelledby={tab === 'rewards' ? 'rewards-tab' : 'categories-tab'}>
       {statusTarget && <StatusConfirmation target={statusTarget} isSaving={isSaving} onCancel={() => setStatusTarget(null)} onConfirm={() => void changeStatus()} />}
       {tab === 'rewards' ? <>
         {view === 'list' && <RewardList rewards={rewards} categories={categories} onCreate={openCreate} onOpen={openRewardDetail} onEdit={openRewardEdit} onStatus={requestStatus} />}
@@ -218,6 +222,42 @@ function CategoryList({ categories, onCreate, onEdit, onStatus }: { categories: 
   return <section className="rewards-section"><div className="page-section-heading"><div><h2>Categorias de recompensa</h2><p>Organize o catálogo por tipos de benefício.</p></div><button className="primary-button" type="button" onClick={onCreate}>Nova categoria</button></div>{categories.length === 0 ? <EmptyState title="Nenhuma categoria cadastrada." action="Criar primeira categoria" onAction={onCreate} /> : <div className="rewards-table-wrapper"><table className="rewards-table"><caption>Categorias da empresa</caption><thead><tr><th scope="col">Nome</th><th scope="col">Descrição</th><th scope="col">Status</th><th scope="col"><span className="visually-hidden">Ações</span></th></tr></thead><tbody>{categories.map((item) => <tr key={item.idRewardCategory}><td><strong>{item.name}</strong></td><td>{item.description ?? 'Não informada'}</td><td><StatusBadge active={item.isActive} /></td><td className="rewards-actions"><button className="secondary-button" type="button" onClick={() => onEdit(item)}>Editar</button><button className={item.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('categories', item.idRewardCategory, item.name, !item.isActive)}>{item.isActive ? 'Inativar' : 'Reativar'}</button></td></tr>)}</tbody></table></div>}</section>
 }
 
+function PendingRewards({ companyId, token }: { companyId: number; token: string }) {
+  const [data, setData] = useState<{ rewardFundBalance: string; pendingRewards: PendingCustomerReward[] } | null>(null)
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [selected, setSelected] = useState<{ item: PendingCustomerReward; action: 'approve' | 'deny' } | null>(null)
+
+  const load = useCallback(async () => {
+    setIsLoading(true); setError('')
+    try { setData(await getPendingCustomerRewards(companyId, token)) } catch (requestError) { setError(getCustomerRewardError(requestError)) } finally { setIsLoading(false) }
+  }, [companyId, token])
+
+  useEffect(() => { void Promise.resolve().then(load) }, [load])
+  async function approve(item: PendingCustomerReward, input: ApproveCustomerRewardInput) {
+    try { await approveCustomerReward(companyId, item.idCustomerReward, input, token); toast.success('Recompensa aprovada com sucesso.'); setSelected(null); await load() } catch (requestError) { toast.error(getCustomerRewardError(requestError)) }
+  }
+  async function deny(item: PendingCustomerReward, decisionNote: string | null) {
+    try { await denyCustomerReward(companyId, item.idCustomerReward, decisionNote, token); toast.success('Recompensa negada.'); setSelected(null); await load() } catch (requestError) { toast.error(getCustomerRewardError(requestError)) }
+  }
+
+  if (isLoading) return <p className="loading-state" role="status">Carregando pendências…</p>
+  if (error) return <section className="rewards-unavailable" role="alert"><h2>Não foi possível carregar as pendências.</h2><p>{error}</p><button className="secondary-button" type="button" onClick={() => void load()}>Tentar novamente</button></section>
+  if (!data) return null
+  return <section className="rewards-section pending-rewards"><div className="page-section-heading"><div><p className="eyebrow">Fidelidade</p><h2>Pendentes</h2><p>Analise as recompensas aguardando uma decisão.</p></div><dl className="fund-balance"><div><dt>Fundo disponível</dt><dd>{formatCurrency(data.rewardFundBalance)}</dd></div></dl></div>{selected?.action === 'approve' && <ApprovalPanel item={selected.item} fundBalance={data.rewardFundBalance} companyId={companyId} token={token} onCancel={() => setSelected(null)} onSubmit={approve} />}{selected?.action === 'deny' && <DenialPanel item={selected.item} onCancel={() => setSelected(null)} onSubmit={deny} />}{data.pendingRewards.length === 0 ? <EmptyState title="Nenhuma recompensa pendente no momento." action="Atualizar" onAction={() => void load()} /> : <div className="rewards-table-wrapper"><table className="rewards-table"><caption>Recompensas pendentes da empresa</caption><thead><tr><th scope="col">Cliente</th><th scope="col">CPF</th><th scope="col">Data</th><th scope="col">Categoria sugerida</th><th scope="col"><span className="visually-hidden">Ações</span></th></tr></thead><tbody>{data.pendingRewards.map((item) => <tr key={item.idCustomerReward}><td><strong>{item.customer.name}</strong></td><td>{formatCpf(item.customer.cpf)}</td><td><time dateTime={item.earnedAt}>{formatDateTime(item.earnedAt)}</time></td><td>{tierLabel(item.suggestedTier)}</td><td className="rewards-actions"><button className="primary-button" type="button" onClick={() => setSelected({ item, action: 'approve' })}>Aprovar</button><button className="secondary-button" type="button" onClick={() => setSelected({ item, action: 'deny' })}>Negar</button></td></tr>)}</tbody></table></div>}</section>
+}
+
+function ApprovalPanel({ item, fundBalance, companyId, token, onCancel, onSubmit }: { item: PendingCustomerReward; fundBalance: string; companyId: number; token: string; onCancel: () => void; onSubmit: (item: PendingCustomerReward, input: ApproveCustomerRewardInput) => Promise<void> }) {
+  const [rewardType, setRewardType] = useState<RewardType>('DIRECT'); const [finalTier, setFinalTier] = useState<RewardTier>(item.suggestedTier); const [timing, setTiming] = useState<RedemptionTiming>('IMMEDIATE'); const [rewardId, setRewardId] = useState(''); const [expiresOn, setExpiresOn] = useState(''); const [decisionNote, setDecisionNote] = useState(''); const [rewards, setRewards] = useState<Reward[]>([]); const [isLoading, setIsLoading] = useState(true); const [isSaving, setIsSaving] = useState(false); const [fieldError, setFieldError] = useState('')
+  useEffect(() => { void getRewards(companyId, token).then((result) => setRewards(result.rewards)).catch((requestError) => setFieldError(getCustomerRewardError(requestError))).finally(() => setIsLoading(false)) }, [companyId, token])
+  const availableRewards = rewards.filter((reward) => reward.isActive && tierFromCost(reward.costAmount) === finalTier)
+  const selectedReward = availableRewards.find((reward) => reward.idReward === Number(rewardId))
+  async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setFieldError(''); if (rewardType === 'DIRECT' && !selectedReward) { setFieldError('Selecione uma recompensa ativa desta faixa.'); return }; if (decisionNote.trim().length > 255) { setFieldError('A observação deve possuir no máximo 255 caracteres.'); return }; setIsSaving(true); try { await onSubmit(item, { rewardType, finalTier, ...(rewardType === 'DIRECT' ? { rewardId: selectedReward!.idReward } : {}), redemptionTiming: timing, expiresOn: expiresOn || null, decisionNote: decisionNote.trim() || null }) } finally { setIsSaving(false) } }
+  return <form className="reward-confirmation approval-panel" onSubmit={submit} noValidate><div><p className="eyebrow">Cliente: {item.customer.name}</p><h2>Aprovar recompensa pendente</h2><p>Categoria sugerida: <strong>{tierLabel(item.suggestedTier)}</strong></p></div><div className="reward-form-grid"><div className="form-field"><label htmlFor="approval-type">Tipo de concessão</label><select id="approval-type" value={rewardType} disabled={isSaving} onChange={(event) => { setRewardType(event.target.value as RewardType); setRewardId('') }}><option value="DIRECT">Administrador escolhe a recompensa</option><option value="CHOICE">Cliente escolhe a recompensa</option></select></div><div className="form-field"><label htmlFor="approval-tier">Tier final</label><select id="approval-tier" value={finalTier} disabled={isSaving} onChange={(event) => { setFinalTier(event.target.value as RewardTier); setRewardId('') }}><option value="LOW">Baixa</option><option value="MEDIUM">Média</option><option value="HIGH">Alta</option></select></div>{rewardType === 'DIRECT' && <div className="form-field"><label htmlFor="approval-reward">Recompensa *</label><select id="approval-reward" value={rewardId} disabled={isSaving || isLoading} onChange={(event) => setRewardId(event.target.value)}><option value="">Selecione uma recompensa</option>{availableRewards.map((reward) => <option key={reward.idReward} value={reward.idReward}>{reward.name} — {formatCurrency(reward.costAmount)}</option>)}</select>{!isLoading && availableRewards.length === 0 && <small>Não há recompensas ativas nesta faixa.</small>}</div>}<div className="form-field"><label htmlFor="approval-timing">Disponibilidade</label><select id="approval-timing" value={timing} disabled={isSaving} onChange={(event) => setTiming(event.target.value as RedemptionTiming)}><option value="IMMEDIATE">Disponível imediatamente</option><option value="NEXT_PURCHASE">Após a próxima compra</option><option value="NEXT_PURCHASE_DAY">No próximo dia de compra</option></select></div><div className="form-field"><label htmlFor="approval-expiration">Expiração</label><input id="approval-expiration" type="date" value={expiresOn} disabled={isSaving} onChange={(event) => setExpiresOn(event.target.value)} /></div><TextAreaField id="approval-note" label="Observação" value={decisionNote} error={fieldError} disabled={isSaving} onChange={setDecisionNote} /></div>{rewardType === 'CHOICE' ? <p className="reward-choice-note">O valor necessário será reservado no fundo com base nas recompensas disponíveis desta faixa.</p> : selectedReward && <dl className="approval-balance"><div><dt>Custo da recompensa</dt><dd>{formatCurrency(selectedReward.costAmount)}</dd></div><div><dt>Saldo atual</dt><dd>{formatCurrency(fundBalance)}</dd></div><div><dt>Saldo estimado após aprovação</dt><dd>{formatCurrency(String(Math.max(0, Number(fundBalance) - Number(selectedReward.costAmount))))}</dd></div></dl>}<FormActions isSaving={isSaving} submitLabel="Confirmar aprovação" onCancel={onCancel} /></form>
+}
+
+function DenialPanel({ item, onCancel, onSubmit }: { item: PendingCustomerReward; onCancel: () => void; onSubmit: (item: PendingCustomerReward, decisionNote: string | null) => Promise<void> }) { const [note, setNote] = useState(''); const [isSaving, setIsSaving] = useState(false); async function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (note.trim().length > 255) return; setIsSaving(true); try { await onSubmit(item, note.trim() || null) } finally { setIsSaving(false) } } return <form className="reward-confirmation" onSubmit={submit}><h2>Negar recompensa pendente?</h2><p>A pendência de {item.customer.name} será cancelada.</p><TextAreaField id="denial-note" label="Motivo da recusa (opcional)" value={note} disabled={isSaving} onChange={setNote} /><FormActions isSaving={isSaving} submitLabel="Confirmar recusa" onCancel={onCancel} /></form> }
+
 function RewardDetails({ reward, categoryInactive, isSaving, onBack, onEdit, onStatus }: { reward: Reward; categoryInactive: boolean; isSaving: boolean; onBack: () => void; onEdit: () => void; onStatus: (type: Tab, id: number, name: string, next: boolean) => void }) {
   return <section className="reward-details"><div className="page-section-heading"><div><p className="eyebrow">Recompensa</p><h2>{reward.name}</h2></div><button className="secondary-button" type="button" onClick={onBack}>Voltar para lista</button></div><div className="reward-details-actions"><button className="secondary-button" type="button" onClick={onEdit} disabled={isSaving}>Editar recompensa</button><button className={reward.isActive ? 'danger-button' : 'secondary-button'} type="button" onClick={() => onStatus('rewards', reward.idReward, reward.name, !reward.isActive)} disabled={isSaving}>{reward.isActive ? 'Inativar recompensa' : 'Reativar recompensa'}</button></div><dl><div><dt>Status</dt><dd><StatusBadge active={reward.isActive} /></dd></div><div><dt>Categoria</dt><dd>{reward.category ? <>{reward.category.name}{categoryInactive && <small className="reward-category-inactive">Inativa</small>}</> : 'Sem categoria'}</dd></div><div><dt>Custo para a empresa</dt><dd>{formatCurrency(reward.costAmount)}</dd></div><div><dt>Descrição</dt><dd>{reward.description ?? 'Não informada'}</dd></div></dl></section>
 }
@@ -239,6 +279,29 @@ function FormActions({ isSaving, submitLabel, onCancel }: { isSaving: boolean; s
 function EmptyState({ title, action, onAction }: { title: string; action: string; onAction: () => void }) { return <section className="rewards-empty"><h3>{title}</h3><button className="primary-button" type="button" onClick={onAction}>{action}</button></section> }
 function StatusBadge({ active }: { active: boolean }) { return <span className={active ? 'status-badge' : 'status-badge status-badge--inactive'}>{active ? 'Ativa' : 'Inativa'}</span> }
 function StatusConfirmation({ target, isSaving, onCancel, onConfirm }: { target: StatusTarget; isSaving: boolean; onCancel: () => void; onConfirm: () => void }) { const action = target.nextIsActive ? 'Reativar' : 'Inativar'; const label = target.type === 'rewards' ? 'recompensa' : 'categoria'; return <section className="reward-confirmation" aria-labelledby="reward-confirmation-title"><h2 id="reward-confirmation-title">{action} {label}?</h2><p>{target.nextIsActive ? `Deseja reativar “${target.name}”?` : `“${target.name}” deixará de estar disponível para novas utilizações. Deseja continuar?`}</p><div className="form-actions"><button className={target.nextIsActive ? 'primary-button' : 'danger-button'} type="button" onClick={onConfirm} disabled={isSaving}>{isSaving ? 'Salvando…' : `Confirmar ${target.nextIsActive ? 'reativação' : 'inativação'}`}</button><button className="secondary-button" type="button" onClick={onCancel} disabled={isSaving}>Cancelar</button></div></section> }
+
+function tierFromCost(costAmount: string): RewardTier { const amount = Number(costAmount); return amount <= 10 ? 'LOW' : amount <= 50 ? 'MEDIUM' : 'HIGH' }
+function tierLabel(tier: RewardTier | null) { return tier === 'LOW' ? 'Baixa' : tier === 'MEDIUM' ? 'Média' : tier === 'HIGH' ? 'Alta' : 'Não definida' }
+function formatDateTime(value: string) { return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) }
+
+function getCustomerRewardError(error: unknown) {
+  if (error instanceof ApiError) {
+    const messages: Record<string, string> = {
+      'Saldo insuficiente no fundo de recompensas': 'Saldo insuficiente no fundo de recompensas.',
+      'A recompensa escolhida não pertence à faixa selecionada': 'A recompensa escolhida não pertence à faixa selecionada.',
+      'Não existem recompensas ativas nessa faixa': 'Não há recompensas ativas disponíveis nesta faixa.',
+      'Recompensa pendente não encontrada': 'Esta pendência não está mais disponível.',
+      'Recompensa não encontrada ou inativa': 'Recompensa não encontrada ou inativa.',
+      'Data de expiração inválida': 'Data de expiração inválida.',
+      'A recompensa expiraria antes de poder ser resgatada': 'A data de expiração é anterior à primeira data possível de resgate.',
+    }
+    if (messages[error.message]) return messages[error.message]
+    if (error.status === 401) return 'Sua sessão expirou. Entre novamente.'
+    if (error.status === 403) return 'Você não possui permissão para realizar esta ação.'
+    if (error.status === 400) return 'Revise os dados informados e tente novamente.'
+  }
+  return 'Não foi possível concluir a operação agora. Verifique sua conexão e tente novamente.'
+}
 
 function parseCostAmount(value: string) {
   const normalizedValue = value.trim()

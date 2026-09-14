@@ -13,6 +13,7 @@ import type {
 } from "../../types/customer";
 import { formatCpf, getCpfValidationError, normalizeCpf } from "../../utils/cpf";
 import { toast } from "react-toastify";
+import { CustomerRewardsPanel } from "../../components/CustomerRewardsPanel";
 
 type View = "search" | "create" | "edit";
 const emptyForm: CreateCustomerInput = {
@@ -196,6 +197,8 @@ export function CustomersPage() {
           {customer && (
             <CustomerDetails
               customer={customer}
+              companyId={companyId}
+              token={token}
               isSaving={isSaving}
               onEdit={openEdit}
               onChangeStatus={changeStatus}
@@ -223,11 +226,15 @@ export function CustomersPage() {
 
 function CustomerDetails({
   customer,
+  companyId,
+  token,
   isSaving,
   onEdit,
   onChangeStatus,
 }: {
   customer: Customer;
+  companyId: number;
+  token: string;
   isSaving: boolean;
   onEdit: () => void;
   onChangeStatus: () => void;
@@ -296,6 +303,7 @@ function CustomerDetails({
           value={formatDate(customer.registrationDate)}
         />
       </dl>
+      <CustomerRewardsPanel companyId={companyId} cpf={customer.person.cpf} token={token} customerName={customer.person.name} customerPhone={customer.person.phoneNumber} whatsappOptIn={customer.whatsappOptIn} />
     </article>
   );
 }
