@@ -244,6 +244,7 @@ export type CompanyEmployeeWhereInput = {
   role?: Prisma.XOR<Prisma.UserRolesNullableScalarRelationFilter, Prisma.UserRolesWhereInput> | null
   registeredCustomers?: Prisma.CompanyCustomerListRelationFilter
   registeredPurchases?: Prisma.PurchaseListRelationFilter
+  reviewedRewards?: Prisma.CustomerRewardListRelationFilter
 }
 
 export type CompanyEmployeeOrderByWithRelationInput = {
@@ -258,6 +259,7 @@ export type CompanyEmployeeOrderByWithRelationInput = {
   role?: Prisma.UserRolesOrderByWithRelationInput
   registeredCustomers?: Prisma.CompanyCustomerOrderByRelationAggregateInput
   registeredPurchases?: Prisma.PurchaseOrderByRelationAggregateInput
+  reviewedRewards?: Prisma.CustomerRewardOrderByRelationAggregateInput
 }
 
 export type CompanyEmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -275,6 +277,7 @@ export type CompanyEmployeeWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.XOR<Prisma.UserRolesNullableScalarRelationFilter, Prisma.UserRolesWhereInput> | null
   registeredCustomers?: Prisma.CompanyCustomerListRelationFilter
   registeredPurchases?: Prisma.PurchaseListRelationFilter
+  reviewedRewards?: Prisma.CustomerRewardListRelationFilter
 }, "idCompanyEmployee" | "CompanyPerson_idCompanyPerson">
 
 export type CompanyEmployeeOrderByWithAggregationInput = {
@@ -314,6 +317,7 @@ export type CompanyEmployeeCreateInput = {
   role?: Prisma.UserRolesCreateNestedOneWithoutEmployeesInput
   registeredCustomers?: Prisma.CompanyCustomerCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUncheckedCreateInput = {
@@ -326,6 +330,7 @@ export type CompanyEmployeeUncheckedCreateInput = {
   createdAt?: Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUpdateInput = {
@@ -337,6 +342,7 @@ export type CompanyEmployeeUpdateInput = {
   role?: Prisma.UserRolesUpdateOneWithoutEmployeesNestedInput
   registeredCustomers?: Prisma.CompanyCustomerUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateInput = {
@@ -349,6 +355,7 @@ export type CompanyEmployeeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeCreateManyInput = {
@@ -549,6 +556,22 @@ export type CompanyEmployeeUpdateOneWithoutRegisteredPurchasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyEmployeeUpdateToOneWithWhereWithoutRegisteredPurchasesInput, Prisma.CompanyEmployeeUpdateWithoutRegisteredPurchasesInput>, Prisma.CompanyEmployeeUncheckedUpdateWithoutRegisteredPurchasesInput>
 }
 
+export type CompanyEmployeeCreateNestedOneWithoutReviewedRewardsInput = {
+  create?: Prisma.XOR<Prisma.CompanyEmployeeCreateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedCreateWithoutReviewedRewardsInput>
+  connectOrCreate?: Prisma.CompanyEmployeeCreateOrConnectWithoutReviewedRewardsInput
+  connect?: Prisma.CompanyEmployeeWhereUniqueInput
+}
+
+export type CompanyEmployeeUpdateOneWithoutReviewedRewardsNestedInput = {
+  create?: Prisma.XOR<Prisma.CompanyEmployeeCreateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedCreateWithoutReviewedRewardsInput>
+  connectOrCreate?: Prisma.CompanyEmployeeCreateOrConnectWithoutReviewedRewardsInput
+  upsert?: Prisma.CompanyEmployeeUpsertWithoutReviewedRewardsInput
+  disconnect?: Prisma.CompanyEmployeeWhereInput | boolean
+  delete?: Prisma.CompanyEmployeeWhereInput | boolean
+  connect?: Prisma.CompanyEmployeeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CompanyEmployeeUpdateToOneWithWhereWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUpdateWithoutReviewedRewardsInput>, Prisma.CompanyEmployeeUncheckedUpdateWithoutReviewedRewardsInput>
+}
+
 export type CompanyEmployeeCreateWithoutCompanyPersonInput = {
   admissionDate?: Date | string | null
   terminationDate?: Date | string | null
@@ -557,6 +580,7 @@ export type CompanyEmployeeCreateWithoutCompanyPersonInput = {
   role?: Prisma.UserRolesCreateNestedOneWithoutEmployeesInput
   registeredCustomers?: Prisma.CompanyCustomerCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUncheckedCreateWithoutCompanyPersonInput = {
@@ -568,6 +592,7 @@ export type CompanyEmployeeUncheckedCreateWithoutCompanyPersonInput = {
   createdAt?: Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeCreateOrConnectWithoutCompanyPersonInput = {
@@ -594,6 +619,7 @@ export type CompanyEmployeeUpdateWithoutCompanyPersonInput = {
   role?: Prisma.UserRolesUpdateOneWithoutEmployeesNestedInput
   registeredCustomers?: Prisma.CompanyCustomerUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateWithoutCompanyPersonInput = {
@@ -605,6 +631,7 @@ export type CompanyEmployeeUncheckedUpdateWithoutCompanyPersonInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeCreateWithoutRoleInput = {
@@ -615,6 +642,7 @@ export type CompanyEmployeeCreateWithoutRoleInput = {
   companyPerson: Prisma.CompanyPersonCreateNestedOneWithoutEmployeeInput
   registeredCustomers?: Prisma.CompanyCustomerCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUncheckedCreateWithoutRoleInput = {
@@ -626,6 +654,7 @@ export type CompanyEmployeeUncheckedCreateWithoutRoleInput = {
   createdAt?: Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
   registeredPurchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeCreateOrConnectWithoutRoleInput = {
@@ -675,6 +704,7 @@ export type CompanyEmployeeCreateWithoutRegisteredCustomersInput = {
   companyPerson: Prisma.CompanyPersonCreateNestedOneWithoutEmployeeInput
   role?: Prisma.UserRolesCreateNestedOneWithoutEmployeesInput
   registeredPurchases?: Prisma.PurchaseCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUncheckedCreateWithoutRegisteredCustomersInput = {
@@ -686,6 +716,7 @@ export type CompanyEmployeeUncheckedCreateWithoutRegisteredCustomersInput = {
   isActive?: boolean
   createdAt?: Date | string
   registeredPurchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeCreateOrConnectWithoutRegisteredCustomersInput = {
@@ -712,6 +743,7 @@ export type CompanyEmployeeUpdateWithoutRegisteredCustomersInput = {
   companyPerson?: Prisma.CompanyPersonUpdateOneRequiredWithoutEmployeeNestedInput
   role?: Prisma.UserRolesUpdateOneWithoutEmployeesNestedInput
   registeredPurchases?: Prisma.PurchaseUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateWithoutRegisteredCustomersInput = {
@@ -723,6 +755,7 @@ export type CompanyEmployeeUncheckedUpdateWithoutRegisteredCustomersInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredPurchases?: Prisma.PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeCreateWithoutRegisteredPurchasesInput = {
@@ -733,6 +766,7 @@ export type CompanyEmployeeCreateWithoutRegisteredPurchasesInput = {
   companyPerson: Prisma.CompanyPersonCreateNestedOneWithoutEmployeeInput
   role?: Prisma.UserRolesCreateNestedOneWithoutEmployeesInput
   registeredCustomers?: Prisma.CompanyCustomerCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeUncheckedCreateWithoutRegisteredPurchasesInput = {
@@ -744,6 +778,7 @@ export type CompanyEmployeeUncheckedCreateWithoutRegisteredPurchasesInput = {
   isActive?: boolean
   createdAt?: Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput
 }
 
 export type CompanyEmployeeCreateOrConnectWithoutRegisteredPurchasesInput = {
@@ -770,6 +805,7 @@ export type CompanyEmployeeUpdateWithoutRegisteredPurchasesInput = {
   companyPerson?: Prisma.CompanyPersonUpdateOneRequiredWithoutEmployeeNestedInput
   role?: Prisma.UserRolesUpdateOneWithoutEmployeesNestedInput
   registeredCustomers?: Prisma.CompanyCustomerUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateWithoutRegisteredPurchasesInput = {
@@ -781,6 +817,69 @@ export type CompanyEmployeeUncheckedUpdateWithoutRegisteredPurchasesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput
+}
+
+export type CompanyEmployeeCreateWithoutReviewedRewardsInput = {
+  admissionDate?: Date | string | null
+  terminationDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  companyPerson: Prisma.CompanyPersonCreateNestedOneWithoutEmployeeInput
+  role?: Prisma.UserRolesCreateNestedOneWithoutEmployeesInput
+  registeredCustomers?: Prisma.CompanyCustomerCreateNestedManyWithoutRegisteredByEmployeeInput
+  registeredPurchases?: Prisma.PurchaseCreateNestedManyWithoutRegisteredByEmployeeInput
+}
+
+export type CompanyEmployeeUncheckedCreateWithoutReviewedRewardsInput = {
+  idCompanyEmployee?: number
+  CompanyPerson_idCompanyPerson: number
+  UserRoles_idRole?: number | null
+  admissionDate?: Date | string | null
+  terminationDate?: Date | string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  registeredCustomers?: Prisma.CompanyCustomerUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+  registeredPurchases?: Prisma.PurchaseUncheckedCreateNestedManyWithoutRegisteredByEmployeeInput
+}
+
+export type CompanyEmployeeCreateOrConnectWithoutReviewedRewardsInput = {
+  where: Prisma.CompanyEmployeeWhereUniqueInput
+  create: Prisma.XOR<Prisma.CompanyEmployeeCreateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedCreateWithoutReviewedRewardsInput>
+}
+
+export type CompanyEmployeeUpsertWithoutReviewedRewardsInput = {
+  update: Prisma.XOR<Prisma.CompanyEmployeeUpdateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedUpdateWithoutReviewedRewardsInput>
+  create: Prisma.XOR<Prisma.CompanyEmployeeCreateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedCreateWithoutReviewedRewardsInput>
+  where?: Prisma.CompanyEmployeeWhereInput
+}
+
+export type CompanyEmployeeUpdateToOneWithWhereWithoutReviewedRewardsInput = {
+  where?: Prisma.CompanyEmployeeWhereInput
+  data: Prisma.XOR<Prisma.CompanyEmployeeUpdateWithoutReviewedRewardsInput, Prisma.CompanyEmployeeUncheckedUpdateWithoutReviewedRewardsInput>
+}
+
+export type CompanyEmployeeUpdateWithoutReviewedRewardsInput = {
+  admissionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  terminationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  companyPerson?: Prisma.CompanyPersonUpdateOneRequiredWithoutEmployeeNestedInput
+  role?: Prisma.UserRolesUpdateOneWithoutEmployeesNestedInput
+  registeredCustomers?: Prisma.CompanyCustomerUpdateManyWithoutRegisteredByEmployeeNestedInput
+  registeredPurchases?: Prisma.PurchaseUpdateManyWithoutRegisteredByEmployeeNestedInput
+}
+
+export type CompanyEmployeeUncheckedUpdateWithoutReviewedRewardsInput = {
+  idCompanyEmployee?: Prisma.IntFieldUpdateOperationsInput | number
+  CompanyPerson_idCompanyPerson?: Prisma.IntFieldUpdateOperationsInput | number
+  UserRoles_idRole?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  admissionDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  terminationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  registeredCustomers?: Prisma.CompanyCustomerUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  registeredPurchases?: Prisma.PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
 }
 
 export type CompanyEmployeeCreateManyRoleInput = {
@@ -800,6 +899,7 @@ export type CompanyEmployeeUpdateWithoutRoleInput = {
   companyPerson?: Prisma.CompanyPersonUpdateOneRequiredWithoutEmployeeNestedInput
   registeredCustomers?: Prisma.CompanyCustomerUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateWithoutRoleInput = {
@@ -811,6 +911,7 @@ export type CompanyEmployeeUncheckedUpdateWithoutRoleInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   registeredCustomers?: Prisma.CompanyCustomerUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
   registeredPurchases?: Prisma.PurchaseUncheckedUpdateManyWithoutRegisteredByEmployeeNestedInput
+  reviewedRewards?: Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput
 }
 
 export type CompanyEmployeeUncheckedUpdateManyWithoutRoleInput = {
@@ -830,11 +931,13 @@ export type CompanyEmployeeUncheckedUpdateManyWithoutRoleInput = {
 export type CompanyEmployeeCountOutputType = {
   registeredCustomers: number
   registeredPurchases: number
+  reviewedRewards: number
 }
 
 export type CompanyEmployeeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   registeredCustomers?: boolean | CompanyEmployeeCountOutputTypeCountRegisteredCustomersArgs
   registeredPurchases?: boolean | CompanyEmployeeCountOutputTypeCountRegisteredPurchasesArgs
+  reviewedRewards?: boolean | CompanyEmployeeCountOutputTypeCountReviewedRewardsArgs
 }
 
 /**
@@ -861,6 +964,13 @@ export type CompanyEmployeeCountOutputTypeCountRegisteredPurchasesArgs<ExtArgs e
   where?: Prisma.PurchaseWhereInput
 }
 
+/**
+ * CompanyEmployeeCountOutputType without action
+ */
+export type CompanyEmployeeCountOutputTypeCountReviewedRewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CustomerRewardWhereInput
+}
+
 
 export type CompanyEmployeeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   idCompanyEmployee?: boolean
@@ -874,6 +984,7 @@ export type CompanyEmployeeSelect<ExtArgs extends runtime.Types.Extensions.Inter
   role?: boolean | Prisma.CompanyEmployee$roleArgs<ExtArgs>
   registeredCustomers?: boolean | Prisma.CompanyEmployee$registeredCustomersArgs<ExtArgs>
   registeredPurchases?: boolean | Prisma.CompanyEmployee$registeredPurchasesArgs<ExtArgs>
+  reviewedRewards?: boolean | Prisma.CompanyEmployee$reviewedRewardsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyEmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["companyEmployee"]>
 
@@ -895,6 +1006,7 @@ export type CompanyEmployeeInclude<ExtArgs extends runtime.Types.Extensions.Inte
   role?: boolean | Prisma.CompanyEmployee$roleArgs<ExtArgs>
   registeredCustomers?: boolean | Prisma.CompanyEmployee$registeredCustomersArgs<ExtArgs>
   registeredPurchases?: boolean | Prisma.CompanyEmployee$registeredPurchasesArgs<ExtArgs>
+  reviewedRewards?: boolean | Prisma.CompanyEmployee$reviewedRewardsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyEmployeeCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -905,6 +1017,7 @@ export type $CompanyEmployeePayload<ExtArgs extends runtime.Types.Extensions.Int
     role: Prisma.$UserRolesPayload<ExtArgs> | null
     registeredCustomers: Prisma.$CompanyCustomerPayload<ExtArgs>[]
     registeredPurchases: Prisma.$PurchasePayload<ExtArgs>[]
+    reviewedRewards: Prisma.$CustomerRewardPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     idCompanyEmployee: number
@@ -1258,6 +1371,7 @@ export interface Prisma__CompanyEmployeeClient<T, Null = never, ExtArgs extends 
   role<T extends Prisma.CompanyEmployee$roleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyEmployee$roleArgs<ExtArgs>>): Prisma.Prisma__UserRolesClient<runtime.Types.Result.GetResult<Prisma.$UserRolesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   registeredCustomers<T extends Prisma.CompanyEmployee$registeredCustomersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyEmployee$registeredCustomersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyCustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   registeredPurchases<T extends Prisma.CompanyEmployee$registeredPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyEmployee$registeredPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  reviewedRewards<T extends Prisma.CompanyEmployee$reviewedRewardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyEmployee$reviewedRewardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerRewardPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1706,6 +1820,30 @@ export type CompanyEmployee$registeredPurchasesArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.PurchaseScalarFieldEnum | Prisma.PurchaseScalarFieldEnum[]
+}
+
+/**
+ * CompanyEmployee.reviewedRewards
+ */
+export type CompanyEmployee$reviewedRewardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CustomerReward
+   */
+  select?: Prisma.CustomerRewardSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CustomerReward
+   */
+  omit?: Prisma.CustomerRewardOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CustomerRewardInclude<ExtArgs> | null
+  where?: Prisma.CustomerRewardWhereInput
+  orderBy?: Prisma.CustomerRewardOrderByWithRelationInput | Prisma.CustomerRewardOrderByWithRelationInput[]
+  cursor?: Prisma.CustomerRewardWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CustomerRewardScalarFieldEnum | Prisma.CustomerRewardScalarFieldEnum[]
 }
 
 /**

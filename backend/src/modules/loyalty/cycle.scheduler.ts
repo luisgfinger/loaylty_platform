@@ -7,6 +7,10 @@ import {
   processExpiredCycles,
 } from "./cycle.service.js";
 
+import {
+  processExpiredCustomerRewards,
+} from "../rewards/customer-reward.service.js";
+
 
 const ONE_HOUR =
   60 * 60 * 1000;
@@ -23,6 +27,10 @@ export function startCycleScheduler(
 
       // Depois fecha ciclos vencidos.
       await processExpiredCycles();
+
+      // Por fim expira recompensas e devolve
+      // ao fundo os valores que estavam reservados.
+      await processExpiredCustomerRewards();
 
       logger.info(
         "Processamento de fidelidade concluído"

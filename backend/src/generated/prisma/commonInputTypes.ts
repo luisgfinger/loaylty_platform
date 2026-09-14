@@ -334,11 +334,11 @@ export type EnumCustomerCycleStatusWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumCustomerCycleStatusFilter<$PrismaModel>
 }
 
-export type EnumCustomerRewardTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.CustomerRewardType[]
-  notIn?: $Enums.CustomerRewardType[]
-  not?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel> | $Enums.CustomerRewardType
+export type EnumCustomerRewardTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerRewardType[] | null
+  notIn?: $Enums.CustomerRewardType[] | null
+  not?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel> | $Enums.CustomerRewardType | null
 }
 
 export type EnumCustomerRewardStatusFilter<$PrismaModel = never> = {
@@ -348,14 +348,28 @@ export type EnumCustomerRewardStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel> | $Enums.CustomerRewardStatus
 }
 
-export type EnumCustomerRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.CustomerRewardType[]
-  notIn?: $Enums.CustomerRewardType[]
-  not?: Prisma.NestedEnumCustomerRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerRewardType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel>
+export type EnumRewardTierNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardTier | Prisma.EnumRewardTierFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardTier[] | null
+  notIn?: $Enums.RewardTier[] | null
+  not?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel> | $Enums.RewardTier | null
+}
+
+export type EnumRewardRedemptionTimingNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardRedemptionTiming | Prisma.EnumRewardRedemptionTimingFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardRedemptionTiming[] | null
+  notIn?: $Enums.RewardRedemptionTiming[] | null
+  not?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel> | $Enums.RewardRedemptionTiming | null
+}
+
+export type EnumCustomerRewardTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerRewardType[] | null
+  notIn?: $Enums.CustomerRewardType[] | null
+  not?: Prisma.NestedEnumCustomerRewardTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CustomerRewardType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel>
 }
 
 export type EnumCustomerRewardStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -366,6 +380,26 @@ export type EnumCustomerRewardStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel>
+}
+
+export type EnumRewardTierNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardTier | Prisma.EnumRewardTierFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardTier[] | null
+  notIn?: $Enums.RewardTier[] | null
+  not?: Prisma.NestedEnumRewardTierNullableWithAggregatesFilter<$PrismaModel> | $Enums.RewardTier | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel>
+}
+
+export type EnumRewardRedemptionTimingNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardRedemptionTiming | Prisma.EnumRewardRedemptionTimingFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardRedemptionTiming[] | null
+  notIn?: $Enums.RewardRedemptionTiming[] | null
+  not?: Prisma.NestedEnumRewardRedemptionTimingNullableWithAggregatesFilter<$PrismaModel> | $Enums.RewardRedemptionTiming | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel>
 }
 
 export type NestedIntFilter<$PrismaModel = never> = {
@@ -705,11 +739,11 @@ export type NestedEnumCustomerCycleStatusWithAggregatesFilter<$PrismaModel = nev
   _max?: Prisma.NestedEnumCustomerCycleStatusFilter<$PrismaModel>
 }
 
-export type NestedEnumCustomerRewardTypeFilter<$PrismaModel = never> = {
-  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.CustomerRewardType[]
-  notIn?: $Enums.CustomerRewardType[]
-  not?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel> | $Enums.CustomerRewardType
+export type NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerRewardType[] | null
+  notIn?: $Enums.CustomerRewardType[] | null
+  not?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel> | $Enums.CustomerRewardType | null
 }
 
 export type NestedEnumCustomerRewardStatusFilter<$PrismaModel = never> = {
@@ -719,14 +753,28 @@ export type NestedEnumCustomerRewardStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel> | $Enums.CustomerRewardStatus
 }
 
-export type NestedEnumCustomerRewardTypeWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel>
-  in?: $Enums.CustomerRewardType[]
-  notIn?: $Enums.CustomerRewardType[]
-  not?: Prisma.NestedEnumCustomerRewardTypeWithAggregatesFilter<$PrismaModel> | $Enums.CustomerRewardType
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumCustomerRewardTypeFilter<$PrismaModel>
+export type NestedEnumRewardTierNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardTier | Prisma.EnumRewardTierFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardTier[] | null
+  notIn?: $Enums.RewardTier[] | null
+  not?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel> | $Enums.RewardTier | null
+}
+
+export type NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardRedemptionTiming | Prisma.EnumRewardRedemptionTimingFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardRedemptionTiming[] | null
+  notIn?: $Enums.RewardRedemptionTiming[] | null
+  not?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel> | $Enums.RewardRedemptionTiming | null
+}
+
+export type NestedEnumCustomerRewardTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerRewardType | Prisma.EnumCustomerRewardTypeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.CustomerRewardType[] | null
+  notIn?: $Enums.CustomerRewardType[] | null
+  not?: Prisma.NestedEnumCustomerRewardTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.CustomerRewardType | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerRewardTypeNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumCustomerRewardStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -737,6 +785,26 @@ export type NestedEnumCustomerRewardStatusWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumCustomerRewardStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRewardTierNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardTier | Prisma.EnumRewardTierFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardTier[] | null
+  notIn?: $Enums.RewardTier[] | null
+  not?: Prisma.NestedEnumRewardTierNullableWithAggregatesFilter<$PrismaModel> | $Enums.RewardTier | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRewardTierNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumRewardRedemptionTimingNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RewardRedemptionTiming | Prisma.EnumRewardRedemptionTimingFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RewardRedemptionTiming[] | null
+  notIn?: $Enums.RewardRedemptionTiming[] | null
+  not?: Prisma.NestedEnumRewardRedemptionTimingNullableWithAggregatesFilter<$PrismaModel> | $Enums.RewardRedemptionTiming | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRewardRedemptionTimingNullableFilter<$PrismaModel>
 }
 
 

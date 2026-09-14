@@ -29,59 +29,97 @@ export type AggregateCustomerReward = {
 export type CustomerRewardAvgAggregateOutputType = {
   idCustomerReward: number | null
   CompanyCustomer_idCompanyCustomer: number | null
+  ReviewedByEmployee_idCompanyEmployee: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
+  progressMilestone: runtime.Decimal | null
+  regularityAtEarned: runtime.Decimal | null
+  reservedAmount: runtime.Decimal | null
   costAmountSnapshot: runtime.Decimal | null
 }
 
 export type CustomerRewardSumAggregateOutputType = {
   idCustomerReward: bigint | null
   CompanyCustomer_idCompanyCustomer: number | null
+  ReviewedByEmployee_idCompanyEmployee: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
+  progressMilestone: runtime.Decimal | null
+  regularityAtEarned: runtime.Decimal | null
+  reservedAmount: runtime.Decimal | null
   costAmountSnapshot: runtime.Decimal | null
 }
 
 export type CustomerRewardMinAggregateOutputType = {
   idCustomerReward: bigint | null
   CompanyCustomer_idCompanyCustomer: number | null
+  ReviewedByEmployee_idCompanyEmployee: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
   rewardType: $Enums.CustomerRewardType | null
   status: $Enums.CustomerRewardStatus | null
+  suggestedTier: $Enums.RewardTier | null
+  finalTier: $Enums.RewardTier | null
+  progressMilestone: runtime.Decimal | null
+  regularityAtEarned: runtime.Decimal | null
+  redemptionTiming: $Enums.RewardRedemptionTiming | null
+  reservedAmount: runtime.Decimal | null
   costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date | null
+  reviewedAt: Date | null
+  approvedAt: Date | null
   selectedAt: Date | null
   redeemedAt: Date | null
   expiresAt: Date | null
+  decisionNote: string | null
 }
 
 export type CustomerRewardMaxAggregateOutputType = {
   idCustomerReward: bigint | null
   CompanyCustomer_idCompanyCustomer: number | null
+  ReviewedByEmployee_idCompanyEmployee: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
   rewardType: $Enums.CustomerRewardType | null
   status: $Enums.CustomerRewardStatus | null
+  suggestedTier: $Enums.RewardTier | null
+  finalTier: $Enums.RewardTier | null
+  progressMilestone: runtime.Decimal | null
+  regularityAtEarned: runtime.Decimal | null
+  redemptionTiming: $Enums.RewardRedemptionTiming | null
+  reservedAmount: runtime.Decimal | null
   costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date | null
+  reviewedAt: Date | null
+  approvedAt: Date | null
   selectedAt: Date | null
   redeemedAt: Date | null
   expiresAt: Date | null
+  decisionNote: string | null
 }
 
 export type CustomerRewardCountAggregateOutputType = {
   idCustomerReward: number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee: number
   RewardCategory_idRewardCategory: number
   Reward_idReward: number
   rewardType: number
   status: number
+  suggestedTier: number
+  finalTier: number
+  progressMilestone: number
+  regularityAtEarned: number
+  redemptionTiming: number
+  reservedAmount: number
   costAmountSnapshot: number
   earnedAt: number
+  reviewedAt: number
+  approvedAt: number
   selectedAt: number
   redeemedAt: number
   expiresAt: number
+  decisionNote: number
   _all: number
 }
 
@@ -89,59 +127,97 @@ export type CustomerRewardCountAggregateOutputType = {
 export type CustomerRewardAvgAggregateInputType = {
   idCustomerReward?: true
   CompanyCustomer_idCompanyCustomer?: true
+  ReviewedByEmployee_idCompanyEmployee?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
+  progressMilestone?: true
+  regularityAtEarned?: true
+  reservedAmount?: true
   costAmountSnapshot?: true
 }
 
 export type CustomerRewardSumAggregateInputType = {
   idCustomerReward?: true
   CompanyCustomer_idCompanyCustomer?: true
+  ReviewedByEmployee_idCompanyEmployee?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
+  progressMilestone?: true
+  regularityAtEarned?: true
+  reservedAmount?: true
   costAmountSnapshot?: true
 }
 
 export type CustomerRewardMinAggregateInputType = {
   idCustomerReward?: true
   CompanyCustomer_idCompanyCustomer?: true
+  ReviewedByEmployee_idCompanyEmployee?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  suggestedTier?: true
+  finalTier?: true
+  progressMilestone?: true
+  regularityAtEarned?: true
+  redemptionTiming?: true
+  reservedAmount?: true
   costAmountSnapshot?: true
   earnedAt?: true
+  reviewedAt?: true
+  approvedAt?: true
   selectedAt?: true
   redeemedAt?: true
   expiresAt?: true
+  decisionNote?: true
 }
 
 export type CustomerRewardMaxAggregateInputType = {
   idCustomerReward?: true
   CompanyCustomer_idCompanyCustomer?: true
+  ReviewedByEmployee_idCompanyEmployee?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  suggestedTier?: true
+  finalTier?: true
+  progressMilestone?: true
+  regularityAtEarned?: true
+  redemptionTiming?: true
+  reservedAmount?: true
   costAmountSnapshot?: true
   earnedAt?: true
+  reviewedAt?: true
+  approvedAt?: true
   selectedAt?: true
   redeemedAt?: true
   expiresAt?: true
+  decisionNote?: true
 }
 
 export type CustomerRewardCountAggregateInputType = {
   idCustomerReward?: true
   CompanyCustomer_idCompanyCustomer?: true
+  ReviewedByEmployee_idCompanyEmployee?: true
   RewardCategory_idRewardCategory?: true
   Reward_idReward?: true
   rewardType?: true
   status?: true
+  suggestedTier?: true
+  finalTier?: true
+  progressMilestone?: true
+  regularityAtEarned?: true
+  redemptionTiming?: true
+  reservedAmount?: true
   costAmountSnapshot?: true
   earnedAt?: true
+  reviewedAt?: true
+  approvedAt?: true
   selectedAt?: true
   redeemedAt?: true
   expiresAt?: true
+  decisionNote?: true
   _all?: true
 }
 
@@ -234,15 +310,25 @@ export type CustomerRewardGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type CustomerRewardGroupByOutputType = {
   idCustomerReward: bigint
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee: number | null
   RewardCategory_idRewardCategory: number | null
   Reward_idReward: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType: $Enums.CustomerRewardType | null
   status: $Enums.CustomerRewardStatus
+  suggestedTier: $Enums.RewardTier | null
+  finalTier: $Enums.RewardTier | null
+  progressMilestone: runtime.Decimal | null
+  regularityAtEarned: runtime.Decimal | null
+  redemptionTiming: $Enums.RewardRedemptionTiming | null
+  reservedAmount: runtime.Decimal | null
   costAmountSnapshot: runtime.Decimal | null
   earnedAt: Date
+  reviewedAt: Date | null
+  approvedAt: Date | null
   selectedAt: Date | null
   redeemedAt: Date | null
   expiresAt: Date | null
+  decisionNote: string | null
   _count: CustomerRewardCountAggregateOutputType | null
   _avg: CustomerRewardAvgAggregateOutputType | null
   _sum: CustomerRewardSumAggregateOutputType | null
@@ -271,16 +357,27 @@ export type CustomerRewardWhereInput = {
   NOT?: Prisma.CustomerRewardWhereInput | Prisma.CustomerRewardWhereInput[]
   idCustomerReward?: Prisma.BigIntFilter<"CustomerReward"> | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"CustomerReward"> | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
+  rewardType?: Prisma.EnumCustomerRewardTypeNullableFilter<"CustomerReward"> | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  finalTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  progressMilestone?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.EnumRewardRedemptionTimingNullableFilter<"CustomerReward"> | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  decisionNote?: Prisma.StringNullableFilter<"CustomerReward"> | string | null
   customer?: Prisma.XOR<Prisma.CompanyCustomerScalarRelationFilter, Prisma.CompanyCustomerWhereInput>
+  reviewedByEmployee?: Prisma.XOR<Prisma.CompanyEmployeeNullableScalarRelationFilter, Prisma.CompanyEmployeeWhereInput> | null
   rewardCategory?: Prisma.XOR<Prisma.RewardCategoryNullableScalarRelationFilter, Prisma.RewardCategoryWhereInput> | null
   reward?: Prisma.XOR<Prisma.RewardNullableScalarRelationFilter, Prisma.RewardWhereInput> | null
 }
@@ -288,52 +385,86 @@ export type CustomerRewardWhereInput = {
 export type CustomerRewardOrderByWithRelationInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrderInput | Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrderInput | Prisma.SortOrder
-  rewardType?: Prisma.SortOrder
+  rewardType?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  suggestedTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  finalTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrderInput | Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrderInput | Prisma.SortOrder
+  redemptionTiming?: Prisma.SortOrderInput | Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   selectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   redeemedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   customer?: Prisma.CompanyCustomerOrderByWithRelationInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeOrderByWithRelationInput
   rewardCategory?: Prisma.RewardCategoryOrderByWithRelationInput
   reward?: Prisma.RewardOrderByWithRelationInput
+  _relevance?: Prisma.CustomerRewardOrderByRelevanceInput
 }
 
 export type CustomerRewardWhereUniqueInput = Prisma.AtLeast<{
   idCustomerReward?: bigint | number
+  CompanyCustomer_idCompanyCustomer_progressMilestone?: Prisma.CustomerRewardCompanyCustomer_idCompanyCustomerProgressMilestoneCompoundUniqueInput
   AND?: Prisma.CustomerRewardWhereInput | Prisma.CustomerRewardWhereInput[]
   OR?: Prisma.CustomerRewardWhereInput[]
   NOT?: Prisma.CustomerRewardWhereInput | Prisma.CustomerRewardWhereInput[]
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"CustomerReward"> | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
   Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
+  rewardType?: Prisma.EnumCustomerRewardTypeNullableFilter<"CustomerReward"> | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  finalTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  progressMilestone?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.EnumRewardRedemptionTimingNullableFilter<"CustomerReward"> | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
   expiresAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  decisionNote?: Prisma.StringNullableFilter<"CustomerReward"> | string | null
   customer?: Prisma.XOR<Prisma.CompanyCustomerScalarRelationFilter, Prisma.CompanyCustomerWhereInput>
+  reviewedByEmployee?: Prisma.XOR<Prisma.CompanyEmployeeNullableScalarRelationFilter, Prisma.CompanyEmployeeWhereInput> | null
   rewardCategory?: Prisma.XOR<Prisma.RewardCategoryNullableScalarRelationFilter, Prisma.RewardCategoryWhereInput> | null
   reward?: Prisma.XOR<Prisma.RewardNullableScalarRelationFilter, Prisma.RewardWhereInput> | null
-}, "idCustomerReward">
+}, "idCustomerReward" | "CompanyCustomer_idCompanyCustomer_progressMilestone">
 
 export type CustomerRewardOrderByWithAggregationInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrderInput | Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrderInput | Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrderInput | Prisma.SortOrder
-  rewardType?: Prisma.SortOrder
+  rewardType?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  suggestedTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  finalTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrderInput | Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrderInput | Prisma.SortOrder
+  redemptionTiming?: Prisma.SortOrderInput | Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  approvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   selectedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   redeemedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CustomerRewardCountOrderByAggregateInput
   _avg?: Prisma.CustomerRewardAvgOrderByAggregateInput
   _max?: Prisma.CustomerRewardMaxOrderByAggregateInput
@@ -347,27 +478,47 @@ export type CustomerRewardScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CustomerRewardScalarWhereWithAggregatesInput | Prisma.CustomerRewardScalarWhereWithAggregatesInput[]
   idCustomerReward?: Prisma.BigIntWithAggregatesFilter<"CustomerReward"> | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntWithAggregatesFilter<"CustomerReward"> | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.IntNullableWithAggregatesFilter<"CustomerReward"> | number | null
   RewardCategory_idRewardCategory?: Prisma.IntNullableWithAggregatesFilter<"CustomerReward"> | number | null
   Reward_idReward?: Prisma.IntNullableWithAggregatesFilter<"CustomerReward"> | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeWithAggregatesFilter<"CustomerReward"> | $Enums.CustomerRewardType
+  rewardType?: Prisma.EnumCustomerRewardTypeNullableWithAggregatesFilter<"CustomerReward"> | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusWithAggregatesFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.EnumRewardTierNullableWithAggregatesFilter<"CustomerReward"> | $Enums.RewardTier | null
+  finalTier?: Prisma.EnumRewardTierNullableWithAggregatesFilter<"CustomerReward"> | $Enums.RewardTier | null
+  progressMilestone?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.EnumRewardRedemptionTimingNullableWithAggregatesFilter<"CustomerReward"> | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerReward"> | Date | string
+  reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
+  approvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
   selectedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
   redeemedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerReward"> | Date | string | null
+  decisionNote?: Prisma.StringNullableWithAggregatesFilter<"CustomerReward"> | string | null
 }
 
 export type CustomerRewardCreateInput = {
   idCustomerReward?: bigint | number
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
   customer: Prisma.CompanyCustomerCreateNestedOneWithoutCustomerRewardsInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeCreateNestedOneWithoutReviewedRewardsInput
   rewardCategory?: Prisma.RewardCategoryCreateNestedOneWithoutCustomerRewardsInput
   reward?: Prisma.RewardCreateNestedOneWithoutCustomerRewardsInput
 }
@@ -375,27 +526,47 @@ export type CustomerRewardCreateInput = {
 export type CustomerRewardUncheckedCreateInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   RewardCategory_idRewardCategory?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardUpdateInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutCustomerRewardsNestedInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeUpdateOneWithoutReviewedRewardsNestedInput
   rewardCategory?: Prisma.RewardCategoryUpdateOneWithoutCustomerRewardsNestedInput
   reward?: Prisma.RewardUpdateOneWithoutCustomerRewardsNestedInput
 }
@@ -403,54 +574,93 @@ export type CustomerRewardUpdateInput = {
 export type CustomerRewardUncheckedUpdateInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardCreateManyInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   RewardCategory_idRewardCategory?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardUpdateManyMutationInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardUncheckedUpdateManyInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardListRelationFilter = {
@@ -463,62 +673,153 @@ export type CustomerRewardOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type CustomerRewardOrderByRelevanceInput = {
+  fields: Prisma.CustomerRewardOrderByRelevanceFieldEnum | Prisma.CustomerRewardOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
+}
+
+export type CustomerRewardCompanyCustomer_idCompanyCustomerProgressMilestoneCompoundUniqueInput = {
+  CompanyCustomer_idCompanyCustomer: number
+  progressMilestone: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type CustomerRewardCountOrderByAggregateInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  suggestedTier?: Prisma.SortOrder
+  finalTier?: Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrder
+  redemptionTiming?: Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  decisionNote?: Prisma.SortOrder
 }
 
 export type CustomerRewardAvgOrderByAggregateInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrder
 }
 
 export type CustomerRewardMaxOrderByAggregateInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  suggestedTier?: Prisma.SortOrder
+  finalTier?: Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrder
+  redemptionTiming?: Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  decisionNote?: Prisma.SortOrder
 }
 
 export type CustomerRewardMinOrderByAggregateInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
   rewardType?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  suggestedTier?: Prisma.SortOrder
+  finalTier?: Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrder
+  redemptionTiming?: Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrder
   earnedAt?: Prisma.SortOrder
+  reviewedAt?: Prisma.SortOrder
+  approvedAt?: Prisma.SortOrder
   selectedAt?: Prisma.SortOrder
   redeemedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  decisionNote?: Prisma.SortOrder
 }
 
 export type CustomerRewardSumOrderByAggregateInput = {
   idCustomerReward?: Prisma.SortOrder
   CompanyCustomer_idCompanyCustomer?: Prisma.SortOrder
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.SortOrder
   RewardCategory_idRewardCategory?: Prisma.SortOrder
   Reward_idReward?: Prisma.SortOrder
+  progressMilestone?: Prisma.SortOrder
+  regularityAtEarned?: Prisma.SortOrder
+  reservedAmount?: Prisma.SortOrder
   costAmountSnapshot?: Prisma.SortOrder
+}
+
+export type CustomerRewardCreateNestedManyWithoutReviewedByEmployeeInput = {
+  create?: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput> | Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput[] | Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput[]
+  connectOrCreate?: Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput | Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput[]
+  createMany?: Prisma.CustomerRewardCreateManyReviewedByEmployeeInputEnvelope
+  connect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+}
+
+export type CustomerRewardUncheckedCreateNestedManyWithoutReviewedByEmployeeInput = {
+  create?: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput> | Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput[] | Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput[]
+  connectOrCreate?: Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput | Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput[]
+  createMany?: Prisma.CustomerRewardCreateManyReviewedByEmployeeInputEnvelope
+  connect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+}
+
+export type CustomerRewardUpdateManyWithoutReviewedByEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput> | Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput[] | Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput[]
+  connectOrCreate?: Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput | Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput[]
+  upsert?: Prisma.CustomerRewardUpsertWithWhereUniqueWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpsertWithWhereUniqueWithoutReviewedByEmployeeInput[]
+  createMany?: Prisma.CustomerRewardCreateManyReviewedByEmployeeInputEnvelope
+  set?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  disconnect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  delete?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  connect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  update?: Prisma.CustomerRewardUpdateWithWhereUniqueWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpdateWithWhereUniqueWithoutReviewedByEmployeeInput[]
+  updateMany?: Prisma.CustomerRewardUpdateManyWithWhereWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpdateManyWithWhereWithoutReviewedByEmployeeInput[]
+  deleteMany?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
+}
+
+export type CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput> | Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput[] | Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput[]
+  connectOrCreate?: Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput | Prisma.CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput[]
+  upsert?: Prisma.CustomerRewardUpsertWithWhereUniqueWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpsertWithWhereUniqueWithoutReviewedByEmployeeInput[]
+  createMany?: Prisma.CustomerRewardCreateManyReviewedByEmployeeInputEnvelope
+  set?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  disconnect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  delete?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  connect?: Prisma.CustomerRewardWhereUniqueInput | Prisma.CustomerRewardWhereUniqueInput[]
+  update?: Prisma.CustomerRewardUpdateWithWhereUniqueWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpdateWithWhereUniqueWithoutReviewedByEmployeeInput[]
+  updateMany?: Prisma.CustomerRewardUpdateManyWithWhereWithoutReviewedByEmployeeInput | Prisma.CustomerRewardUpdateManyWithWhereWithoutReviewedByEmployeeInput[]
+  deleteMany?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
 }
 
 export type CustomerRewardCreateNestedManyWithoutCustomerInput = {
@@ -647,38 +948,165 @@ export type CustomerRewardUncheckedUpdateManyWithoutRewardNestedInput = {
   deleteMany?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
 }
 
-export type EnumCustomerRewardTypeFieldUpdateOperationsInput = {
-  set?: $Enums.CustomerRewardType
+export type NullableEnumCustomerRewardTypeFieldUpdateOperationsInput = {
+  set?: $Enums.CustomerRewardType | null
 }
 
 export type EnumCustomerRewardStatusFieldUpdateOperationsInput = {
   set?: $Enums.CustomerRewardStatus
 }
 
-export type CustomerRewardCreateWithoutCustomerInput = {
+export type NullableEnumRewardTierFieldUpdateOperationsInput = {
+  set?: $Enums.RewardTier | null
+}
+
+export type NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput = {
+  set?: $Enums.RewardRedemptionTiming | null
+}
+
+export type CustomerRewardCreateWithoutReviewedByEmployeeInput = {
   idCustomerReward?: bigint | number
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
+  customer: Prisma.CompanyCustomerCreateNestedOneWithoutCustomerRewardsInput
+  rewardCategory?: Prisma.RewardCategoryCreateNestedOneWithoutCustomerRewardsInput
+  reward?: Prisma.RewardCreateNestedOneWithoutCustomerRewardsInput
+}
+
+export type CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput = {
+  idCustomerReward?: bigint | number
+  CompanyCustomer_idCompanyCustomer: number
+  RewardCategory_idRewardCategory?: number | null
+  Reward_idReward?: number | null
+  rewardType?: $Enums.CustomerRewardType | null
+  status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  selectedAt?: Date | string | null
+  redeemedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  decisionNote?: string | null
+}
+
+export type CustomerRewardCreateOrConnectWithoutReviewedByEmployeeInput = {
+  where: Prisma.CustomerRewardWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput>
+}
+
+export type CustomerRewardCreateManyReviewedByEmployeeInputEnvelope = {
+  data: Prisma.CustomerRewardCreateManyReviewedByEmployeeInput | Prisma.CustomerRewardCreateManyReviewedByEmployeeInput[]
+  skipDuplicates?: boolean
+}
+
+export type CustomerRewardUpsertWithWhereUniqueWithoutReviewedByEmployeeInput = {
+  where: Prisma.CustomerRewardWhereUniqueInput
+  update: Prisma.XOR<Prisma.CustomerRewardUpdateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedUpdateWithoutReviewedByEmployeeInput>
+  create: Prisma.XOR<Prisma.CustomerRewardCreateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedCreateWithoutReviewedByEmployeeInput>
+}
+
+export type CustomerRewardUpdateWithWhereUniqueWithoutReviewedByEmployeeInput = {
+  where: Prisma.CustomerRewardWhereUniqueInput
+  data: Prisma.XOR<Prisma.CustomerRewardUpdateWithoutReviewedByEmployeeInput, Prisma.CustomerRewardUncheckedUpdateWithoutReviewedByEmployeeInput>
+}
+
+export type CustomerRewardUpdateManyWithWhereWithoutReviewedByEmployeeInput = {
+  where: Prisma.CustomerRewardScalarWhereInput
+  data: Prisma.XOR<Prisma.CustomerRewardUpdateManyMutationInput, Prisma.CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeInput>
+}
+
+export type CustomerRewardScalarWhereInput = {
+  AND?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
+  OR?: Prisma.CustomerRewardScalarWhereInput[]
+  NOT?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
+  idCustomerReward?: Prisma.BigIntFilter<"CustomerReward"> | bigint | number
+  CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"CustomerReward"> | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
+  RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
+  Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
+  rewardType?: Prisma.EnumCustomerRewardTypeNullableFilter<"CustomerReward"> | $Enums.CustomerRewardType | null
+  status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  finalTier?: Prisma.EnumRewardTierNullableFilter<"CustomerReward"> | $Enums.RewardTier | null
+  progressMilestone?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.EnumRewardRedemptionTimingNullableFilter<"CustomerReward"> | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
+  reviewedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  approvedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
+  decisionNote?: Prisma.StringNullableFilter<"CustomerReward"> | string | null
+}
+
+export type CustomerRewardCreateWithoutCustomerInput = {
+  idCustomerReward?: bigint | number
+  rewardType?: $Enums.CustomerRewardType | null
+  status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  selectedAt?: Date | string | null
+  redeemedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  decisionNote?: string | null
+  reviewedByEmployee?: Prisma.CompanyEmployeeCreateNestedOneWithoutReviewedRewardsInput
   rewardCategory?: Prisma.RewardCategoryCreateNestedOneWithoutCustomerRewardsInput
   reward?: Prisma.RewardCreateNestedOneWithoutCustomerRewardsInput
 }
 
 export type CustomerRewardUncheckedCreateWithoutCustomerInput = {
   idCustomerReward?: bigint | number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   RewardCategory_idRewardCategory?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardCreateOrConnectWithoutCustomerInput = {
@@ -707,47 +1135,50 @@ export type CustomerRewardUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.CustomerRewardUpdateManyMutationInput, Prisma.CustomerRewardUncheckedUpdateManyWithoutCustomerInput>
 }
 
-export type CustomerRewardScalarWhereInput = {
-  AND?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
-  OR?: Prisma.CustomerRewardScalarWhereInput[]
-  NOT?: Prisma.CustomerRewardScalarWhereInput | Prisma.CustomerRewardScalarWhereInput[]
-  idCustomerReward?: Prisma.BigIntFilter<"CustomerReward"> | bigint | number
-  CompanyCustomer_idCompanyCustomer?: Prisma.IntFilter<"CustomerReward"> | number
-  RewardCategory_idRewardCategory?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
-  Reward_idReward?: Prisma.IntNullableFilter<"CustomerReward"> | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFilter<"CustomerReward"> | $Enums.CustomerRewardType
-  status?: Prisma.EnumCustomerRewardStatusFilter<"CustomerReward"> | $Enums.CustomerRewardStatus
-  costAmountSnapshot?: Prisma.DecimalNullableFilter<"CustomerReward"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  earnedAt?: Prisma.DateTimeFilter<"CustomerReward"> | Date | string
-  selectedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
-  redeemedAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
-  expiresAt?: Prisma.DateTimeNullableFilter<"CustomerReward"> | Date | string | null
-}
-
 export type CustomerRewardCreateWithoutRewardCategoryInput = {
   idCustomerReward?: bigint | number
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
   customer: Prisma.CompanyCustomerCreateNestedOneWithoutCustomerRewardsInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeCreateNestedOneWithoutReviewedRewardsInput
   reward?: Prisma.RewardCreateNestedOneWithoutCustomerRewardsInput
 }
 
 export type CustomerRewardUncheckedCreateWithoutRewardCategoryInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardCreateOrConnectWithoutRewardCategoryInput = {
@@ -778,28 +1209,48 @@ export type CustomerRewardUpdateManyWithWhereWithoutRewardCategoryInput = {
 
 export type CustomerRewardCreateWithoutRewardInput = {
   idCustomerReward?: bigint | number
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
   customer: Prisma.CompanyCustomerCreateNestedOneWithoutCustomerRewardsInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeCreateNestedOneWithoutReviewedRewardsInput
   rewardCategory?: Prisma.RewardCategoryCreateNestedOneWithoutCustomerRewardsInput
 }
 
 export type CustomerRewardUncheckedCreateWithoutRewardInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   RewardCategory_idRewardCategory?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardCreateOrConnectWithoutRewardInput = {
@@ -828,160 +1279,372 @@ export type CustomerRewardUpdateManyWithWhereWithoutRewardInput = {
   data: Prisma.XOR<Prisma.CustomerRewardUpdateManyMutationInput, Prisma.CustomerRewardUncheckedUpdateManyWithoutRewardInput>
 }
 
-export type CustomerRewardCreateManyCustomerInput = {
+export type CustomerRewardCreateManyReviewedByEmployeeInput = {
   idCustomerReward?: bigint | number
+  CompanyCustomer_idCompanyCustomer: number
   RewardCategory_idRewardCategory?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
+}
+
+export type CustomerRewardUpdateWithoutReviewedByEmployeeInput = {
+  idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
+  status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutCustomerRewardsNestedInput
+  rewardCategory?: Prisma.RewardCategoryUpdateOneWithoutCustomerRewardsNestedInput
+  reward?: Prisma.RewardUpdateOneWithoutCustomerRewardsNestedInput
+}
+
+export type CustomerRewardUncheckedUpdateWithoutReviewedByEmployeeInput = {
+  idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
+  status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type CustomerRewardUncheckedUpdateManyWithoutReviewedByEmployeeInput = {
+  idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
+  status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type CustomerRewardCreateManyCustomerInput = {
+  idCustomerReward?: bigint | number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
+  RewardCategory_idRewardCategory?: number | null
+  Reward_idReward?: number | null
+  rewardType?: $Enums.CustomerRewardType | null
+  status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
+  selectedAt?: Date | string | null
+  redeemedAt?: Date | string | null
+  expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardUpdateWithoutCustomerInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reviewedByEmployee?: Prisma.CompanyEmployeeUpdateOneWithoutReviewedRewardsNestedInput
   rewardCategory?: Prisma.RewardCategoryUpdateOneWithoutCustomerRewardsNestedInput
   reward?: Prisma.RewardUpdateOneWithoutCustomerRewardsNestedInput
 }
 
 export type CustomerRewardUncheckedUpdateWithoutCustomerInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardUncheckedUpdateManyWithoutCustomerInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardCreateManyRewardCategoryInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   Reward_idReward?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardUpdateWithoutRewardCategoryInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutCustomerRewardsNestedInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeUpdateOneWithoutReviewedRewardsNestedInput
   reward?: Prisma.RewardUpdateOneWithoutCustomerRewardsNestedInput
 }
 
 export type CustomerRewardUncheckedUpdateWithoutRewardCategoryInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardUncheckedUpdateManyWithoutRewardCategoryInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   Reward_idReward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardCreateManyRewardInput = {
   idCustomerReward?: bigint | number
   CompanyCustomer_idCompanyCustomer: number
+  ReviewedByEmployee_idCompanyEmployee?: number | null
   RewardCategory_idRewardCategory?: number | null
-  rewardType: $Enums.CustomerRewardType
+  rewardType?: $Enums.CustomerRewardType | null
   status?: $Enums.CustomerRewardStatus
+  suggestedTier?: $Enums.RewardTier | null
+  finalTier?: $Enums.RewardTier | null
+  progressMilestone?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: $Enums.RewardRedemptionTiming | null
+  reservedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Date | string
+  reviewedAt?: Date | string | null
+  approvedAt?: Date | string | null
   selectedAt?: Date | string | null
   redeemedAt?: Date | string | null
   expiresAt?: Date | string | null
+  decisionNote?: string | null
 }
 
 export type CustomerRewardUpdateWithoutRewardInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CompanyCustomerUpdateOneRequiredWithoutCustomerRewardsNestedInput
+  reviewedByEmployee?: Prisma.CompanyEmployeeUpdateOneWithoutReviewedRewardsNestedInput
   rewardCategory?: Prisma.RewardCategoryUpdateOneWithoutCustomerRewardsNestedInput
 }
 
 export type CustomerRewardUncheckedUpdateWithoutRewardInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type CustomerRewardUncheckedUpdateManyWithoutRewardInput = {
   idCustomerReward?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   CompanyCustomer_idCompanyCustomer?: Prisma.IntFieldUpdateOperationsInput | number
+  ReviewedByEmployee_idCompanyEmployee?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   RewardCategory_idRewardCategory?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  rewardType?: Prisma.EnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType
+  rewardType?: Prisma.NullableEnumCustomerRewardTypeFieldUpdateOperationsInput | $Enums.CustomerRewardType | null
   status?: Prisma.EnumCustomerRewardStatusFieldUpdateOperationsInput | $Enums.CustomerRewardStatus
+  suggestedTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  finalTier?: Prisma.NullableEnumRewardTierFieldUpdateOperationsInput | $Enums.RewardTier | null
+  progressMilestone?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  regularityAtEarned?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  redemptionTiming?: Prisma.NullableEnumRewardRedemptionTimingFieldUpdateOperationsInput | $Enums.RewardRedemptionTiming | null
+  reservedAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   costAmountSnapshot?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   earnedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  approvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   selectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   redeemedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -989,16 +1652,27 @@ export type CustomerRewardUncheckedUpdateManyWithoutRewardInput = {
 export type CustomerRewardSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   idCustomerReward?: boolean
   CompanyCustomer_idCompanyCustomer?: boolean
+  ReviewedByEmployee_idCompanyEmployee?: boolean
   RewardCategory_idRewardCategory?: boolean
   Reward_idReward?: boolean
   rewardType?: boolean
   status?: boolean
+  suggestedTier?: boolean
+  finalTier?: boolean
+  progressMilestone?: boolean
+  regularityAtEarned?: boolean
+  redemptionTiming?: boolean
+  reservedAmount?: boolean
   costAmountSnapshot?: boolean
   earnedAt?: boolean
+  reviewedAt?: boolean
+  approvedAt?: boolean
   selectedAt?: boolean
   redeemedAt?: boolean
   expiresAt?: boolean
+  decisionNote?: boolean
   customer?: boolean | Prisma.CompanyCustomerDefaultArgs<ExtArgs>
+  reviewedByEmployee?: boolean | Prisma.CustomerReward$reviewedByEmployeeArgs<ExtArgs>
   rewardCategory?: boolean | Prisma.CustomerReward$rewardCategoryArgs<ExtArgs>
   reward?: boolean | Prisma.CustomerReward$rewardArgs<ExtArgs>
 }, ExtArgs["result"]["customerReward"]>
@@ -1008,20 +1682,31 @@ export type CustomerRewardSelect<ExtArgs extends runtime.Types.Extensions.Intern
 export type CustomerRewardSelectScalar = {
   idCustomerReward?: boolean
   CompanyCustomer_idCompanyCustomer?: boolean
+  ReviewedByEmployee_idCompanyEmployee?: boolean
   RewardCategory_idRewardCategory?: boolean
   Reward_idReward?: boolean
   rewardType?: boolean
   status?: boolean
+  suggestedTier?: boolean
+  finalTier?: boolean
+  progressMilestone?: boolean
+  regularityAtEarned?: boolean
+  redemptionTiming?: boolean
+  reservedAmount?: boolean
   costAmountSnapshot?: boolean
   earnedAt?: boolean
+  reviewedAt?: boolean
+  approvedAt?: boolean
   selectedAt?: boolean
   redeemedAt?: boolean
   expiresAt?: boolean
+  decisionNote?: boolean
 }
 
-export type CustomerRewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCustomerReward" | "CompanyCustomer_idCompanyCustomer" | "RewardCategory_idRewardCategory" | "Reward_idReward" | "rewardType" | "status" | "costAmountSnapshot" | "earnedAt" | "selectedAt" | "redeemedAt" | "expiresAt", ExtArgs["result"]["customerReward"]>
+export type CustomerRewardOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"idCustomerReward" | "CompanyCustomer_idCompanyCustomer" | "ReviewedByEmployee_idCompanyEmployee" | "RewardCategory_idRewardCategory" | "Reward_idReward" | "rewardType" | "status" | "suggestedTier" | "finalTier" | "progressMilestone" | "regularityAtEarned" | "redemptionTiming" | "reservedAmount" | "costAmountSnapshot" | "earnedAt" | "reviewedAt" | "approvedAt" | "selectedAt" | "redeemedAt" | "expiresAt" | "decisionNote", ExtArgs["result"]["customerReward"]>
 export type CustomerRewardInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CompanyCustomerDefaultArgs<ExtArgs>
+  reviewedByEmployee?: boolean | Prisma.CustomerReward$reviewedByEmployeeArgs<ExtArgs>
   rewardCategory?: boolean | Prisma.CustomerReward$rewardCategoryArgs<ExtArgs>
   reward?: boolean | Prisma.CustomerReward$rewardArgs<ExtArgs>
 }
@@ -1030,21 +1715,32 @@ export type $CustomerRewardPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "CustomerReward"
   objects: {
     customer: Prisma.$CompanyCustomerPayload<ExtArgs>
+    reviewedByEmployee: Prisma.$CompanyEmployeePayload<ExtArgs> | null
     rewardCategory: Prisma.$RewardCategoryPayload<ExtArgs> | null
     reward: Prisma.$RewardPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     idCustomerReward: bigint
     CompanyCustomer_idCompanyCustomer: number
+    ReviewedByEmployee_idCompanyEmployee: number | null
     RewardCategory_idRewardCategory: number | null
     Reward_idReward: number | null
-    rewardType: $Enums.CustomerRewardType
+    rewardType: $Enums.CustomerRewardType | null
     status: $Enums.CustomerRewardStatus
+    suggestedTier: $Enums.RewardTier | null
+    finalTier: $Enums.RewardTier | null
+    progressMilestone: runtime.Decimal | null
+    regularityAtEarned: runtime.Decimal | null
+    redemptionTiming: $Enums.RewardRedemptionTiming | null
+    reservedAmount: runtime.Decimal | null
     costAmountSnapshot: runtime.Decimal | null
     earnedAt: Date
+    reviewedAt: Date | null
+    approvedAt: Date | null
     selectedAt: Date | null
     redeemedAt: Date | null
     expiresAt: Date | null
+    decisionNote: string | null
   }, ExtArgs["result"]["customerReward"]>
   composites: {}
 }
@@ -1386,6 +2082,7 @@ readonly fields: CustomerRewardFieldRefs;
 export interface Prisma__CustomerRewardClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   customer<T extends Prisma.CompanyCustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyCustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyCustomerClient<runtime.Types.Result.GetResult<Prisma.$CompanyCustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  reviewedByEmployee<T extends Prisma.CustomerReward$reviewedByEmployeeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerReward$reviewedByEmployeeArgs<ExtArgs>>): Prisma.Prisma__CompanyEmployeeClient<runtime.Types.Result.GetResult<Prisma.$CompanyEmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   rewardCategory<T extends Prisma.CustomerReward$rewardCategoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerReward$rewardCategoryArgs<ExtArgs>>): Prisma.Prisma__RewardCategoryClient<runtime.Types.Result.GetResult<Prisma.$RewardCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reward<T extends Prisma.CustomerReward$rewardArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerReward$rewardArgs<ExtArgs>>): Prisma.Prisma__RewardClient<runtime.Types.Result.GetResult<Prisma.$RewardPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1419,15 +2116,25 @@ export interface Prisma__CustomerRewardClient<T, Null = never, ExtArgs extends r
 export interface CustomerRewardFieldRefs {
   readonly idCustomerReward: Prisma.FieldRef<"CustomerReward", 'BigInt'>
   readonly CompanyCustomer_idCompanyCustomer: Prisma.FieldRef<"CustomerReward", 'Int'>
+  readonly ReviewedByEmployee_idCompanyEmployee: Prisma.FieldRef<"CustomerReward", 'Int'>
   readonly RewardCategory_idRewardCategory: Prisma.FieldRef<"CustomerReward", 'Int'>
   readonly Reward_idReward: Prisma.FieldRef<"CustomerReward", 'Int'>
   readonly rewardType: Prisma.FieldRef<"CustomerReward", 'CustomerRewardType'>
   readonly status: Prisma.FieldRef<"CustomerReward", 'CustomerRewardStatus'>
+  readonly suggestedTier: Prisma.FieldRef<"CustomerReward", 'RewardTier'>
+  readonly finalTier: Prisma.FieldRef<"CustomerReward", 'RewardTier'>
+  readonly progressMilestone: Prisma.FieldRef<"CustomerReward", 'Decimal'>
+  readonly regularityAtEarned: Prisma.FieldRef<"CustomerReward", 'Decimal'>
+  readonly redemptionTiming: Prisma.FieldRef<"CustomerReward", 'RewardRedemptionTiming'>
+  readonly reservedAmount: Prisma.FieldRef<"CustomerReward", 'Decimal'>
   readonly costAmountSnapshot: Prisma.FieldRef<"CustomerReward", 'Decimal'>
   readonly earnedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
+  readonly reviewedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
+  readonly approvedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
   readonly selectedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
   readonly redeemedAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"CustomerReward", 'DateTime'>
+  readonly decisionNote: Prisma.FieldRef<"CustomerReward", 'String'>
 }
     
 
@@ -1773,6 +2480,25 @@ export type CustomerRewardDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many CustomerRewards to delete.
    */
   limit?: number
+}
+
+/**
+ * CustomerReward.reviewedByEmployee
+ */
+export type CustomerReward$reviewedByEmployeeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyEmployee
+   */
+  select?: Prisma.CompanyEmployeeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyEmployee
+   */
+  omit?: Prisma.CompanyEmployeeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyEmployeeInclude<ExtArgs> | null
+  where?: Prisma.CompanyEmployeeWhereInput
 }
 
 /**

@@ -18,6 +18,7 @@ export type CustomerRewardType = (typeof CustomerRewardType)[keyof typeof Custom
 
 
 export const CustomerRewardStatus = {
+  PENDING: 'PENDING',
   AVAILABLE: 'AVAILABLE',
   REDEEMED: 'REDEEMED',
   EXPIRED: 'EXPIRED',
@@ -25,6 +26,24 @@ export const CustomerRewardStatus = {
 } as const
 
 export type CustomerRewardStatus = (typeof CustomerRewardStatus)[keyof typeof CustomerRewardStatus]
+
+
+export const RewardTier = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type RewardTier = (typeof RewardTier)[keyof typeof RewardTier]
+
+
+export const RewardRedemptionTiming = {
+  IMMEDIATE: 'IMMEDIATE',
+  NEXT_PURCHASE: 'NEXT_PURCHASE',
+  NEXT_PURCHASE_DAY: 'NEXT_PURCHASE_DAY'
+} as const
+
+export type RewardRedemptionTiming = (typeof RewardRedemptionTiming)[keyof typeof RewardRedemptionTiming]
 
 
 export const FrequencyLevel = {

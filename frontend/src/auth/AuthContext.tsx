@@ -6,60 +6,60 @@ import {
   type ReactNode,
 } from "react";
 import { getCurrentUser, login as loginRequest } from "../api/auth.api";
-import { ApiError } from "../api/client";
 import type { LoginInput, LoginResponse } from "../types/auth";
 import { AuthContext } from "./auth-context";
+import {
+  clearStoredSession,
+  readSessionToken,
+  removeLegacySession,
+  storeSessionToken,
+} from "./session";
 
-const STORAGE_KEY = "loyalty-platform.session";
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [storedSession] = useState(readStoredSession);
+  const [storedToken] = useState(readSessionToken);
   const [session, setSession] = useState<LoginResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(() => storedSession !== null);
+  const [isLoading, setIsLoading] = useState(() => storedToken !== null);
+
   useEffect(() => {
-    if (!storedSession) return;
-    getCurrentUser(storedSession.token)
-      .then(() => setSession(storedSession))
-      .catch((error: unknown) => {
-        if (error instanceof ApiError && error.status === 401)
-          window.localStorage.removeItem(STORAGE_KEY);
-      })
+    removeLegacySession();
+    if (!storedToken) return;
+
+    getCurrentUser(storedToken)
+      .then(({ user }) => setSession(sessionFromCurrentUser(storedToken, user)))
+      .catch(() => clearStoredSession())
       .finally(() => setIsLoading(false));
-  }, [storedSession]);
+  }, [storedToken]);
+
   const logout = useCallback(() => {
-    window.localStorage.removeItem(STORAGE_KEY);
+    clearStoredSession();
     setSession(null);
+    window.location.replace("/login");
   }, []);
+
   const login = useCallback(async (data: LoginInput) => {
     const authenticatedSession = await loginRequest(data);
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(authenticatedSession),
-    );
+    storeSessionToken(authenticatedSession.token);
     setSession(authenticatedSession);
   }, []);
+
   const value = useMemo(
     () => ({ session, isLoading, login, logout }),
     [session, isLoading, login, logout],
   );
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-function readStoredSession(): LoginResponse | null {
-  try {
-    const value: unknown = JSON.parse(
-      window.localStorage.getItem(STORAGE_KEY) ?? "null",
-    );
-    return isLoginResponse(value) ? value : null;
-  } catch {
-    return null;
-  }
-}
-function isLoginResponse(value: unknown): value is LoginResponse {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "token" in value &&
-    typeof value.token === "string" &&
-    "company" in value
-  );
+function sessionFromCurrentUser(
+  token: string,
+  user: Awaited<ReturnType<typeof getCurrentUser>>["user"],
+): LoginResponse {
+  return {
+    token,
+    // /auth/me returns JWT claims only. Personal data is deliberately not
+    // persisted; these labels are used only after a reload.
+    user: { idUser: user.userId, userName: "", name: "Administrador", cpf: "" },
+    employee: { idCompanyEmployee: user.employeeId, role: user.role },
+    company: { idCompany: user.companyId, name: "Empresa" },
+  };
 }

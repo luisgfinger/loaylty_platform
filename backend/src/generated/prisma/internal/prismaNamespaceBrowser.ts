@@ -260,15 +260,25 @@ export type RewardScalarFieldEnum = (typeof RewardScalarFieldEnum)[keyof typeof 
 export const CustomerRewardScalarFieldEnum = {
   idCustomerReward: 'idCustomerReward',
   CompanyCustomer_idCompanyCustomer: 'CompanyCustomer_idCompanyCustomer',
+  ReviewedByEmployee_idCompanyEmployee: 'ReviewedByEmployee_idCompanyEmployee',
   RewardCategory_idRewardCategory: 'RewardCategory_idRewardCategory',
   Reward_idReward: 'Reward_idReward',
   rewardType: 'rewardType',
   status: 'status',
+  suggestedTier: 'suggestedTier',
+  finalTier: 'finalTier',
+  progressMilestone: 'progressMilestone',
+  regularityAtEarned: 'regularityAtEarned',
+  redemptionTiming: 'redemptionTiming',
+  reservedAmount: 'reservedAmount',
   costAmountSnapshot: 'costAmountSnapshot',
   earnedAt: 'earnedAt',
+  reviewedAt: 'reviewedAt',
+  approvedAt: 'approvedAt',
   selectedAt: 'selectedAt',
   redeemedAt: 'redeemedAt',
-  expiresAt: 'expiresAt'
+  expiresAt: 'expiresAt',
+  decisionNote: 'decisionNote'
 } as const
 
 export type CustomerRewardScalarFieldEnum = (typeof CustomerRewardScalarFieldEnum)[keyof typeof CustomerRewardScalarFieldEnum]
@@ -348,4 +358,11 @@ export const RewardOrderByRelevanceFieldEnum = {
 } as const
 
 export type RewardOrderByRelevanceFieldEnum = (typeof RewardOrderByRelevanceFieldEnum)[keyof typeof RewardOrderByRelevanceFieldEnum]
+
+
+export const CustomerRewardOrderByRelevanceFieldEnum = {
+  decisionNote: 'decisionNote'
+} as const
+
+export type CustomerRewardOrderByRelevanceFieldEnum = (typeof CustomerRewardOrderByRelevanceFieldEnum)[keyof typeof CustomerRewardOrderByRelevanceFieldEnum]
 

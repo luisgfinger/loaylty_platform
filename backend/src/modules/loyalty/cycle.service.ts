@@ -14,6 +14,10 @@ import {
   type ValueLevelType,
 } from "./loyalty.engine.js";
 
+import {
+  createPendingCustomerRewardsForProgress,
+} from "../rewards/customer-reward.service.js";
+
 
 // =====================================================
 // TIPOS
@@ -690,30 +694,61 @@ async function processCycleDailyProgress(
   // ATUALIZAR JORNADA
   // ==================================================
 
-  await tx.customerJourney.upsert({
-    where: {
-      CompanyCustomer_idCompanyCustomer:
-        customerId,
-    },
-
-    create: {
-      CompanyCustomer_idCompanyCustomer:
-        customerId,
-
-      progress:
-        progressToAdd,
-
-      regularity:
-        1,
-    },
-
-    update: {
-      progress: {
-        increment:
-          progressToAdd,
+  const updatedJourney =
+    await tx.customerJourney.upsert({
+      where: {
+        CompanyCustomer_idCompanyCustomer:
+          customerId,
       },
-    },
-  });
+
+      create: {
+        CompanyCustomer_idCompanyCustomer:
+          customerId,
+
+        progress:
+          progressToAdd,
+
+        regularity:
+          1,
+      },
+
+      update: {
+        progress: {
+          increment:
+            progressToAdd,
+        },
+      },
+    });
+
+
+  // ==================================================
+  // GERAR RECOMPENSAS PENDENTES POR MARCO
+  // ==================================================
+
+  const newJourneyProgress =
+    Number(
+      updatedJourney.progress
+    );
+
+
+  const previousJourneyProgress =
+    Number(
+      (
+        newJourneyProgress -
+        progressToAdd
+      ).toFixed(2)
+    );
+
+
+  await createPendingCustomerRewardsForProgress(
+    tx,
+    customerId,
+    previousJourneyProgress,
+    newJourneyProgress,
+    Number(
+      updatedJourney.regularity
+    )
+  );
 
 
   // ==================================================

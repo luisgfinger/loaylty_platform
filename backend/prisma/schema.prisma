@@ -17,10 +17,23 @@ enum CustomerRewardType {
 }
 
 enum CustomerRewardStatus {
+  PENDING
   AVAILABLE
   REDEEMED
   EXPIRED
   CANCELLED
+}
+
+enum RewardTier {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum RewardRedemptionTiming {
+  IMMEDIATE
+  NEXT_PURCHASE
+  NEXT_PURCHASE_DAY
 }
 
 enum FrequencyLevel {
@@ -75,11 +88,7 @@ model Company {
 
   isActive Boolean @default(true)
 
-  // Fundo acumulado disponível para recompensas.
-  rewardFundBalance Decimal @default(0) @db.Decimal(14, 4)
-
-  // Total histórico já gerado pelas vendas.
-  // Este valor não diminui quando recompensas forem concedidas.
+  rewardFundBalance          Decimal @default(0) @db.Decimal(14, 4)
   rewardFundTotalContributed Decimal @default(0) @db.Decimal(14, 4)
 
   createdAt DateTime @default(now())
@@ -148,6 +157,8 @@ model CompanyEmployee {
   registeredCustomers CompanyCustomer[] @relation("CustomerRegisteredBy")
   registeredPurchases Purchase[]        @relation("PurchaseRegisteredBy")
 
+  reviewedRewards CustomerReward[] @relation("CustomerRewardReviewedBy")
+
   @@index([UserRoles_idRole])
 }
 
@@ -215,7 +226,6 @@ model Purchase {
 
   amount Decimal @db.Decimal(12, 2)
 
-  // 0,5% desta venda destinado ao fundo de recompensas.
   rewardFundContribution Decimal @default(0) @db.Decimal(14, 4)
 
   purchaseDate DateTime @default(now())
@@ -289,7 +299,6 @@ model CustomerCycle {
   medianPercentage Decimal? @db.Decimal(8, 2)
   medianSampleSize Int?
 
-  // Soma de todo o progresso diário gerado dentro deste ciclo.
   progressEarned Decimal? @db.Decimal(4, 2)
 
   status CustomerCycleStatus @default(OPEN)
@@ -340,7 +349,7 @@ model Reward {
   name        String  @db.VarChar(100)
   description String? @db.VarChar(255)
 
-  // Custo financeiro atual da recompensa para a empresa.
+  // Custo financeiro da recompensa para a empresa.
   costAmount Decimal @default(0) @db.Decimal(10, 2)
 
   isActive Boolean @default(true)
@@ -365,35 +374,74 @@ model CustomerReward {
 
   CompanyCustomer_idCompanyCustomer Int @db.UnsignedInt
 
+  ReviewedByEmployee_idCompanyEmployee Int? @db.UnsignedInt
+
   RewardCategory_idRewardCategory Int? @db.UnsignedInt
   Reward_idReward                 Int? @db.UnsignedInt
 
-  rewardType CustomerRewardType
+  // PENDING ainda não possui necessariamente
+  // DIRECT ou CHOICE definido.
+  rewardType CustomerRewardType?
 
-  status CustomerRewardStatus @default(AVAILABLE)
+  status CustomerRewardStatus @default(PENDING)
 
-  // Custo congelado no momento em que a recompensa
-  // for atribuída ao cliente.
-  //
-  // Exemplo:
-  // Reward.costAmount hoje = R$ 20
-  // cliente recebe → snapshot = R$ 20
-  //
-  // Se depois Reward.costAmount mudar para R$ 25,
-  // o histórico deste cliente continua em R$ 20.
+  // Categoria sugerida pelo motor.
+  suggestedTier RewardTier?
+
+  // Categoria efetivamente aprovada pelo admin.
+  finalTier RewardTier?
+
+  // Marco de progresso que gerou o direito.
+  // Ex.: 20, 40, 60...
+  progressMilestone Decimal? @db.Decimal(10, 2)
+
+  // Regularidade no momento em que
+  // o marco foi conquistado.
+  regularityAtEarned Decimal? @db.Decimal(2, 1)
+
+  // Momento em que o benefício poderá ser utilizado.
+  redemptionTiming RewardRedemptionTiming?
+
+  // Valor retirado/reservado do caixa.
+  reservedAmount Decimal? @db.Decimal(10, 2)
+
+  // Custo congelado da recompensa escolhida.
   costAmountSnapshot Decimal? @db.Decimal(10, 2)
 
+  // Quando atingiu o marco.
   earnedAt DateTime @default(now())
 
+  // Quando o admin analisou.
+  reviewedAt DateTime?
+
+  // Quando o admin aprovou.
+  approvedAt DateTime?
+
+  // Quando uma recompensa específica foi escolhida.
   selectedAt DateTime?
+
+  // Quando foi utilizada.
   redeemedAt DateTime?
-  expiresAt  DateTime?
 
-  customer       CompanyCustomer @relation(fields: [CompanyCustomer_idCompanyCustomer], references: [idCompanyCustomer])
+  // Data limite opcional.
+  expiresAt DateTime?
+
+  // Observação opcional da decisão.
+  decisionNote String? @db.VarChar(255)
+
+  customer CompanyCustomer @relation(fields: [CompanyCustomer_idCompanyCustomer], references: [idCompanyCustomer])
+
+  reviewedByEmployee CompanyEmployee? @relation("CustomerRewardReviewedBy", fields: [ReviewedByEmployee_idCompanyEmployee], references: [idCompanyEmployee])
+
   rewardCategory RewardCategory? @relation(fields: [RewardCategory_idRewardCategory], references: [idRewardCategory])
-  reward         Reward?         @relation(fields: [Reward_idReward], references: [idReward])
 
+  reward Reward? @relation(fields: [Reward_idReward], references: [idReward])
+
+  @@unique([CompanyCustomer_idCompanyCustomer, progressMilestone], map: "uq_customer_reward_progress_milestone")
   @@index([CompanyCustomer_idCompanyCustomer])
+  @@index([ReviewedByEmployee_idCompanyEmployee])
   @@index([RewardCategory_idRewardCategory])
   @@index([Reward_idReward])
+  @@index([status, earnedAt])
+  @@index([status, expiresAt])
 }
