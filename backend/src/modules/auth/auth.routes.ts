@@ -1,5 +1,6 @@
 import type {
   FastifyInstance,
+  FastifyRequest,
 } from "fastify";
 
 import {
@@ -11,6 +12,51 @@ import {
   createEmployeeUserSchema,
   loginSchema,
 } from "./auth.schema.js";
+
+
+// =====================================================
+// IDENTIFICADOR DO RATE LIMIT DE LOGIN
+//
+// Limitamos por:
+//
+// IP + username
+//
+// Isso evita que vários funcionários atrás do mesmo
+// endereço de rede bloqueiem uns aos outros tão
+// facilmente.
+//
+// Se o body for inválido ou não possuir username,
+// usamos somente o IP.
+// =====================================================
+
+function getLoginRateLimitKey(
+  request: FastifyRequest
+): string {
+  const body =
+    request.body as {
+      userName?: unknown;
+    } | undefined;
+
+
+  const userName =
+    typeof body?.userName ===
+    "string"
+      ? body.userName
+          .trim()
+          .toLowerCase()
+      : "";
+
+
+  if (!userName) {
+    return request.ip;
+  }
+
+
+  return [
+    request.ip,
+    userName,
+  ].join(":");
+}
 
 
 // =====================================================
@@ -183,11 +229,29 @@ export async function authRoutes(
   // /auth/login
   //
   // Essa rota é pública.
-  // O server.ts ignora o requireAdmin para ela.
+  //
+  // Máximo:
+  // 10 tentativas a cada 15 minutos
+  // por combinação IP + username.
   // ==================================================
 
   app.post(
     "/auth/login",
+
+    {
+      config: {
+        rateLimit: {
+          max:
+            10,
+
+          timeWindow:
+            "15 minutes",
+
+          keyGenerator:
+            getLoginRateLimitKey,
+        },
+      },
+    },
 
     async (
       request,
@@ -220,7 +284,7 @@ export async function authRoutes(
 
       try {
         // =============================================
-        // VALIDAR USUÁRIO E SENHA
+        // VALIDAR USUÁRIO, SENHA, EMPRESA E ROLE
         // =============================================
 
         const auth =
@@ -323,40 +387,16 @@ export async function authRoutes(
 
       } catch (error) {
         if (
-          error instanceof Error
-        ) {
-          // -------------------------------------------
-          // LOGIN OU SENHA ERRADOS
-          // -------------------------------------------
-
-          if (
-            error.message ===
+          error instanceof Error &&
+          error.message ===
             "INVALID_CREDENTIALS"
-          ) {
-            return reply
-              .status(401)
-              .send({
-                error:
-                  "Usuário ou senha inválidos",
-              });
-          }
-
-
-          // -------------------------------------------
-          // FUNCIONÁRIO NÃO PERTENCE À EMPRESA
-          // -------------------------------------------
-
-          if (
-            error.message ===
-            "EMPLOYEE_NOT_AUTHORIZED"
-          ) {
-            return reply
-              .status(403)
-              .send({
-                error:
-                  "Usuário não possui acesso a esta empresa",
-              });
-          }
+        ) {
+          return reply
+            .status(401)
+            .send({
+              error:
+                "Usuário ou senha inválidos",
+            });
         }
 
 
@@ -372,8 +412,7 @@ export async function authRoutes(
   // GET
   // /auth/me
   //
-  // Não precisa de preHandler aqui porque
-  // o requireAdmin já é aplicado globalmente.
+  // O requireAdmin é aplicado globalmente.
   // ==================================================
 
   app.get(

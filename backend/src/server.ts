@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 
 import jwt from "@fastify/jwt";
+import rateLimit from "@fastify/rate-limit";
 
 import {
   env,
@@ -66,6 +67,40 @@ await app.register(
   {
     secret:
       env.JWT_SECRET,
+  }
+);
+
+
+// =====================================================
+// RATE LIMIT
+//
+// Não aplicamos limite global neste momento.
+//
+// O login define seu próprio limite em auth.routes.ts.
+//
+// Usamos preHandler para que request.body já esteja
+// disponível ao keyGenerator da rota de login.
+// =====================================================
+
+await app.register(
+  rateLimit,
+  {
+    global:
+      false,
+
+    hook:
+      "preHandler",
+
+    errorResponseBuilder:
+      () => {
+        return {
+          statusCode:
+            429,
+
+          error:
+            "Muitas tentativas de login. Aguarde alguns minutos e tente novamente.",
+        };
+      },
   }
 );
 

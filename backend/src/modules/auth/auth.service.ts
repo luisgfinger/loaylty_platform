@@ -11,6 +11,25 @@ import type {
 
 
 // =====================================================
+// HASH DUMMY PARA LOGIN
+//
+// Não é senha real nem segredo.
+//
+// É usado somente para que uma tentativa com usuário
+// inexistente também execute bcrypt.compare(), evitando
+// uma diferença muito grande de tempo entre:
+//
+// - usuário inexistente
+// - senha incorreta
+//
+// Cost = 12, igual ao utilizado ao criar usuários.
+// =====================================================
+
+const DUMMY_PASSWORD_HASH =
+  "$2b$12$wCGsuqmJBzVWbpkSduUfwOcGGsMAjkRZnKAJ5oPPRW5dLWS39ckzS";
+
+
+// =====================================================
 // CRIAR LOGIN PARA FUNCIONÁRIO
 // =====================================================
 
@@ -225,9 +244,37 @@ export async function authenticateUser(
     });
 
 
+  // ==================================================
+  // VALIDAR SENHA
+  //
+  // Mesmo quando o usuário não existe, executamos
+  // bcrypt.compare() contra um hash dummy.
+  //
+  // Isso reduz diferença de tempo observável entre
+  // usuário inexistente e senha incorreta.
+  // ==================================================
+
+  const passwordHash =
+    user
+      ? user.passwordHash
+      : DUMMY_PASSWORD_HASH;
+
+
+  const passwordIsValid =
+    await bcrypt.compare(
+      data.password,
+      passwordHash
+    );
+
+
+  // ==================================================
+  // CREDENCIAIS INVÁLIDAS
+  // ==================================================
+
   if (
     !user ||
-    !user.isActive
+    !user.isActive ||
+    !passwordIsValid
   ) {
     throw new Error(
       "INVALID_CREDENTIALS"
@@ -236,25 +283,18 @@ export async function authenticateUser(
 
 
   // ==================================================
-  // VALIDAR SENHA
-  // ==================================================
-
-  const passwordIsValid =
-    await bcrypt.compare(
-      data.password,
-      user.passwordHash
-    );
-
-
-  if (!passwordIsValid) {
-    throw new Error(
-      "INVALID_CREDENTIALS"
-    );
-  }
-
-
-  // ==================================================
-  // VERIFICAR SE É FUNCIONÁRIO DESTA EMPRESA
+  // VERIFICAR FUNCIONÁRIO / EMPRESA / ROLE
+  //
+  // O login somente é considerado válido quando:
+  //
+  // - funcionário está ativo
+  // - vínculo está ativo
+  // - pertence à empresa informada
+  // - empresa está ativa
+  // - role atual é ADMIN
+  //
+  // Qualquer falha é apresentada externamente como
+  // credencial inválida.
   // ==================================================
 
   const employee =
@@ -262,6 +302,11 @@ export async function authenticateUser(
       where: {
         isActive:
           true,
+
+        role: {
+          role:
+            "ADMIN",
+        },
 
         companyPerson: {
           Company_idCompany:
@@ -299,7 +344,7 @@ export async function authenticateUser(
 
   if (!employee) {
     throw new Error(
-      "EMPLOYEE_NOT_AUTHORIZED"
+      "INVALID_CREDENTIALS"
     );
   }
 
