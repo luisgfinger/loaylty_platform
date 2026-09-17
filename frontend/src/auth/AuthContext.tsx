@@ -52,14 +52,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 function sessionFromCurrentUser(
   token: string,
-  user: Awaited<ReturnType<typeof getCurrentUser>>["user"],
+  user: Awaited<
+    ReturnType<typeof getCurrentUser>
+  >["user"],
 ): LoginResponse {
   return {
     token,
-    // /auth/me returns JWT claims only. Personal data is deliberately not
-    // persisted; these labels are used only after a reload.
-    user: { idUser: user.userId, userName: "", name: "Administrador", cpf: "" },
-    employee: { idCompanyEmployee: user.employeeId, role: user.role },
-    company: { idCompany: user.companyId, name: "Empresa" },
+
+    user: {
+      idUser:
+        user.userId,
+
+      userName:
+        "",
+
+      name:
+        user.role === "CAIXA"
+          ? "Caixa"
+          : "Administrador",
+
+      cpf:
+        "",
+    },
+
+    employee: {
+      idCompanyEmployee:
+        user.employeeId,
+
+      role:
+        user.role,
+    },
+
+    company: {
+      idCompany:
+        user.companyId,
+
+      name:
+        "Empresa",
+    },
   };
 }

@@ -16,39 +16,159 @@ import {
 
 function navigate(path: string) {
   window.history.pushState({}, "", path);
-  window.dispatchEvent(new PopStateEvent("popstate"));
+  window.dispatchEvent(
+    new PopStateEvent("popstate")
+  );
 }
+
 export function AppRouter() {
-  const { session, isLoading } = useAuth();
-  const [path, setPath] = useState(window.location.pathname);
+  const {
+    session,
+    isLoading,
+  } = useAuth();
+
+  const [
+    path,
+    setPath,
+  ] = useState(
+    window.location.pathname
+  );
+
+
+  // ===================================================
+  // ACOMPANHAR ALTERAÇÕES DA URL
+  // ===================================================
+
   useEffect(() => {
-    const listener = () => setPath(window.location.pathname);
-    window.addEventListener("popstate", listener);
-    return () => window.removeEventListener("popstate", listener);
+    const listener =
+      () =>
+        setPath(
+          window.location.pathname
+        );
+
+    window.addEventListener(
+      "popstate",
+      listener
+    );
+
+    return () =>
+      window.removeEventListener(
+        "popstate",
+        listener
+      );
   }, []);
+
+
+  // ===================================================
+  // REDIRECIONAMENTO DE LOGIN
+  // ===================================================
+
   useEffect(() => {
-    if (!isLoading && !session && path !== "/login") navigate("/login");
-    if (!isLoading && session && path === "/login")
-      navigate("/app/purchases/new");
-  }, [isLoading, path, session]);
-  if (isLoading)
-    return <LoadingState label="Verificando sua sessão…" fullPage />;
-  if (!session) return <LoginPage />;
+    if (
+      !isLoading &&
+      !session &&
+      path !== "/login"
+    ) {
+      navigate("/login");
+    }
+
+    if (
+      !isLoading &&
+      session &&
+      path === "/login"
+    ) {
+      navigate(
+        "/app/purchases/new"
+      );
+    }
+  }, [
+    isLoading,
+    path,
+    session,
+  ]);
+
+
+  // ===================================================
+  // CAIXA SOMENTE PODE ACESSAR REGISTRO DE COMPRAS
+  // ===================================================
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      session?.employee.role ===
+        "CAIXA" &&
+      path !==
+        "/app/purchases/new"
+    ) {
+      navigate(
+        "/app/purchases/new"
+      );
+    }
+  }, [
+    isLoading,
+    path,
+    session,
+  ]);
+
+
+  // ===================================================
+  // CARREGANDO SESSÃO
+  // ===================================================
+
+  if (
+    isLoading
+  ) {
+    return (
+      <LoadingState
+        label="Verificando sua sessão…"
+        fullPage
+      />
+    );
+  }
+
+
+  // ===================================================
+  // SEM SESSÃO
+  // ===================================================
+
+  if (
+    !session
+  ) {
+    return (
+      <LoginPage />
+    );
+  }
+
+
+  // ===================================================
+  // ROTAS AUTENTICADAS
+  // ===================================================
+
   return (
-    <AppLayout currentPath={path} onNavigate={navigate}>
-      {path === "/app/customers" ? (
+    <AppLayout
+      currentPath={path}
+      onNavigate={navigate}
+    >
+      {path ===
+      "/app/customers" ? (
         <CustomersPage />
-      ) : path === "/app/employees" ? (
+      ) : path ===
+        "/app/employees" ? (
         <EmployeesPage />
-      ) : path === "/app/company" ? (
+      ) : path ===
+        "/app/company" ? (
         <CompanyPage />
-      ) : path === "/app/loyalty" ? (
+      ) : path ===
+        "/app/loyalty" ? (
         <LoyaltyPage />
-      ) : path === "/app/rewards" ? (
+      ) : path ===
+        "/app/rewards" ? (
         <RewardsPage />
-      ) : path === "/app/purchases/new" ? (
+      ) : path ===
+        "/app/purchases/new" ? (
         <PurchaseRegistrationPage />
-      ) : path === "/app/purchases" ? (
+      ) : path ===
+        "/app/purchases" ? (
         <PurchaseHistoryPage />
       ) : (
         <DashboardPage />

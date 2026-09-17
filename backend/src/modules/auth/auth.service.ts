@@ -1,14 +1,8 @@
 import bcrypt from "bcryptjs";
 
-import {
-  prisma,
-} from "../../lib/prisma.js";
+import { prisma } from "../../lib/prisma.js";
 
-import type {
-  CreateEmployeeUserInput,
-  LoginInput,
-} from "./auth.schema.js";
-
+import type { CreateEmployeeUserInput, LoginInput } from "./auth.schema.js";
 
 // =====================================================
 // HASH DUMMY PARA LOGIN
@@ -28,7 +22,6 @@ import type {
 const DUMMY_PASSWORD_HASH =
   "$2b$12$wCGsuqmJBzVWbpkSduUfwOcGGsMAjkRZnKAJ5oPPRW5dLWS39ckzS";
 
-
 // =====================================================
 // CRIAR LOGIN PARA FUNCIONÁRIO
 // =====================================================
@@ -36,213 +29,139 @@ const DUMMY_PASSWORD_HASH =
 export async function createEmployeeUser(
   companyId: number,
   cpf: string,
-  data: CreateEmployeeUserInput
+  data: CreateEmployeeUserInput,
 ) {
-  const cleanCpf =
-    cpf.replace(
-      /\D/g,
-      ""
-    );
-
+  const cleanCpf = cpf.replace(/\D/g, "");
 
   // ==================================================
   // LOCALIZAR FUNCIONÁRIO
   // ==================================================
 
-  const employee =
-    await prisma.companyEmployee.findFirst({
-      where: {
-        isActive:
-          true,
+  const employee = await prisma.companyEmployee.findFirst({
+    where: {
+      isActive: true,
 
-        companyPerson: {
-          Company_idCompany:
-            companyId,
+      companyPerson: {
+        Company_idCompany: companyId,
 
-          isActive:
-            true,
+        isActive: true,
 
+        person: {
+          cpf: cleanCpf,
+        },
+      },
+    },
+
+    include: {
+      role: true,
+
+      companyPerson: {
+        include: {
           person: {
-            cpf:
-              cleanCpf,
-          },
-        },
-      },
-
-      include: {
-        role:
-          true,
-
-        companyPerson: {
-          include: {
-            person: {
-              include: {
-                user:
-                  true,
-              },
+            include: {
+              user: true,
             },
-
-            company:
-              true,
           },
+
+          company: true,
         },
       },
-    });
-
+    },
+  });
 
   if (!employee) {
-    throw new Error(
-      "EMPLOYEE_NOT_FOUND"
-    );
+    throw new Error("EMPLOYEE_NOT_FOUND");
   }
-
 
   // ==================================================
   // VERIFICAR SE A PESSOA JÁ POSSUI USER
   // ==================================================
 
-  if (
-    employee
-      .companyPerson
-      .person
-      .user
-  ) {
-    throw new Error(
-      "USER_ALREADY_EXISTS"
-    );
+  if (employee.companyPerson.person.user) {
+    throw new Error("USER_ALREADY_EXISTS");
   }
-
 
   // ==================================================
   // VERIFICAR USERNAME
   // ==================================================
 
-  const existingUserName =
-    await prisma.user.findUnique({
-      where: {
-        userName:
-          data.userName,
-      },
-    });
-
+  const existingUserName = await prisma.user.findUnique({
+    where: {
+      userName: data.userName,
+    },
+  });
 
   if (existingUserName) {
-    throw new Error(
-      "USERNAME_ALREADY_EXISTS"
-    );
+    throw new Error("USERNAME_ALREADY_EXISTS");
   }
-
 
   // ==================================================
   // GERAR HASH DA SENHA
   // ==================================================
 
-  const passwordHash =
-    await bcrypt.hash(
-      data.password,
-      12
-    );
-
+  const passwordHash = await bcrypt.hash(data.password, 12);
 
   // ==================================================
   // CRIAR USER
   // ==================================================
 
-  const user =
-    await prisma.user.create({
-      data: {
-        Person_idPerson:
-          employee
-            .companyPerson
-            .Person_idPerson,
+  const user = await prisma.user.create({
+    data: {
+      Person_idPerson: employee.companyPerson.Person_idPerson,
 
-        userName:
-          data.userName,
+      userName: data.userName,
 
-        passwordHash,
+      passwordHash,
 
-        isActive:
-          true,
-      },
-    });
-
+      isActive: true,
+    },
+  });
 
   // Nunca retornamos passwordHash.
 
   return {
-    idUser:
-      user.idUser,
+    idUser: user.idUser,
 
-    userName:
-      user.userName,
+    userName: user.userName,
 
-    isActive:
-      user.isActive,
+    isActive: user.isActive,
 
     employee: {
-      idCompanyEmployee:
-        employee
-          .idCompanyEmployee,
+      idCompanyEmployee: employee.idCompanyEmployee,
 
-      cpf:
-        employee
-          .companyPerson
-          .person
-          .cpf,
+      cpf: employee.companyPerson.person.cpf,
 
-      name:
-        employee
-          .companyPerson
-          .person
-          .name,
+      name: employee.companyPerson.person.name,
 
-      role:
-        employee.role
-          ?.role ??
-        null,
+      role: employee.role?.role ?? null,
 
       company: {
-        idCompany:
-          employee
-            .companyPerson
-            .company
-            .idCompany,
+        idCompany: employee.companyPerson.company.idCompany,
 
-        name:
-          employee
-            .companyPerson
-            .company
-            .name,
+        name: employee.companyPerson.company.name,
       },
     },
   };
 }
 
-
 // =====================================================
 // VALIDAR LOGIN
 // =====================================================
 
-export async function authenticateUser(
-  data: LoginInput
-) {
+export async function authenticateUser(data: LoginInput) {
   // ==================================================
   // LOCALIZAR USER
   // ==================================================
 
-  const user =
-    await prisma.user.findUnique({
-      where: {
-        userName:
-          data.userName,
-      },
+  const user = await prisma.user.findUnique({
+    where: {
+      userName: data.userName,
+    },
 
-      include: {
-        person:
-          true,
-      },
-    });
-
+    include: {
+      person: true,
+    },
+  });
 
   // ==================================================
   // VALIDAR SENHA
@@ -254,33 +173,17 @@ export async function authenticateUser(
   // usuário inexistente e senha incorreta.
   // ==================================================
 
-  const passwordHash =
-    user
-      ? user.passwordHash
-      : DUMMY_PASSWORD_HASH;
+  const passwordHash = user ? user.passwordHash : DUMMY_PASSWORD_HASH;
 
-
-  const passwordIsValid =
-    await bcrypt.compare(
-      data.password,
-      passwordHash
-    );
-
+  const passwordIsValid = await bcrypt.compare(data.password, passwordHash);
 
   // ==================================================
   // CREDENCIAIS INVÁLIDAS
   // ==================================================
 
-  if (
-    !user ||
-    !user.isActive ||
-    !passwordIsValid
-  ) {
-    throw new Error(
-      "INVALID_CREDENTIALS"
-    );
+  if (!user || !user.isActive || !passwordIsValid) {
+    throw new Error("INVALID_CREDENTIALS");
   }
-
 
   // ==================================================
   // VERIFICAR FUNCIONÁRIO / EMPRESA / ROLE
@@ -291,114 +194,77 @@ export async function authenticateUser(
   // - vínculo está ativo
   // - pertence à empresa informada
   // - empresa está ativa
-  // - role atual é ADMIN
+  // - roles ADMIN e CAIXA
   //
   // Qualquer falha é apresentada externamente como
   // credencial inválida.
   // ==================================================
 
-  const employee =
-    await prisma.companyEmployee.findFirst({
-      where: {
-        isActive:
-          true,
+  const employee = await prisma.companyEmployee.findFirst({
+    where: {
+      isActive: true,
 
+      role: {
         role: {
-          role:
-            "ADMIN",
-        },
-
-        companyPerson: {
-          Company_idCompany:
-            data.companyId,
-
-          Person_idPerson:
-            user.Person_idPerson,
-
-          isActive:
-            true,
-
-          company: {
-            isActive:
-              true,
-          },
+          in: ["ADMIN", "CAIXA"],
         },
       },
 
-      include: {
-        role:
-          true,
+      companyPerson: {
+        Company_idCompany: data.companyId,
 
-        companyPerson: {
-          include: {
-            company:
-              true,
+        Person_idPerson: user.Person_idPerson,
 
-            person:
-              true,
-          },
+        isActive: true,
+
+        company: {
+          isActive: true,
         },
       },
-    });
+    },
 
+    include: {
+      role: true,
+
+      companyPerson: {
+        include: {
+          company: true,
+
+          person: true,
+        },
+      },
+    },
+  });
 
   if (!employee) {
-    throw new Error(
-      "INVALID_CREDENTIALS"
-    );
+    throw new Error("INVALID_CREDENTIALS");
   }
-
 
   return {
     user: {
-      idUser:
-        user.idUser,
+      idUser: user.idUser,
 
-      userName:
-        user.userName,
+      userName: user.userName,
 
-      idPerson:
-        user.Person_idPerson,
+      idPerson: user.Person_idPerson,
     },
 
     employee: {
-      idCompanyEmployee:
-        employee
-          .idCompanyEmployee,
+      idCompanyEmployee: employee.idCompanyEmployee,
 
-      role:
-        employee
-          .role
-          ?.role ??
-        null,
+      role: employee.role?.role ?? null,
     },
 
     company: {
-      idCompany:
-        employee
-          .companyPerson
-          .company
-          .idCompany,
+      idCompany: employee.companyPerson.company.idCompany,
 
-      name:
-        employee
-          .companyPerson
-          .company
-          .name,
+      name: employee.companyPerson.company.name,
     },
 
     person: {
-      cpf:
-        employee
-          .companyPerson
-          .person
-          .cpf,
+      cpf: employee.companyPerson.person.cpf,
 
-      name:
-        employee
-          .companyPerson
-          .person
-          .name,
+      name: employee.companyPerson.person.name,
     },
   };
 }

@@ -13,7 +13,43 @@ import type {
 
 
 // =====================================================
-// SOMENTE ADMIN
+// ROTAS LIBERADAS PARA O CAIXA
+// =====================================================
+
+function cashierCanAccess(
+  request: FastifyRequest
+) {
+  const path =
+    request.url
+      .split("?")[0] ??
+    "";
+
+  // Permite consultar a sessão atual.
+  if (
+    request.method === "GET" &&
+    path === "/auth/me"
+  ) {
+    return true;
+  }
+
+  // Permite registrar uma compra.
+  if (
+    request.method === "POST" &&
+    /^\/companies\/\d+\/purchases$/.test(path)
+  ) {
+    return true;
+  }
+
+  // Permite localizar o cliente pelo CPF antes da compra.
+  return (
+    request.method === "GET" &&
+    /^\/companies\/\d+\/customers\/[^/]+$/.test(path)
+  );
+}
+
+
+// =====================================================
+// AUTENTICAÇÃO E AUTORIZAÇÃO
 // =====================================================
 
 export async function requireAdmin(
@@ -66,39 +102,36 @@ export async function requireAdmin(
 
 
   // ==================================================
-  // VALIDAR ROLE INFORMADA NO TOKEN
+  // VALIDAR PERFIL INFORMADO NO TOKEN
   // ==================================================
 
   if (
-    user.role !== "ADMIN"
+    user.role !== "ADMIN" &&
+    user.role !== "CAIXA"
   ) {
     return reply
       .status(403)
       .send({
         error:
-          "Acesso permitido somente para administradores",
+          "Perfil sem permissão de acesso",
       });
   }
 
 
   // ==================================================
-  // REVALIDAR AUTORIZAÇÃO ATUAL NO BANCO
+  // REVALIDAR AUTORIZAÇÃO NO BANCO
   //
-  // O JWT prova que o token foi emitido pelo sistema,
-  // mas não garante que o usuário ainda esteja ativo.
+  // Mesmo com um JWT válido, verificamos novamente:
   //
-  // Revalidamos:
+  // - usuário ativo;
+  // - funcionário ativo;
+  // - vínculo ativo;
+  // - empresa ativa;
+  // - empresa correta;
+  // - perfil atual igual ao perfil presente no token.
   //
-  // - User ativo
-  // - CompanyEmployee ativo
-  // - CompanyPerson ativo
-  // - vínculo com a mesma pessoa
-  // - vínculo com a mesma empresa
-  // - empresa ativa
-  // - role atual ADMIN
-  //
-  // Dessa forma, um token antigo perde acesso
-  // imediatamente após uma alteração administrativa.
+  // Assim, alterações administrativas invalidam
+  // imediatamente uma sessão antiga.
   // ==================================================
 
   try {
@@ -177,15 +210,7 @@ export async function requireAdmin(
 
 
     // ================================================
-    // USUÁRIO / FUNCIONÁRIO / VÍNCULO / EMPRESA
-    // NÃO SÃO MAIS VÁLIDOS
-    //
-    // Retornamos 401 porque a sessão representada
-    // pelo JWT deixou de corresponder ao estado atual.
-    //
-    // Isso também conversa corretamente com o
-    // frontend atual, que limpa a sessão globalmente
-    // quando recebe 401.
+    // SESSÃO NÃO CORRESPONDE MAIS AO BANCO
     // ================================================
 
     if (
@@ -203,12 +228,12 @@ export async function requireAdmin(
 
 
     // ================================================
-    // ROLE FOI REMOVIDA OU ALTERADA
+    // PERFIL FOI ALTERADO
     // ================================================
 
     if (
       currentEmployee.role?.role !==
-      "ADMIN"
+      user.role
     ) {
       return reply
         .status(401)
@@ -236,9 +261,26 @@ export async function requireAdmin(
 
 
   // ==================================================
+  // LIMITAR O CAIXA À OPERAÇÃO DE COMPRAS
+  // ==================================================
+
+  if (
+    user.role === "CAIXA" &&
+    !cashierCanAccess(request)
+  ) {
+    return reply
+      .status(403)
+      .send({
+        error:
+          "O perfil CAIXA possui acesso somente ao registro de compras",
+      });
+  }
+
+
+  // ==================================================
   // VALIDAR EMPRESA DA ROTA
   //
-  // Um ADMIN da empresa 1 não pode acessar:
+  // Um funcionário da empresa 1 não pode acessar:
   //
   // /companies/2/...
   // ==================================================
