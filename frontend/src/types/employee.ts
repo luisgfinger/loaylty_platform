@@ -54,3 +54,24 @@ export interface UpdateEmployeeInput {
   role?: string | null
   isActive?: boolean
 }
+
+export interface CreateEmployeeAccessInput {
+  userName: string
+  password: string
+}
+
+export interface EmployeeAccess {
+  idUser: number
+  userName: string
+  isActive: boolean
+  employee: {
+    idCompanyEmployee: number
+    cpf: string
+    name: string
+    role: string | null
+    company: {
+      idCompany: number
+      name: string
+    }
+  }
+}
