@@ -9,6 +9,7 @@ import {
 
 import {
   createCustomer,
+  findAllCustomers,
   findCustomerByCpf,
   updateCustomer,
 } from "./customer.service.js";
@@ -174,6 +175,69 @@ export async function customerRoutes(
       }
     }
   );
+
+  // ==================================================
+// LISTAR TODOS OS CLIENTES
+//
+// GET
+// /companies/:companyId/customers
+// ==================================================
+
+app.get(
+  "/companies/:companyId/customers",
+
+  async (
+    request,
+    reply
+  ) => {
+    const params =
+      request.params as {
+        companyId: string;
+      };
+
+
+    // ===============================================
+    // EMPRESA
+    // ===============================================
+
+    const companyId =
+      Number(
+        params.companyId
+      );
+
+
+    if (
+      !Number.isInteger(
+        companyId
+      ) ||
+      companyId <= 0
+    ) {
+      return reply
+        .status(400)
+        .send({
+          error:
+            "Empresa inválida",
+        });
+    }
+
+
+    // ===============================================
+    // BUSCAR CLIENTES
+    // ===============================================
+
+    const customers =
+      await findAllCustomers(
+        companyId
+      );
+
+
+    return reply
+      .status(200)
+      .send(
+        customers
+      );
+  }
+);
 
 
   // ==================================================

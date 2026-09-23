@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import {
+  getCustomers,
   createCustomer,
   getCustomerByCpf,
   updateCustomer,
@@ -16,6 +17,7 @@ import { useAuth } from "../../auth/useAuth";
 import type {
   CreateCustomerInput,
   Customer,
+  CustomerListItem,
   UpdateCustomerInput,
 } from "../../types/customer";
 
@@ -93,12 +95,72 @@ export function CustomersPage() {
     setCpfError,
   ] = useState("");
 
+  const [
+    customers,
+    setCustomers,
+  ] = useState<CustomerListItem[]>([]);
+
+  const [
+    isLoadingCustomers,
+    setIsLoadingCustomers,
+  ] = useState(false);
+
+  const [
+    customersError,
+    setCustomersError,
+  ] = useState("");
+
   const companyId =
     session?.company.idCompany ??
     0;
 
   const token =
     session?.token ?? "";
+
+  const isAdmin =
+    session?.employee.role ===
+    "ADMIN";
+
+  async function loadCustomers() {
+    if (!isAdmin) {
+      return;
+    }
+
+    setIsLoadingCustomers(true);
+
+    setCustomersError("");
+
+    try {
+      setCustomers(
+        await getCustomers(
+          companyId,
+          token,
+        ),
+      );
+    } catch {
+      setCustomersError(
+        "Não foi possível carregar a lista de clientes.",
+      );
+    } finally {
+      setIsLoadingCustomers(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!isAdmin) {
+      setCustomers([]);
+
+      setCustomersError("");
+
+      return;
+    }
+
+    void loadCustomers();
+  }, [
+    companyId,
+    isAdmin,
+    token,
+  ]);
 
   // ===================================================
   // ABRIR CADASTRO AUTOMATICAMENTE PELA URL
@@ -187,6 +249,12 @@ export function CustomersPage() {
       return;
     }
 
+    await loadCustomerByCpf(cpf);
+  }
+
+  async function loadCustomerByCpf(
+    cpfToSearch: string,
+  ) {
     setIsSearching(true);
 
     setCustomer(null);
@@ -195,7 +263,7 @@ export function CustomersPage() {
       setCustomer(
         await getCustomerByCpf(
           companyId,
-          cpf,
+          cpfToSearch,
           token,
         ),
       );
@@ -211,6 +279,24 @@ export function CustomersPage() {
     } finally {
       setIsSearching(false);
     }
+  }
+
+  function viewCustomer(
+    customerCpf: string,
+  ) {
+    resetFeedback();
+
+    setCpfError("");
+
+    setCpf(
+      formatCpf(customerCpf),
+    );
+
+    setView("search");
+
+    void loadCustomerByCpf(
+      customerCpf,
+    );
   }
 
   function openCreate() {
@@ -333,6 +419,8 @@ export function CustomersPage() {
           "Cliente cadastrado com sucesso.",
         );
 
+        await loadCustomers();
+
         setView("search");
       } else if (customer) {
         const update:
@@ -375,6 +463,8 @@ export function CustomersPage() {
         toast.success(
           "Cliente atualizado com sucesso.",
         );
+
+        await loadCustomers();
 
         setView("search");
       }
@@ -430,6 +520,8 @@ export function CustomersPage() {
           ? "Cliente ativado com sucesso."
           : "Cliente inativado com sucesso.",
       );
+
+      await loadCustomers();
     } catch (
       requestError
     ) {
@@ -608,6 +700,114 @@ export function CustomersPage() {
           }}
         />
       )}
+
+      {isAdmin && (
+        <CustomersList
+          customers={customers}
+          isLoading={isLoadingCustomers}
+          error={customersError}
+          onViewCustomer={viewCustomer}
+        />
+      )}
+    </section>
+  );
+}
+
+function CustomersList({
+  customers,
+  isLoading,
+  error,
+  onViewCustomer,
+}: {
+  customers: CustomerListItem[];
+  isLoading: boolean;
+  error: string;
+  onViewCustomer: (cpf: string) => void;
+}) {
+  return (
+    <section
+      className="customers-list"
+      aria-labelledby="registered-customers-title"
+    >
+      <div>
+        <p className="eyebrow">
+          Administração
+        </p>
+
+        <h2 id="registered-customers-title">
+          Clientes cadastrados
+        </h2>
+      </div>
+
+      {isLoading && (
+        <p
+          className="loading-state"
+          aria-live="polite"
+        >
+          Carregando clientes…
+        </p>
+      )}
+
+      {!isLoading && error && (
+        <p
+          className="form-error"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+
+      {!isLoading && !error &&
+        customers.length === 0 && (
+          <p className="empty-state">
+            Nenhum cliente cadastrado até o momento.
+          </p>
+        )}
+
+      {!isLoading && !error &&
+        customers.length > 0 && (
+          <div className="customers-table-wrapper">
+            <table className="customers-table">
+              <caption>
+                Clientes da empresa
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Nome</th>
+                  <th scope="col">CPF</th>
+                  <th scope="col">Telefone</th>
+                  <th scope="col">
+                    <span className="visually-hidden">
+                      Ações
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {customers.map((item) => (
+                  <tr key={item.idCompanyCustomer}>
+                    <td>
+                      <strong>{item.person.name}</strong>
+                    </td>
+                    <td>{formatCpf(item.person.cpf)}</td>
+                    <td>{item.person.phoneNumber ?? "Não informado"}</td>
+                    <td className="customers-actions">
+                      <button
+                        className="secondary-button"
+                        type="button"
+                        onClick={() => onViewCustomer(item.person.cpf)}
+                      >
+                        Ver cliente
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
     </section>
   );
 }
