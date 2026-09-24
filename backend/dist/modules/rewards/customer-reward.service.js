@@ -343,15 +343,22 @@ export async function approveCustomerReward(companyId, employeeId, customerRewar
             reservedAmount =
                 Math.max(...rewards.map((reward) => Number(reward.costAmount)));
         }
-        // Reserva o custo antes de disponibilizar.
-        // updateMany com gte evita saldo negativo em concorrência.
-        const fundReservation = await tx.company.updateMany({
+        // ==================================================
+        // DEBITAR O CUSTO DO FUNDO DE RECOMPENSAS
+        //
+        // O saldo pode ficar negativo.
+        //
+        // Assim, rewardFundBalance passa a representar
+        // o resultado acumulado do programa:
+        //
+        // contribuições das compras
+        // - recompensas comprometidas
+        // + valores devolvidos por expiração
+        // ==================================================
+        const fundUpdate = await tx.company.updateMany({
             where: {
                 idCompany: companyId,
                 isActive: true,
-                rewardFundBalance: {
-                    gte: reservedAmount,
-                },
             },
             data: {
                 rewardFundBalance: {
@@ -359,8 +366,8 @@ export async function approveCustomerReward(companyId, employeeId, customerRewar
                 },
             },
         });
-        if (fundReservation.count !== 1) {
-            throw new Error("INSUFFICIENT_REWARD_FUND");
+        if (fundUpdate.count !== 1) {
+            throw new Error("COMPANY_NOT_FOUND");
         }
         const updated = await tx.customerReward.updateMany({
             where: {
@@ -618,12 +625,12 @@ export async function selectCustomerReward(companyId, customerRewardId, data) {
         }
         if (difference < 0) {
             const additionalAmount = Math.abs(difference);
-            const fundReservation = await tx.company.updateMany({
+            // O saldo pode ficar negativo.
+            // Portanto, não verificamos se existe
+            // saldo suficiente antes de debitar.
+            await tx.company.update({
                 where: {
                     idCompany: companyId,
-                    rewardFundBalance: {
-                        gte: additionalAmount,
-                    },
                 },
                 data: {
                     rewardFundBalance: {
@@ -631,9 +638,6 @@ export async function selectCustomerReward(companyId, customerRewardId, data) {
                     },
                 },
             });
-            if (fundReservation.count !== 1) {
-                throw new Error("INSUFFICIENT_REWARD_FUND");
-            }
         }
         const updated = await tx.customerReward.update({
             where: {

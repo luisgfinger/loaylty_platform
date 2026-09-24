@@ -19,11 +19,6 @@ import {
   updateReward,
 } from "./reward.service.js";
 
-import {
-  customerRewardRoutes,
-} from "./customer-reward.routes.js";
-
-
 // =====================================================
 // ROTAS DE RECOMPENSAS
 // =====================================================
@@ -857,9 +852,4 @@ export async function rewardRoutes(
     }
   );
 
-
-  // Rotas de pendências, aprovação, escolha e resgate.
-  await customerRewardRoutes(
-    app
-  );
 }
