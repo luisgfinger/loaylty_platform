@@ -768,9 +768,20 @@ export async function approveCustomerReward(
       }
 
 
-      // Reserva o custo antes de disponibilizar.
-      // updateMany com gte evita saldo negativo em concorrência.
-      const fundReservation =
+      // ==================================================
+      // DEBITAR O CUSTO DO FUNDO DE RECOMPENSAS
+      //
+      // O saldo pode ficar negativo.
+      //
+      // Assim, rewardFundBalance passa a representar
+      // o resultado acumulado do programa:
+      //
+      // contribuições das compras
+      // - recompensas comprometidas
+      // + valores devolvidos por expiração
+      // ==================================================
+
+      const fundUpdate =
         await tx.company.updateMany({
           where: {
             idCompany:
@@ -778,11 +789,6 @@ export async function approveCustomerReward(
 
             isActive:
               true,
-
-            rewardFundBalance: {
-              gte:
-                reservedAmount,
-            },
           },
 
           data: {
@@ -795,10 +801,10 @@ export async function approveCustomerReward(
 
 
       if (
-        fundReservation.count !== 1
+        fundUpdate.count !== 1
       ) {
         throw new Error(
-          "INSUFFICIENT_REWARD_FUND"
+          "COMPANY_NOT_FOUND"
         );
       }
 
@@ -1342,34 +1348,22 @@ export async function selectCustomerReward(
           );
 
 
-        const fundReservation =
-          await tx.company.updateMany({
-            where: {
-              idCompany:
-                companyId,
+        // O saldo pode ficar negativo.
+        // Portanto, não verificamos se existe
+        // saldo suficiente antes de debitar.
+        await tx.company.update({
+          where: {
+            idCompany:
+              companyId,
+          },
 
-              rewardFundBalance: {
-                gte:
-                  additionalAmount,
-              },
+          data: {
+            rewardFundBalance: {
+              decrement:
+                additionalAmount,
             },
-
-            data: {
-              rewardFundBalance: {
-                decrement:
-                  additionalAmount,
-              },
-            },
-          });
-
-
-        if (
-          fundReservation.count !== 1
-        ) {
-          throw new Error(
-            "INSUFFICIENT_REWARD_FUND"
-          );
-        }
+          },
+        });
       }
 
 

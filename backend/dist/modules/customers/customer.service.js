@@ -249,6 +249,93 @@ export async function updateCustomer(companyId, cpf, data) {
     });
 }
 // =====================================================
+// LISTAR TODOS OS CLIENTES DA EMPRESA
+// =====================================================
+export async function findAllCustomers(companyId) {
+    const customers = await prisma.companyCustomer.findMany({
+        where: {
+            companyPerson: {
+                Company_idCompany: companyId,
+            },
+        },
+        include: {
+            companyPerson: {
+                include: {
+                    person: true,
+                },
+            },
+            registeredByEmployee: {
+                include: {
+                    companyPerson: {
+                        include: {
+                            person: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            registrationDate: "desc",
+        },
+    });
+    return customers.map((customer) => ({
+        idCompanyCustomer: customer
+            .idCompanyCustomer,
+        registrationDate: customer
+            .registrationDate,
+        isActive: customer
+            .isActive,
+        whatsappOptIn: customer
+            .whatsappOptIn,
+        whatsappOptInAt: customer
+            .whatsappOptInAt,
+        person: {
+            idPerson: customer
+                .companyPerson
+                .person
+                .idPerson,
+            cpf: customer
+                .companyPerson
+                .person
+                .cpf,
+            name: customer
+                .companyPerson
+                .person
+                .name,
+            email: customer
+                .companyPerson
+                .person
+                .email,
+            phoneNumber: customer
+                .companyPerson
+                .person
+                .phoneNumber,
+            dateOfBirth: customer
+                .companyPerson
+                .person
+                .dateOfBirth,
+        },
+        registeredBy: customer
+            .registeredByEmployee
+            ? {
+                idCompanyEmployee: customer
+                    .registeredByEmployee
+                    .idCompanyEmployee,
+                name: customer
+                    .registeredByEmployee
+                    .companyPerson
+                    .person
+                    .name,
+                cpf: customer
+                    .registeredByEmployee
+                    .companyPerson
+                    .person
+                    .cpf,
+            }
+            : null,
+    }));
+}
+// =====================================================
 // BUSCAR CLIENTE PELO CPF
 // =====================================================
 export async function findCustomerByCpf(companyId, cpf) {
