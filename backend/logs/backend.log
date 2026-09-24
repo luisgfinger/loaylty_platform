@@ -533,3 +533,72 @@
 {"level":30,"time":1790239912524,"pid":10408,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
 {"level":30,"time":1790243512509,"pid":10408,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
 {"level":30,"time":1790247112520,"pid":10408,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
+{"level":30,"time":1790250624370,"pid":9680,"hostname":"SUPORTE","msg":"Server listening at http://127.0.0.1:3333"}
+{"level":30,"time":1790250624585,"pid":9680,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
+{"level":30,"time":1790252157287,"pid":9680,"hostname":"SUPORTE","reqId":"req-1","req":{"method":"POST","url":"/auth/login","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252157726,"pid":9680,"hostname":"SUPORTE","reqId":"req-1","res":{"statusCode":200},"responseTime":435.5873000000138,"msg":"request completed"}
+{"level":30,"time":1790252159661,"pid":9680,"hostname":"SUPORTE","reqId":"req-2","req":{"method":"GET","url":"/companies/1/customers","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252159702,"pid":9680,"hostname":"SUPORTE","reqId":"req-2","res":{"statusCode":200},"responseTime":40.62349999998696,"msg":"request completed"}
+{"level":30,"time":1790252167856,"pid":9680,"hostname":"SUPORTE","reqId":"req-3","req":{"method":"GET","url":"/companies/1/customers/05656795977","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252167878,"pid":9680,"hostname":"SUPORTE","reqId":"req-3","res":{"statusCode":200},"responseTime":22.203299999935552,"msg":"request completed"}
+{"level":30,"time":1790252167905,"pid":9680,"hostname":"SUPORTE","reqId":"req-4","req":{"method":"GET","url":"/companies/1/customers/05656795977/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252167907,"pid":9680,"hostname":"SUPORTE","reqId":"req-5","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252167930,"pid":9680,"hostname":"SUPORTE","reqId":"req-4","res":{"statusCode":200},"responseTime":25.062399999937043,"msg":"request completed"}
+{"level":30,"time":1790252167933,"pid":9680,"hostname":"SUPORTE","reqId":"req-5","res":{"statusCode":200},"responseTime":25.171700000064448,"msg":"request completed"}
+{"level":30,"time":1790252171684,"pid":9680,"hostname":"SUPORTE","reqId":"req-6","req":{"method":"GET","url":"/companies/1/customers/03047244910","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252171698,"pid":9680,"hostname":"SUPORTE","reqId":"req-6","res":{"statusCode":200},"responseTime":13.612200000090525,"msg":"request completed"}
+{"level":30,"time":1790252171706,"pid":9680,"hostname":"SUPORTE","reqId":"req-7","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252171709,"pid":9680,"hostname":"SUPORTE","reqId":"req-8","req":{"method":"GET","url":"/companies/1/customers/03047244910/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252171720,"pid":9680,"hostname":"SUPORTE","reqId":"req-7","res":{"statusCode":200},"responseTime":12.90610000002198,"msg":"request completed"}
+{"level":30,"time":1790252171724,"pid":9680,"hostname":"SUPORTE","reqId":"req-8","res":{"statusCode":200},"responseTime":15.18169999984093,"msg":"request completed"}
+{"level":30,"time":1790252176522,"pid":9680,"hostname":"SUPORTE","reqId":"req-9","req":{"method":"GET","url":"/companies/1/customers/91190681900","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252176534,"pid":9680,"hostname":"SUPORTE","reqId":"req-9","res":{"statusCode":200},"responseTime":12.018700000131503,"msg":"request completed"}
+{"level":30,"time":1790252176543,"pid":9680,"hostname":"SUPORTE","reqId":"req-a","req":{"method":"GET","url":"/companies/1/customers/91190681900/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252176545,"pid":9680,"hostname":"SUPORTE","reqId":"req-b","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252176558,"pid":9680,"hostname":"SUPORTE","reqId":"req-b","res":{"statusCode":200},"responseTime":12.692599999951199,"msg":"request completed"}
+{"level":30,"time":1790252176561,"pid":9680,"hostname":"SUPORTE","reqId":"req-a","res":{"statusCode":200},"responseTime":18.196599999908358,"msg":"request completed"}
+{"level":30,"time":1790252179256,"pid":9680,"hostname":"SUPORTE","reqId":"req-c","req":{"method":"GET","url":"/companies/1/customers/08119451970","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252179268,"pid":9680,"hostname":"SUPORTE","reqId":"req-c","res":{"statusCode":200},"responseTime":12.115899999858811,"msg":"request completed"}
+{"level":30,"time":1790252179274,"pid":9680,"hostname":"SUPORTE","reqId":"req-d","req":{"method":"GET","url":"/companies/1/customers/08119451970/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252179277,"pid":9680,"hostname":"SUPORTE","reqId":"req-e","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252179287,"pid":9680,"hostname":"SUPORTE","reqId":"req-e","res":{"statusCode":200},"responseTime":10.477100000018254,"msg":"request completed"}
+{"level":30,"time":1790252179289,"pid":9680,"hostname":"SUPORTE","reqId":"req-d","res":{"statusCode":200},"responseTime":14.546899999957532,"msg":"request completed"}
+{"level":30,"time":1790252181742,"pid":9680,"hostname":"SUPORTE","reqId":"req-f","req":{"method":"GET","url":"/companies/1/customers/09648434980","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252181755,"pid":9680,"hostname":"SUPORTE","reqId":"req-f","res":{"statusCode":200},"responseTime":12.761799999978393,"msg":"request completed"}
+{"level":30,"time":1790252181761,"pid":9680,"hostname":"SUPORTE","reqId":"req-g","req":{"method":"GET","url":"/companies/1/customers/09648434980/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252181763,"pid":9680,"hostname":"SUPORTE","reqId":"req-h","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252181773,"pid":9680,"hostname":"SUPORTE","reqId":"req-h","res":{"statusCode":200},"responseTime":10.352100000018254,"msg":"request completed"}
+{"level":30,"time":1790252181776,"pid":9680,"hostname":"SUPORTE","reqId":"req-g","res":{"statusCode":200},"responseTime":14.911100000143051,"msg":"request completed"}
+{"level":30,"time":1790252184478,"pid":9680,"hostname":"SUPORTE","reqId":"req-i","req":{"method":"GET","url":"/companies/1/customers/08119451970","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252184491,"pid":9680,"hostname":"SUPORTE","reqId":"req-i","res":{"statusCode":200},"responseTime":13.540400000056252,"msg":"request completed"}
+{"level":30,"time":1790252184495,"pid":9680,"hostname":"SUPORTE","reqId":"req-j","req":{"method":"GET","url":"/companies/1/customers/08119451970/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51384},"msg":"incoming request"}
+{"level":30,"time":1790252184497,"pid":9680,"hostname":"SUPORTE","reqId":"req-k","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51390},"msg":"incoming request"}
+{"level":30,"time":1790252184508,"pid":9680,"hostname":"SUPORTE","reqId":"req-k","res":{"statusCode":200},"responseTime":11.029000000096858,"msg":"request completed"}
+{"level":30,"time":1790252184510,"pid":9680,"hostname":"SUPORTE","reqId":"req-j","res":{"statusCode":200},"responseTime":14.638600000180304,"msg":"request completed"}
+{"level":30,"time":1790252298067,"pid":9680,"hostname":"SUPORTE","reqId":"req-l","req":{"method":"POST","url":"/companies/1/customers","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51407},"msg":"incoming request"}
+{"level":30,"time":1790252298126,"pid":9680,"hostname":"SUPORTE","reqId":"req-l","res":{"statusCode":201},"responseTime":58.32110000005923,"msg":"request completed"}
+{"level":30,"time":1790252298128,"pid":9680,"hostname":"SUPORTE","reqId":"req-m","req":{"method":"GET","url":"/companies/1/customers/02876093910","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51407},"msg":"incoming request"}
+{"level":30,"time":1790252298136,"pid":9680,"hostname":"SUPORTE","reqId":"req-m","res":{"statusCode":200},"responseTime":8.40570000000298,"msg":"request completed"}
+{"level":30,"time":1790252298139,"pid":9680,"hostname":"SUPORTE","reqId":"req-n","req":{"method":"GET","url":"/companies/1/customers","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51407},"msg":"incoming request"}
+{"level":30,"time":1790252298144,"pid":9680,"hostname":"SUPORTE","reqId":"req-n","res":{"statusCode":200},"responseTime":5.373799999943003,"msg":"request completed"}
+{"level":30,"time":1790252298151,"pid":9680,"hostname":"SUPORTE","reqId":"req-o","req":{"method":"GET","url":"/companies/1/customers/02876093910/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51407},"msg":"incoming request"}
+{"level":30,"time":1790252298153,"pid":9680,"hostname":"SUPORTE","reqId":"req-p","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51408},"msg":"incoming request"}
+{"level":30,"time":1790252298163,"pid":9680,"hostname":"SUPORTE","reqId":"req-p","res":{"statusCode":200},"responseTime":9.839799999957904,"msg":"request completed"}
+{"level":30,"time":1790252298164,"pid":9680,"hostname":"SUPORTE","reqId":"req-o","res":{"statusCode":200},"responseTime":13.182199999922886,"msg":"request completed"}
+{"level":30,"time":1790252490220,"pid":9680,"hostname":"SUPORTE","reqId":"req-q","req":{"method":"GET","url":"/auth/me","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51430},"msg":"incoming request"}
+{"level":30,"time":1790252490224,"pid":9680,"hostname":"SUPORTE","reqId":"req-q","res":{"statusCode":200},"responseTime":3.9725999999791384,"msg":"request completed"}
+{"level":30,"time":1790252490227,"pid":9680,"hostname":"SUPORTE","reqId":"req-r","req":{"method":"GET","url":"/companies/1/customers","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51430},"msg":"incoming request"}
+{"level":30,"time":1790252490237,"pid":9680,"hostname":"SUPORTE","reqId":"req-r","res":{"statusCode":200},"responseTime":10.194200000027195,"msg":"request completed"}
+{"level":30,"time":1790252532580,"pid":9680,"hostname":"SUPORTE","reqId":"req-s","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51430},"msg":"incoming request"}
+{"level":30,"time":1790252532582,"pid":9680,"hostname":"SUPORTE","reqId":"req-t","req":{"method":"GET","url":"/companies/1/reward-categories","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51437},"msg":"incoming request"}
+{"level":30,"time":1790252532591,"pid":9680,"hostname":"SUPORTE","reqId":"req-s","res":{"statusCode":200},"responseTime":10.954400000162423,"msg":"request completed"}
+{"level":30,"time":1790252532598,"pid":9680,"hostname":"SUPORTE","reqId":"req-t","res":{"statusCode":200},"responseTime":15.741799999959767,"msg":"request completed"}
+{"level":30,"time":1790252957073,"pid":9680,"hostname":"SUPORTE","reqId":"req-u","req":{"method":"GET","url":"/companies/1/customers","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51480},"msg":"incoming request"}
+{"level":30,"time":1790252957082,"pid":9680,"hostname":"SUPORTE","reqId":"req-u","res":{"statusCode":200},"responseTime":9.265300000086427,"msg":"request completed"}
+{"level":30,"time":1790254218856,"pid":9680,"hostname":"SUPORTE","reqId":"req-v","req":{"method":"GET","url":"/companies/1/reward-categories","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51701},"msg":"incoming request"}
+{"level":30,"time":1790254218858,"pid":9680,"hostname":"SUPORTE","reqId":"req-w","req":{"method":"GET","url":"/companies/1/rewards","host":"localhost","remoteAddress":"127.0.0.1","remotePort":51700},"msg":"incoming request"}
+{"level":30,"time":1790254218865,"pid":9680,"hostname":"SUPORTE","reqId":"req-v","res":{"statusCode":200},"responseTime":8.3996000001207,"msg":"request completed"}
+{"level":30,"time":1790254218866,"pid":9680,"hostname":"SUPORTE","reqId":"req-w","res":{"statusCode":200},"responseTime":7.506699999794364,"msg":"request completed"}
+{"level":30,"time":1790254224398,"pid":9680,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
+{"level":30,"time":1790257824407,"pid":9680,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
+{"level":30,"time":1790261424407,"pid":9680,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}
