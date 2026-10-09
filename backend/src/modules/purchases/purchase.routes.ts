@@ -8,6 +8,7 @@ import {
 
 import {
   createPurchase,
+  listCompanyPurchases,
   listCustomerPurchases,
 } from "./purchase.service.js";
 
@@ -157,6 +158,70 @@ export async function purchaseRoutes(
 
         throw error;
       }
+    }
+  );
+
+
+  // ==================================================
+  // LISTAR TODAS AS COMPRAS DA EMPRESA
+  //
+  // GET
+  // /companies/:companyId/purchases
+  // ==================================================
+
+  app.get(
+    "/companies/:companyId/purchases",
+
+    async (
+      request,
+      reply
+    ) => {
+      const params =
+        request.params as {
+          companyId: string;
+        };
+
+
+      // ===============================================
+      // EMPRESA
+      // ===============================================
+
+      const companyId =
+        Number(
+          params.companyId
+        );
+
+
+      if (
+        !Number.isInteger(
+          companyId
+        ) ||
+        companyId <= 0
+      ) {
+        return reply
+          .status(400)
+          .send({
+            error:
+              "Empresa inválida",
+          });
+      }
+
+
+      // ===============================================
+      // LISTAR COMPRAS
+      // ===============================================
+
+      const result =
+        await listCompanyPurchases(
+          companyId
+        );
+
+
+      return reply
+        .status(200)
+        .send(
+          result
+        );
     }
   );
 

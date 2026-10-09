@@ -1,3 +1,4 @@
+import { CustomerLoyaltyPanel } from "./CustomerLoyaltyPanel";
 import {
   useEffect,
   useState,
@@ -552,9 +553,8 @@ export function CustomersPage() {
           </h1>
 
           <p>
-            Consulte um cliente
-            pelo CPF ou faça um
-            novo cadastro.
+            Consulte dados, recompensas e fidelidade
+            pelo CPF ou faça um novo cadastro.
           </p>
         </div>
 
@@ -648,6 +648,7 @@ export function CustomersPage() {
 
           {customer && (
             <CustomerDetails
+              isAdmin={isAdmin}
               customer={
                 customer
               }
@@ -814,6 +815,7 @@ function CustomersList({
 
 function CustomerDetails({
   customer,
+  isAdmin,
   companyId,
   token,
   isSaving,
@@ -821,6 +823,7 @@ function CustomerDetails({
   onChangeStatus,
 }: {
   customer: Customer;
+  isAdmin: boolean;
   companyId: number;
   token: string;
   isSaving: boolean;
@@ -943,6 +946,13 @@ function CustomerDetails({
           )}
         />
       </dl>
+
+      {isAdmin && <CustomerLoyaltyPanel
+        key={`${companyId}-${customer.idCompanyCustomer}-${customer.isActive}`}
+        customer={customer}
+        companyId={companyId}
+        token={token}
+      />}
 
       <CustomerRewardsPanel
         companyId={companyId}

@@ -1,5 +1,5 @@
 import { request } from './client'
-import type { CreatePurchaseInput, CreatedPurchase, CustomerPurchaseHistory } from '../types/purchase'
+import type { CompanyPurchaseHistory, CreatePurchaseInput, CreatedPurchase, CustomerPurchaseHistory } from '../types/purchase'
 import { normalizeCpf } from '../utils/cpf'
 
 function purchasePath(companyId: number) {
@@ -16,4 +16,8 @@ export function registerPurchase(companyId: number, data: CreatePurchaseInput, t
 
 export function getCustomerPurchases(companyId: number, cpf: string, token: string) {
   return request<CustomerPurchaseHistory>(customerPurchasePath(companyId, cpf), { token })
+}
+
+export function getPurchases(companyId: number, token: string) {
+  return request<CompanyPurchaseHistory>(purchasePath(companyId), { token })
 }

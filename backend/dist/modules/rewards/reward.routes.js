@@ -1,5 +1,6 @@
 import { createRewardCategorySchema, createRewardSchema, updateRewardCategorySchema, updateRewardSchema, } from "./reward.schema.js";
 import { createRewardCategory, createReward, findRewardById, listRewardCategories, listRewards, updateRewardCategory, updateReward, } from "./reward.service.js";
+import { customerRewardRoutes } from "./customer-reward.routes.js";
 // =====================================================
 // ROTAS DE RECOMPENSAS
 // =====================================================
@@ -419,5 +420,9 @@ export async function rewardRoutes(app) {
             throw error;
         }
     });
+    // ==================================================
+    // ROTAS DE RECOMPENSAS DOS CLIENTES
+    // ==================================================
+    await customerRewardRoutes(app);
 }
 //# sourceMappingURL=reward.routes.js.map

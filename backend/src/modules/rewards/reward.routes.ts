@@ -18,6 +18,7 @@ import {
   updateRewardCategory,
   updateReward,
 } from "./reward.service.js";
+import { customerRewardRoutes } from "./customer-reward.routes.js";
 
 // =====================================================
 // ROTAS DE RECOMPENSAS
@@ -850,6 +851,14 @@ export async function rewardRoutes(
         throw error;
       }
     }
+  );
+
+    // ==================================================
+  // ROTAS DE RECOMPENSAS DOS CLIENTES
+  // ==================================================
+
+  await customerRewardRoutes(
+    app
   );
 
 }

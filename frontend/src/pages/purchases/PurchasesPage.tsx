@@ -1,13 +1,14 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { getCustomerByCpf } from '../../api/customers.api'
 import {
   getCustomerPurchases,
+  getPurchases,
   registerPurchase,
 } from '../../api/purchases.api'
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Customer } from '../../types/customer'
-import type { CustomerPurchaseHistory } from '../../types/purchase'
+import type { CompanyPurchaseHistory, CustomerPurchaseHistory } from '../../types/purchase'
 import {
   formatCpf,
   getCpfValidationError,
@@ -384,12 +385,16 @@ export function PurchaseRegistrationPage() {
   )
 }
 
+type PurchaseHistoryResult =
+  | { kind: 'company'; data: CompanyPurchaseHistory }
+  | { kind: 'customer'; data: CustomerPurchaseHistory }
+
 export function PurchaseHistoryPage() {
   const { session } = useAuth()
 
   const [cpf, setCpf] = useState('')
   const [history, setHistory] =
-    useState<CustomerPurchaseHistory | null>(
+    useState<PurchaseHistoryResult | null>(
       null,
     )
 
@@ -406,6 +411,30 @@ export function PurchaseHistoryPage() {
   const token =
     session?.token ?? ''
 
+  useEffect(() => {
+    if (!companyId || !token) return
+
+    let cancelled = false
+    setIsLoading(true)
+    setHistory(null)
+    setError('')
+
+    getPurchases(companyId, token)
+      .then((data) => {
+        if (!cancelled) setHistory({ kind: 'company', data })
+      })
+      .catch((requestError: unknown) => {
+        if (!cancelled) setError(getHistoryError(requestError))
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [companyId, token])
+
   async function searchHistory(
     event: FormEvent<HTMLFormElement>,
   ) {
@@ -414,8 +443,9 @@ export function PurchaseHistoryPage() {
     setError('')
     setCpfError('')
 
-    const validationError =
-      getCpfValidationError(cpf)
+    const validationError = cpf.trim()
+      ? getCpfValidationError(cpf)
+      : ''
 
     if (validationError) {
       setCpfError(validationError)
@@ -426,13 +456,13 @@ export function PurchaseHistoryPage() {
     setHistory(null)
 
     try {
-      setHistory(
-        await getCustomerPurchases(
-          companyId,
-          cpf,
-          token,
-        ),
-      )
+      if (cpf.trim()) {
+        const data = await getCustomerPurchases(companyId, cpf, token)
+        setHistory({ kind: 'customer', data })
+      } else {
+        const data = await getPurchases(companyId, token)
+        setHistory({ kind: 'company', data })
+      }
     } catch (requestError) {
       setError(
         getHistoryError(
@@ -459,8 +489,7 @@ export function PurchaseHistoryPage() {
         </h1>
 
         <p>
-          Consulte as compras de um
-          cliente pelo CPF.
+          Consulte todas as compras da empresa ou filtre pelo CPF do cliente.
         </p>
       </div>
 
@@ -480,7 +509,7 @@ export function PurchaseHistoryPage() {
       >
         <div className="form-field">
           <label htmlFor="purchase-history-cpf">
-            CPF do cliente
+            CPF do cliente (opcional)
           </label>
 
           <input
@@ -499,7 +528,6 @@ export function PurchaseHistoryPage() {
             inputMode="numeric"
             placeholder="000.000.000-00"
             disabled={isLoading}
-            required
             aria-invalid={Boolean(
               cpfError,
             )}
@@ -540,10 +568,10 @@ export function PurchaseHistoryPage() {
 }
 
 function PurchaseHistory({
-  history,
+  history: result,
   isLoading,
 }: {
-  history: CustomerPurchaseHistory | null
+  history: PurchaseHistoryResult | null
   isLoading: boolean
 }) {
   if (isLoading) {
@@ -557,9 +585,49 @@ function PurchaseHistory({
     )
   }
 
-  if (!history) {
+  if (!result) {
     return null
   }
+
+  if (result.kind === 'company') {
+    return (
+      <section className="purchase-history" aria-label="Compras da empresa">
+        {result.data.purchases.length === 0 ? (
+          <p className="empty-state">Nenhuma compra registrada até o momento.</p>
+        ) : (
+          <div className="purchase-table-wrapper">
+            <table>
+              <caption>Compras da empresa</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Data e hora</th>
+                  <th scope="col">Cliente</th>
+                  <th scope="col">Valor</th>
+                  <th scope="col">Registrada por</th>
+                </tr>
+              </thead>
+              <tbody>
+                {result.data.purchases.map((purchase) => (
+                  <tr key={purchase.idPurchase}>
+                    <td>
+                      <time dateTime={purchase.purchaseDate}>
+                        {formatDateTime(purchase.purchaseDate)}
+                      </time>
+                    </td>
+                    <td>{purchase.customer.name}</td>
+                    <td>{formatCurrency(purchase.amount)}</td>
+                    <td>{purchase.registeredBy?.name ?? 'Não informado'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  const history = result.data
 
   return (
     <section

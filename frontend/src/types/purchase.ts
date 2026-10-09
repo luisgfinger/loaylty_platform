@@ -34,6 +34,14 @@ export interface CustomerPurchaseHistory {
   purchases: Purchase[]
 }
 
+export interface CompanyPurchase extends Omit<Purchase, 'fiscalDocumentNumber'> {
+  customer: PurchaseCustomer
+}
+
+export interface CompanyPurchaseHistory {
+  purchases: CompanyPurchase[]
+}
+
 export interface CreatePurchaseInput {
   cpf: string
   fiscalDocumentNumber: string

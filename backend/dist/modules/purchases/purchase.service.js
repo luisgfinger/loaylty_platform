@@ -158,6 +158,88 @@ export async function createPurchase(companyId, employeeId, data) {
     });
 }
 // =====================================================
+// LISTAR TODAS AS COMPRAS DA EMPRESA
+// =====================================================
+export async function listCompanyPurchases(companyId) {
+    const purchases = await prisma.purchase.findMany({
+        where: {
+            customer: {
+                companyPerson: {
+                    Company_idCompany: companyId,
+                },
+            },
+        },
+        include: {
+            customer: {
+                include: {
+                    companyPerson: {
+                        include: {
+                            person: true,
+                        },
+                    },
+                },
+            },
+            registeredByEmployee: {
+                include: {
+                    companyPerson: {
+                        include: {
+                            person: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            purchaseDate: "desc",
+        },
+    });
+    return {
+        purchases: purchases.map((purchase) => ({
+            idPurchase: purchase
+                .idPurchase
+                .toString(),
+            purchaseDate: purchase
+                .purchaseDate,
+            amount: purchase
+                .amount
+                .toString(),
+            customer: {
+                idCompanyCustomer: purchase
+                    .customer
+                    .idCompanyCustomer,
+                cpf: purchase
+                    .customer
+                    .companyPerson
+                    .person
+                    .cpf,
+                name: purchase
+                    .customer
+                    .companyPerson
+                    .person
+                    .name,
+            },
+            registeredBy: purchase
+                .registeredByEmployee
+                ? {
+                    idCompanyEmployee: purchase
+                        .registeredByEmployee
+                        .idCompanyEmployee,
+                    cpf: purchase
+                        .registeredByEmployee
+                        .companyPerson
+                        .person
+                        .cpf,
+                    name: purchase
+                        .registeredByEmployee
+                        .companyPerson
+                        .person
+                        .name,
+                }
+                : null,
+        })),
+    };
+}
+// =====================================================
 // LISTAR COMPRAS DO CLIENTE
 // =====================================================
 export async function listCustomerPurchases(companyId, cpf) {
