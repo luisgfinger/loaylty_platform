@@ -24,7 +24,11 @@ function cashierCanAccess(
       .split("?")[0] ??
     "";
 
-  // Permite consultar a sessão atual.
+
+  // ==================================================
+  // CONSULTAR SESSÃO ATUAL
+  // ==================================================
+
   if (
     request.method === "GET" &&
     path === "/auth/me"
@@ -32,29 +36,82 @@ function cashierCanAccess(
     return true;
   }
 
-  // Permite registrar uma compra.
+
+  // ==================================================
+  // REGISTRAR COMPRA
+  //
+  // POST
+  // /companies/:companyId/purchases
+  // ==================================================
+
   if (
     request.method === "POST" &&
-    /^\/companies\/\d+\/purchases$/.test(path)
+    /^\/companies\/\d+\/purchases$/.test(
+      path
+    )
   ) {
     return true;
   }
 
-  // Permite cadastrar um novo cliente.
+
+  // ==================================================
+  // EXCLUIR COMPRA
+  //
+  // DELETE
+  // /companies/:companyId/purchases/:purchaseId
+  //
+  // Aqui apenas liberamos a rota para o CAIXA.
+  //
+  // O purchase.service.ts continua responsável por
+  // validar:
+  //
+  // - se a venda foi feita pelo próprio CAIXA;
+  // - se ainda está dentro dos 30 minutos.
+  // ==================================================
+
   if (
-    request.method === "POST" &&
-    /^\/companies\/\d+\/customers$/.test(path)
+    request.method === "DELETE" &&
+    /^\/companies\/\d+\/purchases\/\d+$/.test(
+      path
+    )
   ) {
     return true;
   }
 
-  // Permite localizar o cliente pelo CPF.
+
+  // ==================================================
+  // CADASTRAR CLIENTE
+  //
+  // POST
+  // /companies/:companyId/customers
+  // ==================================================
+
+  if (
+    request.method === "POST" &&
+    /^\/companies\/\d+\/customers$/.test(
+      path
+    )
+  ) {
+    return true;
+  }
+
+
+  // ==================================================
+  // LOCALIZAR CLIENTE PELO CPF
+  //
+  // GET
+  // /companies/:companyId/customers/:cpf
+  // ==================================================
+
   if (
     request.method === "GET" &&
-    /^\/companies\/\d+\/customers\/[^/]+$/.test(path)
+    /^\/companies\/\d+\/customers\/[^/]+$/.test(
+      path
+    )
   ) {
     return true;
   }
+
 
   return false;
 }
@@ -78,7 +135,8 @@ export async function requireAdmin(
     return reply
       .status(401)
       .send({
-        error: "Não autenticado",
+        error:
+          "Não autenticado",
       });
   }
 
@@ -96,19 +154,31 @@ export async function requireAdmin(
   // ==================================================
 
   if (
-    !Number.isInteger(user.userId) ||
+    !Number.isInteger(
+      user.userId
+    ) ||
     user.userId <= 0 ||
-    !Number.isInteger(user.personId) ||
+
+    !Number.isInteger(
+      user.personId
+    ) ||
     user.personId <= 0 ||
-    !Number.isInteger(user.employeeId) ||
+
+    !Number.isInteger(
+      user.employeeId
+    ) ||
     user.employeeId <= 0 ||
-    !Number.isInteger(user.companyId) ||
+
+    !Number.isInteger(
+      user.companyId
+    ) ||
     user.companyId <= 0
   ) {
     return reply
       .status(401)
       .send({
-        error: "Não autenticado",
+        error:
+          "Não autenticado",
       });
   }
 
@@ -133,7 +203,7 @@ export async function requireAdmin(
   // ==================================================
   // REVALIDAR AUTORIZAÇÃO NO BANCO
   //
-  // Mesmo com um JWT válido, verificamos novamente:
+  // Mesmo com JWT válido, verificamos novamente:
   //
   // - usuário ativo;
   // - funcionário ativo;
@@ -141,9 +211,6 @@ export async function requireAdmin(
   // - empresa ativa;
   // - empresa correta;
   // - perfil atual igual ao perfil presente no token.
-  //
-  // Assim, alterações administrativas invalidam
-  // imediatamente uma sessão antiga.
   // ==================================================
 
   try {
@@ -170,6 +237,7 @@ export async function requireAdmin(
               true,
           },
         }),
+
 
         prisma.companyEmployee.findFirst({
           where: {
@@ -203,6 +271,7 @@ export async function requireAdmin(
             },
           },
         }),
+
 
         prisma.company.findFirst({
           where: {
@@ -244,7 +313,9 @@ export async function requireAdmin(
     // ================================================
 
     if (
-      currentEmployee.role?.role !==
+      currentEmployee
+        .role
+        ?.role !==
       user.role
     ) {
       return reply
@@ -254,6 +325,7 @@ export async function requireAdmin(
             "Sessão não é mais válida",
         });
     }
+
   } catch (error) {
     request.log.error(
       {
@@ -262,6 +334,7 @@ export async function requireAdmin(
       },
       "Erro ao revalidar autorização do usuário"
     );
+
 
     return reply
       .status(500)
@@ -273,18 +346,20 @@ export async function requireAdmin(
 
 
   // ==================================================
-  // LIMITAR O CAIXA À OPERAÇÃO DE COMPRAS
+  // LIMITAR O CAIXA ÀS ROTAS OPERACIONAIS PERMITIDAS
   // ==================================================
 
   if (
     user.role === "CAIXA" &&
-    !cashierCanAccess(request)
+    !cashierCanAccess(
+      request
+    )
   ) {
     return reply
       .status(403)
       .send({
         error:
-          "O perfil CAIXA possui acesso somente ao registro de compras",
+          "O perfil CAIXA possui acesso somente às operações permitidas",
       });
   }
 
