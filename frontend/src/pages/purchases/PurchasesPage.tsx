@@ -518,8 +518,13 @@ type PurchaseHistoryResult =
   | { kind: 'company'; data: CompanyPurchaseHistory }
   | { kind: 'customer'; data: CustomerPurchaseHistory }
 
+type CancellablePurchase = Pick<Purchase, 'idPurchase' | 'amount' | 'purchaseDate'>
+
 export function PurchaseHistoryPage() {
   const { session } = useAuth()
+  const role = session?.employee.role
+  const isAdmin = role === 'ADMIN'
+  const [cancellingPurchaseIds, setCancellingPurchaseIds] = useState<Set<string>>(() => new Set())
 
   const [cpf, setCpf] = useState('')
   const [history, setHistory] =
@@ -563,6 +568,62 @@ export function PurchaseHistoryPage() {
       cancelled = true
     }
   }, [companyId, token])
+
+  function removePurchase(purchaseId: string) {
+    setHistory((current) => {
+      if (!current) return current
+
+      if (current.kind === 'company') {
+        return {
+          ...current,
+          data: {
+            ...current.data,
+            purchases: current.data.purchases.filter((purchase) => purchase.idPurchase !== purchaseId),
+          },
+        }
+      }
+
+      return {
+        ...current,
+        data: {
+          ...current.data,
+          purchases: current.data.purchases.filter((purchase) => purchase.idPurchase !== purchaseId),
+        },
+      }
+    })
+  }
+
+  async function cancelPurchase(purchase: CancellablePurchase, customerName: string) {
+    if (!isAdmin || !companyId || !token || cancellingPurchaseIds.has(purchase.idPurchase)) return
+
+    if (!window.confirm(
+      `Tem certeza que deseja cancelar esta venda?\n\nCliente: ${customerName}\nValor: ${formatCurrency(purchase.amount)}\nData: ${formatDateTime(purchase.purchaseDate)}\n\nA venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\nO progresso de fidelidade já concedido não será alterado.`,
+    )) return
+
+    setCancellingPurchaseIds((current) => new Set(current).add(purchase.idPurchase))
+    try {
+      await deletePurchase(companyId, purchase.idPurchase, token)
+      removePurchase(purchase.idPurchase)
+      toast.success('Venda cancelada com sucesso.')
+    } catch (requestError) {
+      if (requestError instanceof ApiError && requestError.status === 404) {
+        removePurchase(purchase.idPurchase)
+        toast.error('A venda não foi encontrada.')
+      } else if (requestError instanceof ApiError && requestError.status === 403) {
+        toast.error('Você não possui permissão para cancelar esta venda.')
+      } else if (requestError instanceof ApiError && requestError.status === 401) {
+        toast.error('Sua sessão expirou. Entre novamente.')
+      } else {
+        toast.error('Não foi possível cancelar a venda.')
+      }
+    } finally {
+      setCancellingPurchaseIds((current) => {
+        const next = new Set(current)
+        next.delete(purchase.idPurchase)
+        return next
+      })
+    }
+  }
 
   async function searchHistory(
     event: FormEvent<HTMLFormElement>,
@@ -691,6 +752,9 @@ export function PurchaseHistoryPage() {
       <PurchaseHistory
         history={history}
         isLoading={isLoading}
+        isAdmin={isAdmin}
+        cancellingPurchaseIds={cancellingPurchaseIds}
+        onCancelPurchase={cancelPurchase}
       />
     </section>
   )
@@ -699,9 +763,15 @@ export function PurchaseHistoryPage() {
 function PurchaseHistory({
   history: result,
   isLoading,
+  isAdmin,
+  cancellingPurchaseIds,
+  onCancelPurchase,
 }: {
   history: PurchaseHistoryResult | null
   isLoading: boolean
+  isAdmin: boolean
+  cancellingPurchaseIds: ReadonlySet<string>
+  onCancelPurchase: (purchase: CancellablePurchase, customerName: string) => Promise<void>
 }) {
   if (isLoading) {
     return (
@@ -733,6 +803,7 @@ function PurchaseHistory({
                   <th scope="col">Cliente</th>
                   <th scope="col">Valor</th>
                   <th scope="col">Registrada por</th>
+                  {isAdmin && <th scope="col">Ações</th>}
                 </tr>
               </thead>
               <tbody>
@@ -746,6 +817,18 @@ function PurchaseHistory({
                     <td>{purchase.customer.name}</td>
                     <td>{formatCurrency(purchase.amount)}</td>
                     <td>{purchase.registeredBy?.name ?? 'Não informado'}</td>
+                    {isAdmin && (
+                      <td>
+                        <button
+                          className="danger-button purchase-cancel-button"
+                          type="button"
+                          disabled={cancellingPurchaseIds.has(purchase.idPurchase)}
+                          onClick={() => onCancelPurchase(purchase, purchase.customer.name)}
+                        >
+                          {cancellingPurchaseIds.has(purchase.idPurchase) ? 'Cancelando…' : 'Cancelar venda'}
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -810,6 +893,7 @@ function PurchaseHistory({
                 <th scope="col">
                   Registrada por
                 </th>
+                {isAdmin && <th scope="col">Ações</th>}
               </tr>
             </thead>
 
@@ -849,6 +933,18 @@ function PurchaseHistory({
                         ?.name ??
                         'Não informado'}
                     </td>
+                    {isAdmin && (
+                      <td>
+                        <button
+                          className="danger-button purchase-cancel-button"
+                          type="button"
+                          disabled={cancellingPurchaseIds.has(purchase.idPurchase)}
+                          onClick={() => onCancelPurchase(purchase, history.customer.name)}
+                        >
+                          {cancellingPurchaseIds.has(purchase.idPurchase) ? 'Cancelando…' : 'Cancelar venda'}
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ),
               )}

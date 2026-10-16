@@ -24,9 +24,16 @@ function cashierCanAccess(
       .split("?")[0] ??
     "";
 
+  const segments =
+    path
+      .split("/")
+      .filter(Boolean);
+
 
   // ==================================================
   // CONSULTAR SESSÃO ATUAL
+  //
+  // GET /auth/me
   // ==================================================
 
   if (
@@ -34,6 +41,34 @@ function cashierCanAccess(
     path === "/auth/me"
   ) {
     return true;
+  }
+
+
+  // ==================================================
+  // TODAS AS DEMAIS ROTAS DO CAIXA
+  // PRECISAM SER /companies/:companyId/...
+  // ==================================================
+
+  if (
+    segments[0] !== "companies"
+  ) {
+    return false;
+  }
+
+
+  const companyId =
+    Number(
+      segments[1]
+    );
+
+
+  if (
+    !Number.isInteger(
+      companyId
+    ) ||
+    companyId <= 0
+  ) {
+    return false;
   }
 
 
@@ -46,9 +81,8 @@ function cashierCanAccess(
 
   if (
     request.method === "POST" &&
-    /^\/companies\/\d+\/purchases$/.test(
-      path
-    )
+    segments.length === 3 &&
+    segments[2] === "purchases"
   ) {
     return true;
   }
@@ -60,22 +94,37 @@ function cashierCanAccess(
   // DELETE
   // /companies/:companyId/purchases/:purchaseId
   //
-  // Aqui apenas liberamos a rota para o CAIXA.
+  // IMPORTANTE:
   //
-  // O purchase.service.ts continua responsável por
-  // validar:
+  // Aqui apenas permitimos que a requisição
+  // chegue até purchase.routes.ts / purchase.service.ts.
   //
-  // - se a venda foi feita pelo próprio CAIXA;
+  // O backend ainda valida:
+  //
+  // - se a venda pertence à empresa;
+  // - se o CAIXA foi quem registrou a venda;
   // - se ainda está dentro dos 30 minutos.
   // ==================================================
 
   if (
     request.method === "DELETE" &&
-    /^\/companies\/\d+\/purchases\/\d+$/.test(
-      path
-    )
+    segments.length === 4 &&
+    segments[2] === "purchases"
   ) {
-    return true;
+    const purchaseId =
+      Number(
+        segments[3]
+      );
+
+
+    if (
+      Number.isInteger(
+        purchaseId
+      ) &&
+      purchaseId > 0
+    ) {
+      return true;
+    }
   }
 
 
@@ -88,9 +137,8 @@ function cashierCanAccess(
 
   if (
     request.method === "POST" &&
-    /^\/companies\/\d+\/customers$/.test(
-      path
-    )
+    segments.length === 3 &&
+    segments[2] === "customers"
   ) {
     return true;
   }
@@ -105,8 +153,10 @@ function cashierCanAccess(
 
   if (
     request.method === "GET" &&
-    /^\/companies\/\d+\/customers\/[^/]+$/.test(
-      path
+    segments.length === 4 &&
+    segments[2] === "customers" &&
+    Boolean(
+      segments[3]
     )
   ) {
     return true;
@@ -131,6 +181,7 @@ export async function requireAdmin(
 
   try {
     await request.jwtVerify();
+
   } catch {
     return reply
       .status(401)

@@ -6,24 +6,88 @@ function cashierCanAccess(request) {
     const path = request.url
         .split("?")[0] ??
         "";
-    // Permite consultar a sessão atual.
+    const segments = path
+        .split("/")
+        .filter(Boolean);
+    // ==================================================
+    // CONSULTAR SESSÃO ATUAL
+    //
+    // GET /auth/me
+    // ==================================================
     if (request.method === "GET" &&
         path === "/auth/me") {
         return true;
     }
-    // Permite registrar uma compra.
+    // ==================================================
+    // TODAS AS DEMAIS ROTAS DO CAIXA
+    // PRECISAM SER /companies/:companyId/...
+    // ==================================================
+    if (segments[0] !== "companies") {
+        return false;
+    }
+    const companyId = Number(segments[1]);
+    if (!Number.isInteger(companyId) ||
+        companyId <= 0) {
+        return false;
+    }
+    // ==================================================
+    // REGISTRAR COMPRA
+    //
+    // POST
+    // /companies/:companyId/purchases
+    // ==================================================
     if (request.method === "POST" &&
-        /^\/companies\/\d+\/purchases$/.test(path)) {
+        segments.length === 3 &&
+        segments[2] === "purchases") {
         return true;
     }
-    // Permite cadastrar um novo cliente.
+    // ==================================================
+    // EXCLUIR COMPRA
+    //
+    // DELETE
+    // /companies/:companyId/purchases/:purchaseId
+    //
+    // IMPORTANTE:
+    //
+    // Aqui apenas permitimos que a requisição
+    // chegue até purchase.routes.ts / purchase.service.ts.
+    //
+    // O backend ainda valida:
+    //
+    // - se a venda pertence à empresa;
+    // - se o CAIXA foi quem registrou a venda;
+    // - se ainda está dentro dos 30 minutos.
+    // ==================================================
+    if (request.method === "DELETE" &&
+        segments.length === 4 &&
+        segments[2] === "purchases") {
+        const purchaseId = Number(segments[3]);
+        if (Number.isInteger(purchaseId) &&
+            purchaseId > 0) {
+            return true;
+        }
+    }
+    // ==================================================
+    // CADASTRAR CLIENTE
+    //
+    // POST
+    // /companies/:companyId/customers
+    // ==================================================
     if (request.method === "POST" &&
-        /^\/companies\/\d+\/customers$/.test(path)) {
+        segments.length === 3 &&
+        segments[2] === "customers") {
         return true;
     }
-    // Permite localizar o cliente pelo CPF.
+    // ==================================================
+    // LOCALIZAR CLIENTE PELO CPF
+    //
+    // GET
+    // /companies/:companyId/customers/:cpf
+    // ==================================================
     if (request.method === "GET" &&
-        /^\/companies\/\d+\/customers\/[^/]+$/.test(path)) {
+        segments.length === 4 &&
+        segments[2] === "customers" &&
+        Boolean(segments[3])) {
         return true;
     }
     return false;
@@ -80,7 +144,7 @@ export async function requireAdmin(request, reply) {
     // ==================================================
     // REVALIDAR AUTORIZAÇÃO NO BANCO
     //
-    // Mesmo com um JWT válido, verificamos novamente:
+    // Mesmo com JWT válido, verificamos novamente:
     //
     // - usuário ativo;
     // - funcionário ativo;
@@ -88,9 +152,6 @@ export async function requireAdmin(request, reply) {
     // - empresa ativa;
     // - empresa correta;
     // - perfil atual igual ao perfil presente no token.
-    //
-    // Assim, alterações administrativas invalidam
-    // imediatamente uma sessão antiga.
     // ==================================================
     try {
         const [currentUser, currentEmployee, currentCompany,] = await Promise.all([
@@ -148,7 +209,9 @@ export async function requireAdmin(request, reply) {
         // ================================================
         // PERFIL FOI ALTERADO
         // ================================================
-        if (currentEmployee.role?.role !==
+        if (currentEmployee
+            .role
+            ?.role !==
             user.role) {
             return reply
                 .status(401)
@@ -168,14 +231,14 @@ export async function requireAdmin(request, reply) {
         });
     }
     // ==================================================
-    // LIMITAR O CAIXA À OPERAÇÃO DE COMPRAS
+    // LIMITAR O CAIXA ÀS ROTAS OPERACIONAIS PERMITIDAS
     // ==================================================
     if (user.role === "CAIXA" &&
         !cashierCanAccess(request)) {
         return reply
             .status(403)
             .send({
-            error: "O perfil CAIXA possui acesso somente ao registro de compras",
+            error: "O perfil CAIXA possui acesso somente às operações permitidas",
         });
     }
     // ==================================================
