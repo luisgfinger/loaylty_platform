@@ -8,6 +8,7 @@ import {
 
 import {
   createPurchase,
+  deletePurchase,
   listCompanyPurchases,
   listCustomerPurchases,
 } from "./purchase.service.js";
@@ -44,10 +45,6 @@ export async function purchaseRoutes(
         };
 
 
-      // ===============================================
-      // EMPRESA
-      // ===============================================
-
       const companyId =
         Number(
           params.companyId
@@ -69,17 +66,9 @@ export async function purchaseRoutes(
       }
 
 
-      // ===============================================
-      // FUNCIONÁRIO AUTENTICADO
-      // ===============================================
-
       const authenticatedUser =
         request.user as AuthenticatedUser;
 
-
-      // ===============================================
-      // VALIDAR BODY
-      // ===============================================
 
       const parsed =
         createPurchaseSchema
@@ -102,10 +91,6 @@ export async function purchaseRoutes(
           });
       }
 
-
-      // ===============================================
-      // REGISTRAR COMPRA
-      // ===============================================
 
       try {
         const purchase =
@@ -163,14 +148,14 @@ export async function purchaseRoutes(
 
 
   // ==================================================
-  // LISTAR TODAS AS COMPRAS DA EMPRESA
+  // EXCLUIR COMPRA / VENDA
   //
-  // GET
-  // /companies/:companyId/purchases
+  // DELETE
+  // /companies/:companyId/purchases/:purchaseId
   // ==================================================
 
-  app.get(
-    "/companies/:companyId/purchases",
+  app.delete(
+    "/companies/:companyId/purchases/:purchaseId",
 
     async (
       request,
@@ -179,11 +164,12 @@ export async function purchaseRoutes(
       const params =
         request.params as {
           companyId: string;
+          purchaseId: string;
         };
 
 
       // ===============================================
-      // EMPRESA
+      // VALIDAR EMPRESA
       // ===============================================
 
       const companyId =
@@ -208,8 +194,206 @@ export async function purchaseRoutes(
 
 
       // ===============================================
-      // LISTAR COMPRAS
+      // USUÁRIO AUTENTICADO
       // ===============================================
+
+      const authenticatedUser =
+        request.user as AuthenticatedUser;
+
+
+      // ===============================================
+      // GARANTIR QUE A EMPRESA DA URL É A EMPRESA
+      // DO USUÁRIO AUTENTICADO
+      // ===============================================
+
+      if (
+        authenticatedUser
+          .companyId !==
+        companyId
+      ) {
+        return reply
+          .status(403)
+          .send({
+            error:
+              "Você não possui permissão para excluir vendas desta empresa",
+          });
+      }
+
+
+      // ===============================================
+      // VALIDAR ID DA VENDA
+      // ===============================================
+
+      const purchaseIdText =
+        params
+          .purchaseId
+          .trim();
+
+
+      if (
+        !/^\d+$/.test(
+          purchaseIdText
+        )
+      ) {
+        return reply
+          .status(400)
+          .send({
+            error:
+              "Venda inválida",
+          });
+      }
+
+
+      let purchaseId:
+        bigint;
+
+
+      try {
+        purchaseId =
+          BigInt(
+            purchaseIdText
+          );
+      } catch {
+        return reply
+          .status(400)
+          .send({
+            error:
+              "Venda inválida",
+          });
+      }
+
+
+      if (
+        purchaseId <= 0n
+      ) {
+        return reply
+          .status(400)
+          .send({
+            error:
+              "Venda inválida",
+          });
+      }
+
+
+      // ===============================================
+      // EXCLUIR VENDA
+      // ===============================================
+
+      try {
+        const deletedPurchase =
+          await deletePurchase(
+            companyId,
+
+            purchaseId,
+
+            authenticatedUser
+              .employeeId,
+
+            authenticatedUser
+              .role
+          );
+
+
+        return reply
+          .status(200)
+          .send({
+            message:
+              "Venda excluída com sucesso",
+
+            purchase:
+              deletedPurchase,
+          });
+
+      } catch (error) {
+        if (
+          error instanceof Error
+        ) {
+          if (
+            error.message ===
+            "PURCHASE_NOT_FOUND"
+          ) {
+            return reply
+              .status(404)
+              .send({
+                error:
+                  "Venda não encontrada",
+              });
+          }
+
+
+          if (
+            error.message ===
+            "PURCHASE_DELETE_FORBIDDEN"
+          ) {
+            return reply
+              .status(403)
+              .send({
+                error:
+                  "Você não possui permissão para excluir esta venda",
+              });
+          }
+
+
+          if (
+            error.message ===
+            "PURCHASE_DELETE_WINDOW_EXPIRED"
+          ) {
+            return reply
+              .status(403)
+              .send({
+                error:
+                  "O prazo de 30 minutos para excluir esta venda expirou",
+              });
+          }
+        }
+
+
+        throw error;
+      }
+    }
+  );
+
+
+  // ==================================================
+  // LISTAR TODAS AS COMPRAS DA EMPRESA
+  //
+  // GET
+  // /companies/:companyId/purchases
+  // ==================================================
+
+  app.get(
+    "/companies/:companyId/purchases",
+
+    async (
+      request,
+      reply
+    ) => {
+      const params =
+        request.params as {
+          companyId: string;
+        };
+
+
+      const companyId =
+        Number(
+          params.companyId
+        );
+
+
+      if (
+        !Number.isInteger(
+          companyId
+        ) ||
+        companyId <= 0
+      ) {
+        return reply
+          .status(400)
+          .send({
+            error:
+              "Empresa inválida",
+          });
+      }
+
 
       const result =
         await listCompanyPurchases(

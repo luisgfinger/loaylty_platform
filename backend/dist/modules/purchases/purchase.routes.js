@@ -1,5 +1,5 @@
 import { createPurchaseSchema, } from "./purchase.schema.js";
-import { createPurchase, listCompanyPurchases, listCustomerPurchases, } from "./purchase.service.js";
+import { createPurchase, deletePurchase, listCompanyPurchases, listCustomerPurchases, } from "./purchase.service.js";
 // =====================================================
 // ROTAS DE COMPRAS
 // =====================================================
@@ -12,9 +12,6 @@ export async function purchaseRoutes(app) {
     // ==================================================
     app.post("/companies/:companyId/purchases", async (request, reply) => {
         const params = request.params;
-        // ===============================================
-        // EMPRESA
-        // ===============================================
         const companyId = Number(params.companyId);
         if (!Number.isInteger(companyId) ||
             companyId <= 0) {
@@ -24,13 +21,7 @@ export async function purchaseRoutes(app) {
                 error: "Empresa inválida",
             });
         }
-        // ===============================================
-        // FUNCIONÁRIO AUTENTICADO
-        // ===============================================
         const authenticatedUser = request.user;
-        // ===============================================
-        // VALIDAR BODY
-        // ===============================================
         const parsed = createPurchaseSchema
             .safeParse(request.body);
         if (!parsed.success) {
@@ -43,9 +34,6 @@ export async function purchaseRoutes(app) {
                     .issues,
             });
         }
-        // ===============================================
-        // REGISTRAR COMPRA
-        // ===============================================
         try {
             const purchase = await createPurchase(companyId, authenticatedUser
                 .employeeId, parsed.data);
@@ -76,15 +64,15 @@ export async function purchaseRoutes(app) {
         }
     });
     // ==================================================
-    // LISTAR TODAS AS COMPRAS DA EMPRESA
+    // EXCLUIR COMPRA / VENDA
     //
-    // GET
-    // /companies/:companyId/purchases
+    // DELETE
+    // /companies/:companyId/purchases/:purchaseId
     // ==================================================
-    app.get("/companies/:companyId/purchases", async (request, reply) => {
+    app.delete("/companies/:companyId/purchases/:purchaseId", async (request, reply) => {
         const params = request.params;
         // ===============================================
-        // EMPRESA
+        // VALIDAR EMPRESA
         // ===============================================
         const companyId = Number(params.companyId);
         if (!Number.isInteger(companyId) ||
@@ -96,8 +84,115 @@ export async function purchaseRoutes(app) {
             });
         }
         // ===============================================
-        // LISTAR COMPRAS
+        // USUÁRIO AUTENTICADO
         // ===============================================
+        const authenticatedUser = request.user;
+        // ===============================================
+        // GARANTIR QUE A EMPRESA DA URL É A EMPRESA
+        // DO USUÁRIO AUTENTICADO
+        // ===============================================
+        if (authenticatedUser
+            .companyId !==
+            companyId) {
+            return reply
+                .status(403)
+                .send({
+                error: "Você não possui permissão para excluir vendas desta empresa",
+            });
+        }
+        // ===============================================
+        // VALIDAR ID DA VENDA
+        // ===============================================
+        const purchaseIdText = params
+            .purchaseId
+            .trim();
+        if (!/^\d+$/.test(purchaseIdText)) {
+            return reply
+                .status(400)
+                .send({
+                error: "Venda inválida",
+            });
+        }
+        let purchaseId;
+        try {
+            purchaseId =
+                BigInt(purchaseIdText);
+        }
+        catch {
+            return reply
+                .status(400)
+                .send({
+                error: "Venda inválida",
+            });
+        }
+        if (purchaseId <= 0n) {
+            return reply
+                .status(400)
+                .send({
+                error: "Venda inválida",
+            });
+        }
+        // ===============================================
+        // EXCLUIR VENDA
+        // ===============================================
+        try {
+            const deletedPurchase = await deletePurchase(companyId, purchaseId, authenticatedUser
+                .employeeId, authenticatedUser
+                .role);
+            return reply
+                .status(200)
+                .send({
+                message: "Venda excluída com sucesso",
+                purchase: deletedPurchase,
+            });
+        }
+        catch (error) {
+            if (error instanceof Error) {
+                if (error.message ===
+                    "PURCHASE_NOT_FOUND") {
+                    return reply
+                        .status(404)
+                        .send({
+                        error: "Venda não encontrada",
+                    });
+                }
+                if (error.message ===
+                    "PURCHASE_DELETE_FORBIDDEN") {
+                    return reply
+                        .status(403)
+                        .send({
+                        error: "Você não possui permissão para excluir esta venda",
+                    });
+                }
+                if (error.message ===
+                    "PURCHASE_DELETE_WINDOW_EXPIRED") {
+                    return reply
+                        .status(403)
+                        .send({
+                        error: "O prazo de 30 minutos para excluir esta venda expirou",
+                    });
+                }
+            }
+            throw error;
+        }
+    });
+    // ==================================================
+    // LISTAR TODAS AS COMPRAS DA EMPRESA
+    //
+    // GET
+    // /companies/:companyId/purchases
+    // ==================================================
+    app.get("/companies/:companyId/purchases", async (request, reply) => {
+        const params = request.params;
+        const companyId = Number(params.companyId);
+        if (!Number.isInteger(companyId) ||
+            companyId <= 0) {
+            return reply
+                .status(400)
+                .send({
+                error: "Empresa inválida",
+            });
+        }
         const result = await listCompanyPurchases(companyId);
         return reply
             .status(200)

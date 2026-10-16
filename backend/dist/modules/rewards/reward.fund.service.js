@@ -27,4 +27,25 @@ export async function creditRewardFund(tx, companyId, contribution) {
         },
     });
 }
+// =====================================================
+// ESTORNAR CONTRIBUIÇÃO DO FUNDO
+// =====================================================
+export async function debitRewardFund(tx, companyId, contribution) {
+    if (contribution <= 0) {
+        return;
+    }
+    await tx.company.update({
+        where: {
+            idCompany: companyId,
+        },
+        data: {
+            rewardFundBalance: {
+                decrement: contribution,
+            },
+            rewardFundTotalContributed: {
+                decrement: contribution,
+            },
+        },
+    });
+}
 //# sourceMappingURL=reward.fund.service.js.map

@@ -1,6 +1,30 @@
 import { prisma, } from "../../lib/prisma.js";
 import { ensureCustomerCycle, } from "../loyalty/cycle.service.js";
-import { calculateRewardFundContribution, creditRewardFund, } from "../rewards/reward.fund.service.js";
+import { calculateRewardFundContribution, creditRewardFund, debitRewardFund, } from "../rewards/reward.fund.service.js";
+// =====================================================
+// CONSTANTES
+// =====================================================
+const CASHIER_DELETE_WINDOW_MS = 30 * 60 * 1000;
+// =====================================================
+// FUNÇÕES AUXILIARES DE DATA
+// =====================================================
+function startOfDay(date) {
+    const result = new Date(date);
+    result.setHours(0, 0, 0, 0);
+    return result;
+}
+function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() +
+        days);
+    return result;
+}
+function getDayKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
 // =====================================================
 // CRIAR COMPRA / VENDA
 // =====================================================
@@ -34,12 +58,6 @@ export async function createPurchase(companyId, employeeId, data) {
     // CALCULAR CONTRIBUIÇÃO PARA O FUNDO
     //
     // 0,5% do valor da venda.
-    //
-    // Exemplo:
-    //
-    // R$ 250,00
-    // x 0,005
-    // = R$ 1,2500
     // ==================================================
     const rewardFundContribution = calculateRewardFundContribution(data.amount);
     // ==================================================
@@ -84,14 +102,7 @@ export async function createPurchase(companyId, employeeId, data) {
             },
         });
         // ===============================================
-        // CREDITAR 0,5% NO FUNDO DE RECOMPENSAS
-        //
-        // Está dentro da mesma transação da compra.
-        //
-        // Portanto:
-        //
-        // compra + fundo são confirmados juntos
-        // ou ambos sofrem rollback.
+        // CREDITAR 0,5% NO FUNDO
         // ===============================================
         await creditRewardFund(tx, companyId, rewardFundContribution);
         // ===============================================
@@ -154,6 +165,198 @@ export async function createPurchase(companyId, employeeId, data) {
                         .status,
                 }
                 : null,
+        };
+    });
+}
+// =====================================================
+// EXCLUIR COMPRA / VENDA
+// =====================================================
+export async function deletePurchase(companyId, purchaseId, employeeId, role) {
+    return prisma.$transaction(async (tx) => {
+        // ===============================================
+        // LOCALIZAR VENDA
+        //
+        // A busca já garante que a venda pertence
+        // à empresa informada.
+        // ===============================================
+        const purchase = await tx.purchase.findFirst({
+            where: {
+                idPurchase: purchaseId,
+                customer: {
+                    companyPerson: {
+                        Company_idCompany: companyId,
+                    },
+                },
+            },
+        });
+        if (!purchase) {
+            throw new Error("PURCHASE_NOT_FOUND");
+        }
+        // ===============================================
+        // VALIDAR PERFIL
+        // ===============================================
+        if (role !== "ADMIN" &&
+            role !== "CAIXA") {
+            throw new Error("PURCHASE_DELETE_FORBIDDEN");
+        }
+        // ===============================================
+        // REGRAS DO CAIXA
+        // ===============================================
+        if (role === "CAIXA") {
+            // O CAIXA só pode excluir
+            // uma venda feita por ele.
+            if (purchase
+                .RegisteredByEmployee_idCompanyEmployee
+                !== employeeId) {
+                throw new Error("PURCHASE_DELETE_FORBIDDEN");
+            }
+            const elapsed = Date.now() -
+                purchase
+                    .purchaseDate
+                    .getTime();
+            // Permitimos até exatamente
+            // 30 minutos.
+            if (elapsed >
+                CASHIER_DELETE_WINDOW_MS) {
+                throw new Error("PURCHASE_DELETE_WINDOW_EXPIRED");
+            }
+        }
+        // ===============================================
+        // AJUSTAR CURSOR DO CICLO ABERTO
+        //
+        // IMPORTANTE:
+        //
+        // NÃO retiramos progresso já conquistado.
+        //
+        // Porém CustomerCycle.purchaseDays funciona
+        // como um cursor de dias já processados.
+        //
+        // Se apagarmos o único registro de um dia
+        // já processado e não corrigirmos esse contador,
+        // um novo dia futuro poderia deixar de gerar
+        // progresso.
+        //
+        // Por isso reduzimos APENAS purchaseDays quando:
+        //
+        // - o ciclo ainda está OPEN;
+        // - aquele dia já havia sido processado;
+        // - esta é a única venda daquele dia.
+        //
+        // CustomerJourney.progress e
+        // CustomerCycle.progressEarned NÃO são alterados.
+        // ===============================================
+        const cycle = await tx.customerCycle.findFirst({
+            where: {
+                CompanyCustomer_idCompanyCustomer: purchase
+                    .CompanyCustomer_idCompanyCustomer,
+                status: "OPEN",
+                cycleStart: {
+                    lte: purchase.purchaseDate,
+                },
+                cycleEnd: {
+                    gt: purchase.purchaseDate,
+                },
+            },
+        });
+        if (cycle) {
+            const purchaseDayStart = startOfDay(purchase.purchaseDate);
+            const purchaseDayEnd = addDays(purchaseDayStart, 1);
+            const purchasesOnSameDay = await tx.purchase.count({
+                where: {
+                    CompanyCustomer_idCompanyCustomer: purchase
+                        .CompanyCustomer_idCompanyCustomer,
+                    purchaseDate: {
+                        gte: purchaseDayStart,
+                        lt: purchaseDayEnd,
+                    },
+                },
+            });
+            // Só precisamos mexer no cursor
+            // se essa for a única venda daquele dia.
+            if (purchasesOnSameDay === 1) {
+                const todayStart = startOfDay(new Date());
+                const purchasesBeforeToday = await tx.purchase.findMany({
+                    where: {
+                        CompanyCustomer_idCompanyCustomer: purchase
+                            .CompanyCustomer_idCompanyCustomer,
+                        purchaseDate: {
+                            gte: cycle.cycleStart,
+                            lt: todayStart,
+                        },
+                    },
+                    select: {
+                        purchaseDate: true,
+                    },
+                    orderBy: {
+                        purchaseDate: "asc",
+                    },
+                });
+                const uniqueDays = [];
+                const seenDays = new Set();
+                for (const item of purchasesBeforeToday) {
+                    const dayKey = getDayKey(item.purchaseDate);
+                    if (seenDays.has(dayKey)) {
+                        continue;
+                    }
+                    seenDays.add(dayKey);
+                    uniqueDays.push(dayKey);
+                }
+                const deletedDayKey = getDayKey(purchase.purchaseDate);
+                const deletedDayIndex = uniqueDays.indexOf(deletedDayKey);
+                const processedDays = cycle.purchaseDays ??
+                    0;
+                const deletedDayWasProcessed = deletedDayIndex >= 0 &&
+                    deletedDayIndex <
+                        processedDays;
+                if (deletedDayWasProcessed &&
+                    processedDays > 0) {
+                    await tx.customerCycle.update({
+                        where: {
+                            idCustomerCycle: cycle
+                                .idCustomerCycle,
+                        },
+                        data: {
+                            purchaseDays: processedDays -
+                                1,
+                        },
+                    });
+                }
+            }
+        }
+        // ===============================================
+        // ESTORNAR CONTRIBUIÇÃO DA VENDA
+        //
+        // Utilizamos exatamente o valor registrado
+        // na própria venda.
+        //
+        // NÃO recalculamos 0,5%.
+        // ===============================================
+        const rewardFundContribution = Number(purchase
+            .rewardFundContribution);
+        await debitRewardFund(tx, companyId, rewardFundContribution);
+        // ===============================================
+        // EXCLUIR VENDA
+        // ===============================================
+        await tx.purchase.delete({
+            where: {
+                idPurchase: purchase.idPurchase,
+            },
+        });
+        // ===============================================
+        // RESPOSTA
+        // ===============================================
+        return {
+            idPurchase: purchase
+                .idPurchase
+                .toString(),
+            amount: purchase
+                .amount
+                .toString(),
+            rewardFundContribution: purchase
+                .rewardFundContribution
+                .toString(),
+            purchaseDate: purchase
+                .purchaseDate,
         };
     });
 }

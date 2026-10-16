@@ -55,3 +55,38 @@ export async function creditRewardFund(
     },
   });
 }
+
+
+// =====================================================
+// ESTORNAR CONTRIBUIÇÃO DO FUNDO
+// =====================================================
+
+export async function debitRewardFund(
+  tx: Prisma.TransactionClient,
+  companyId: number,
+  contribution: number
+): Promise<void> {
+  if (contribution <= 0) {
+    return;
+  }
+
+
+  await tx.company.update({
+    where: {
+      idCompany:
+        companyId,
+    },
+
+    data: {
+      rewardFundBalance: {
+        decrement:
+          contribution,
+      },
+
+      rewardFundTotalContributed: {
+        decrement:
+          contribution,
+      },
+    },
+  });
+}

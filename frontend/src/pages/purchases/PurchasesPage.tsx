@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { getCustomerByCpf } from '../../api/customers.api'
 import {
+  deletePurchase,
   getCustomerPurchases,
   getPurchases,
   registerPurchase,
@@ -8,7 +9,7 @@ import {
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Customer } from '../../types/customer'
-import type { CompanyPurchaseHistory, CustomerPurchaseHistory } from '../../types/purchase'
+import type { CompanyPurchaseHistory, CustomerPurchaseHistory, Purchase } from '../../types/purchase'
 import {
   formatCpf,
   getCpfValidationError,
@@ -16,6 +17,39 @@ import {
 import { toast } from 'react-toastify'
 
 export function PurchaseRegistrationPage() {
+  const { session } = useAuth()
+
+  return <PurchaseRegistrationForm key={`${session?.company.idCompany}:${session?.employee.idCompanyEmployee}`} />
+}
+
+type LastPurchase = Pick<Purchase, 'idPurchase' | 'amount' | 'fiscalDocumentNumber' | 'purchaseDate'>
+
+const cancellationWindow = 30 * 60 * 1000
+
+function isExpired(purchase: LastPurchase) {
+  return Date.now() - new Date(purchase.purchaseDate).getTime() > cancellationWindow
+}
+
+function isLastPurchase(value: unknown): value is LastPurchase {
+  if (typeof value !== 'object' || value === null) return false
+
+  return 'idPurchase' in value && typeof value.idPurchase === 'string' && value.idPurchase.trim() !== ''
+    && 'amount' in value && typeof value.amount === 'string' && value.amount.trim() !== '' && Number.isFinite(Number(value.amount))
+    && 'fiscalDocumentNumber' in value && (value.fiscalDocumentNumber === null || typeof value.fiscalDocumentNumber === 'string')
+    && 'purchaseDate' in value && typeof value.purchaseDate === 'string' && Number.isFinite(Date.parse(value.purchaseDate))
+}
+
+// Storage is a convenience only; failures must not interrupt purchase operations.
+function storeLastPurchase(key: string, purchase: LastPurchase | null) {
+  try {
+    if (purchase) localStorage.setItem(key, JSON.stringify(purchase))
+    else localStorage.removeItem(key)
+  } catch {
+    // The page still works when browser storage is unavailable.
+  }
+}
+
+function PurchaseRegistrationForm() {
   const { session } = useAuth()
 
   const [cpf, setCpf] = useState('')
@@ -28,9 +62,85 @@ export function PurchaseRegistrationPage() {
   const [amountError, setAmountError] = useState('')
   const [isSearching, setIsSearching] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [lastPurchase, setLastPurchase] = useState<LastPurchase | null>(null)
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const companyId = session?.company.idCompany ?? 0
   const token = session?.token ?? ''
+  const employeeId = session?.employee.idCompanyEmployee
+  const role = session?.employee.role
+  const storageKey = companyId && employeeId
+    ? `loyalty:last-purchase:${companyId}:${employeeId}`
+    : null
+
+  useEffect(() => {
+    setLastPurchase(null)
+    if (!storageKey) return
+
+    try {
+      const saved = localStorage.getItem(storageKey)
+      if (saved === null) return
+      const parsed: unknown = JSON.parse(saved)
+      if (!isLastPurchase(parsed) || (role === 'CAIXA' && isExpired(parsed))) {
+        storeLastPurchase(storageKey, null)
+        return
+      }
+      setLastPurchase({
+        idPurchase: parsed.idPurchase,
+        amount: parsed.amount,
+        fiscalDocumentNumber: parsed.fiscalDocumentNumber,
+        purchaseDate: parsed.purchaseDate,
+      })
+    } catch {
+      storeLastPurchase(storageKey, null)
+    }
+  }, [storageKey, role])
+
+  useEffect(() => {
+    if (role !== 'CAIXA' || !lastPurchase || !storageKey) return
+
+    function checkExpiration() {
+      if (lastPurchase && isExpired(lastPurchase)) {
+        setLastPurchase(null)
+        storeLastPurchase(storageKey!, null)
+      }
+    }
+
+    checkExpiration()
+    const timer = window.setInterval(checkExpiration, 15_000)
+    return () => window.clearInterval(timer)
+  }, [lastPurchase, role, storageKey])
+
+  async function cancelLastPurchase() {
+    if (!lastPurchase || !storageKey || isCancelling || isSubmitting) return
+    if (!window.confirm(
+      `Tem certeza que deseja cancelar a última compra?\n\nValor: ${formatCurrency(lastPurchase.amount)}\nNota/Cupom: ${lastPurchase.fiscalDocumentNumber ?? 'Não informado'}\n\nA venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\nO progresso de fidelidade já concedido não será alterado.`,
+    )) return
+
+    setIsCancelling(true)
+    try {
+      await deletePurchase(companyId, lastPurchase.idPurchase, token)
+      setLastPurchase(null)
+      storeLastPurchase(storageKey, null)
+      toast.success('Última compra cancelada com sucesso.')
+    } catch (requestError) {
+      if (requestError instanceof ApiError && requestError.status === 404) {
+        setLastPurchase(null)
+        storeLastPurchase(storageKey, null)
+        toast.error('A compra não foi encontrada.')
+      } else if (requestError instanceof ApiError && requestError.status === 403) {
+        toast.error('Não foi possível cancelar esta compra. O prazo pode ter expirado ou você não possui permissão.')
+        if (role === 'CAIXA' && isExpired(lastPurchase)) {
+          setLastPurchase(null)
+          storeLastPurchase(storageKey, null)
+        }
+      } else {
+        toast.error('Não foi possível cancelar a última compra.')
+      }
+    } finally {
+      setIsCancelling(false)
+    }
+  }
 
   function changeCpf(value: string) {
     setCpf(formatCpf(value))
@@ -82,7 +192,7 @@ export function PurchaseRegistrationPage() {
   ) {
     event.preventDefault()
 
-    if (!customer) {
+    if (!customer || isCancelling || isSubmitting) {
       return
     }
 
@@ -135,6 +245,15 @@ export function PurchaseRegistrationPage() {
           token,
         )
 
+      const latest: LastPurchase = {
+        idPurchase: purchase.idPurchase,
+        amount: purchase.amount,
+        fiscalDocumentNumber: purchase.fiscalDocumentNumber,
+        purchaseDate: purchase.purchaseDate,
+      }
+      setLastPurchase(latest)
+      if (storageKey) storeLastPurchase(storageKey, latest)
+
       toast.success(
         `Compra registrada com sucesso. Nota/cupom: ${
           purchase.fiscalDocumentNumber ??
@@ -162,9 +281,19 @@ export function PurchaseRegistrationPage() {
       aria-labelledby="purchase-registration-title"
     >
       <div className="page-intro">
-        <h1 id="purchase-registration-title">
-          Registrar compra
-        </h1>
+        <div className="purchase-page-title-row">
+          <h1 id="purchase-registration-title">Registrar compra</h1>
+          {lastPurchase && (
+            <button
+              className="secondary-button cancel-last-purchase-button"
+              type="button"
+              onClick={cancelLastPurchase}
+              disabled={isCancelling || isSubmitting}
+            >
+              {isCancelling ? 'Cancelando…' : 'Cancelar última compra'}
+            </button>
+          )}
+        </div>
 
         <p>
           Localize o cliente, confirme sua
@@ -280,7 +409,7 @@ export function PurchaseRegistrationPage() {
                     '',
                   )
                 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isCancelling}
                 required
                 aria-invalid={Boolean(
                   fiscalDocumentError,
@@ -325,7 +454,7 @@ export function PurchaseRegistrationPage() {
                   }}
                   inputMode="decimal"
                   placeholder="0,00"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isCancelling}
                   required
                   aria-invalid={Boolean(
                     amountError,
@@ -356,7 +485,7 @@ export function PurchaseRegistrationPage() {
             <button
               className="primary-button"
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isCancelling}
             >
               {isSubmitting
                 ? 'Registrando compra…'

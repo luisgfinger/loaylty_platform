@@ -96,3 +96,6 @@ button, input { font: inherit; } button { cursor: pointer; } button:disabled { c
 }
 
 .customer-card .loyalty-customer h3, .loyalty-current-cycle h4, .loyalty-history h4 { margin: 0; letter-spacing: -.025em; }
+
+.purchase-page-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
+.cancel-last-purchase-button { padding: .45rem .65rem; font-size: .82rem; }
