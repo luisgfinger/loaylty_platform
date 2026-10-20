@@ -17,6 +17,9 @@ import type {
 // CONFIGURAÇÃO DOS MARCOS
 // =====================================================
 
+const FIRST_REWARD_PROGRESS_MILESTONE =
+  10;
+
 const REWARD_PROGRESS_INTERVAL =
   20;
 
@@ -265,8 +268,17 @@ function getSuggestedRewardTier(
 // =====================================================
 
 /**
- * Cria uma pendência para cada marco de 20 progress
- * cruzado entre previousProgress e newProgress.
+ * Cria uma pendência para cada marco cruzado entre
+ * previousProgress e newProgress.
+ *
+ * Marcos:
+ * - 10: primeira recompensa;
+ * - 20, 40, 60, 80...: recompensas seguintes.
+ *
+ * A recompensa de 10 não é retroativa: ela somente é
+ * criada quando o progresso cruza 10 depois desta regra
+ * estar ativa, pois o marco precisa ser maior que
+ * previousProgress e menor ou igual a newProgress.
  *
  * A constraint única por cliente + progressMilestone
  * garante idempotência.
@@ -286,40 +298,76 @@ export async function createPendingCustomerRewardsForProgress(
   }
 
 
-  const firstRewardNumber =
+  const rows:
+    Prisma.CustomerRewardCreateManyInput[] = [];
+
+
+  // ==================================================
+  // PRIMEIRA RECOMPENSA: 10 PONTOS
+  // ==================================================
+
+  if (
+    previousProgress <
+      FIRST_REWARD_PROGRESS_MILESTONE &&
+    newProgress >=
+      FIRST_REWARD_PROGRESS_MILESTONE
+  ) {
+    rows.push({
+      CompanyCustomer_idCompanyCustomer:
+        customerId,
+
+      status:
+        "PENDING",
+
+      suggestedTier:
+        getSuggestedRewardTier(
+          1,
+          regularity
+        ),
+
+      progressMilestone:
+        FIRST_REWARD_PROGRESS_MILESTONE,
+
+      regularityAtEarned:
+        regularity,
+    });
+  }
+
+
+  // ==================================================
+  // RECOMPENSAS SEGUINTES: 20, 40, 60, 80...
+  // ==================================================
+
+  const firstRegularRewardNumber =
     Math.floor(
       previousProgress /
         REWARD_PROGRESS_INTERVAL
     ) + 1;
 
 
-  const lastRewardNumber =
+  const lastRegularRewardNumber =
     Math.floor(
       newProgress /
         REWARD_PROGRESS_INTERVAL
     );
 
 
-  if (
-    firstRewardNumber >
-    lastRewardNumber
-  ) {
-    return;
-  }
-
-
-  const rows:
-    Prisma.CustomerRewardCreateManyInput[] = [];
-
-
   for (
-    let rewardNumber = firstRewardNumber;
-    rewardNumber <= lastRewardNumber;
-    rewardNumber += 1
+    let regularRewardNumber =
+      firstRegularRewardNumber;
+    regularRewardNumber <=
+      lastRegularRewardNumber;
+    regularRewardNumber += 1
   ) {
     const milestone =
-      rewardNumber *
+      regularRewardNumber *
       REWARD_PROGRESS_INTERVAL;
+
+
+    // O marco 20 passa a ser a segunda recompensa,
+    // pois a primeira agora ocorre em 10 pontos.
+    const rewardNumber =
+      regularRewardNumber + 1;
 
 
     rows.push({
