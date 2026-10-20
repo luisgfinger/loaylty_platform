@@ -4,7 +4,7 @@ import { calculateRewardFundContribution, creditRewardFund, debitRewardFund, } f
 // =====================================================
 // CONSTANTES
 // =====================================================
-const CASHIER_DELETE_WINDOW_MS = 30 * 60 * 1000;
+const CASHIER_DELETE_WINDOW_SECONDS = 30 * 60;
 // =====================================================
 // FUNÇÕES AUXILIARES DE DATA
 // =====================================================
@@ -175,9 +175,6 @@ export async function deletePurchase(companyId, purchaseId, employeeId, role) {
     return prisma.$transaction(async (tx) => {
         // ===============================================
         // LOCALIZAR VENDA
-        //
-        // A busca já garante que a venda pertence
-        // à empresa informada.
         // ===============================================
         const purchase = await tx.purchase.findFirst({
             where: {
@@ -203,47 +200,61 @@ export async function deletePurchase(companyId, purchaseId, employeeId, role) {
         // REGRAS DO CAIXA
         // ===============================================
         if (role === "CAIXA") {
-            // O CAIXA só pode excluir
-            // uma venda feita por ele.
+            // ---------------------------------------------
+            // VENDA PRECISA TER SIDO REGISTRADA
+            // PELO PRÓPRIO CAIXA
+            // ---------------------------------------------
             if (purchase
                 .RegisteredByEmployee_idCompanyEmployee
                 !== employeeId) {
                 throw new Error("PURCHASE_DELETE_FORBIDDEN");
             }
-            const elapsed = Date.now() -
-                purchase
-                    .purchaseDate
-                    .getTime();
+            // ---------------------------------------------
+            // CALCULAR PRAZO USANDO SOMENTE O RELÓGIO
+            // DO PRÓPRIO BANCO.
+            //
+            // Isso evita diferença de timezone entre:
+            //
+            // - MySQL
+            // - Node.js
+            // - Windows
+            //
+            // purchaseDate e CURRENT_TIMESTAMP são
+            // comparados pelo mesmo servidor MySQL.
+            // ---------------------------------------------
+            const timingRows = await tx.$queryRaw `
+            SELECT
+              TIMESTAMPDIFF(
+                SECOND,
+                purchaseDate,
+                CURRENT_TIMESTAMP(3)
+              ) AS elapsedSeconds
+            FROM \`Purchase\`
+            WHERE idPurchase = ${purchaseId}
+            LIMIT 1
+          `;
+            const timing = timingRows[0];
+            if (!timing) {
+                throw new Error("PURCHASE_NOT_FOUND");
+            }
+            const elapsedSeconds = Number(timing.elapsedSeconds);
+            if (!Number.isFinite(elapsedSeconds)) {
+                throw new Error("PURCHASE_DELETE_TIME_INVALID");
+            }
             // Permitimos até exatamente
-            // 30 minutos.
-            if (elapsed >
-                CASHIER_DELETE_WINDOW_MS) {
+            // 30 minutos = 1800 segundos.
+            if (elapsedSeconds >
+                CASHIER_DELETE_WINDOW_SECONDS) {
                 throw new Error("PURCHASE_DELETE_WINDOW_EXPIRED");
             }
         }
         // ===============================================
         // AJUSTAR CURSOR DO CICLO ABERTO
         //
-        // IMPORTANTE:
-        //
         // NÃO retiramos progresso já conquistado.
         //
-        // Porém CustomerCycle.purchaseDays funciona
-        // como um cursor de dias já processados.
-        //
-        // Se apagarmos o único registro de um dia
-        // já processado e não corrigirmos esse contador,
-        // um novo dia futuro poderia deixar de gerar
-        // progresso.
-        //
-        // Por isso reduzimos APENAS purchaseDays quando:
-        //
-        // - o ciclo ainda está OPEN;
-        // - aquele dia já havia sido processado;
-        // - esta é a única venda daquele dia.
-        //
-        // CustomerJourney.progress e
-        // CustomerCycle.progressEarned NÃO são alterados.
+        // CustomerCycle.purchaseDays funciona como
+        // cursor dos dias já processados.
         // ===============================================
         const cycle = await tx.customerCycle.findFirst({
             where: {
@@ -271,8 +282,6 @@ export async function deletePurchase(companyId, purchaseId, employeeId, role) {
                     },
                 },
             });
-            // Só precisamos mexer no cursor
-            // se essa for a única venda daquele dia.
             if (purchasesOnSameDay === 1) {
                 const todayStart = startOfDay(new Date());
                 const purchasesBeforeToday = await tx.purchase.findMany({
@@ -325,11 +334,6 @@ export async function deletePurchase(companyId, purchaseId, employeeId, role) {
         }
         // ===============================================
         // ESTORNAR CONTRIBUIÇÃO DA VENDA
-        //
-        // Utilizamos exatamente o valor registrado
-        // na própria venda.
-        //
-        // NÃO recalculamos 0,5%.
         // ===============================================
         const rewardFundContribution = Number(purchase
             .rewardFundContribution);

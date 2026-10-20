@@ -21,8 +21,8 @@ import {
 // CONSTANTES
 // =====================================================
 
-const CASHIER_DELETE_WINDOW_MS =
-  30 * 60 * 1000;
+const CASHIER_DELETE_WINDOW_SECONDS =
+  30 * 60;
 
 
 // =====================================================
@@ -369,9 +369,6 @@ export async function deletePurchase(
     async (tx) => {
       // ===============================================
       // LOCALIZAR VENDA
-      //
-      // A busca já garante que a venda pertence
-      // à empresa informada.
       // ===============================================
 
       const purchase =
@@ -418,8 +415,11 @@ export async function deletePurchase(
       if (
         role === "CAIXA"
       ) {
-        // O CAIXA só pode excluir
-        // uma venda feita por ele.
+        // ---------------------------------------------
+        // VENDA PRECISA TER SIDO REGISTRADA
+        // PELO PRÓPRIO CAIXA
+        // ---------------------------------------------
+
         if (
           purchase
             .RegisteredByEmployee_idCompanyEmployee
@@ -431,18 +431,75 @@ export async function deletePurchase(
         }
 
 
-        const elapsed =
-          Date.now() -
-          purchase
-            .purchaseDate
-            .getTime();
+        // ---------------------------------------------
+        // CALCULAR PRAZO USANDO SOMENTE O RELÓGIO
+        // DO PRÓPRIO BANCO.
+        //
+        // Isso evita diferença de timezone entre:
+        //
+        // - MySQL
+        // - Node.js
+        // - Windows
+        //
+        // purchaseDate e CURRENT_TIMESTAMP são
+        // comparados pelo mesmo servidor MySQL.
+        // ---------------------------------------------
+
+        const timingRows =
+          await tx.$queryRaw<
+            Array<{
+              elapsedSeconds:
+                number |
+                bigint |
+                string;
+            }>
+          >`
+            SELECT
+              TIMESTAMPDIFF(
+                SECOND,
+                purchaseDate,
+                CURRENT_TIMESTAMP(3)
+              ) AS elapsedSeconds
+            FROM \`Purchase\`
+            WHERE idPurchase = ${purchaseId}
+            LIMIT 1
+          `;
+
+
+        const timing =
+          timingRows[0];
+
+
+        if (!timing) {
+          throw new Error(
+            "PURCHASE_NOT_FOUND"
+          );
+        }
+
+
+        const elapsedSeconds =
+          Number(
+            timing.elapsedSeconds
+          );
+
+
+        if (
+          !Number.isFinite(
+            elapsedSeconds
+          )
+        ) {
+          throw new Error(
+            "PURCHASE_DELETE_TIME_INVALID"
+          );
+        }
 
 
         // Permitimos até exatamente
-        // 30 minutos.
+        // 30 minutos = 1800 segundos.
+
         if (
-          elapsed >
-          CASHIER_DELETE_WINDOW_MS
+          elapsedSeconds >
+          CASHIER_DELETE_WINDOW_SECONDS
         ) {
           throw new Error(
             "PURCHASE_DELETE_WINDOW_EXPIRED"
@@ -454,26 +511,10 @@ export async function deletePurchase(
       // ===============================================
       // AJUSTAR CURSOR DO CICLO ABERTO
       //
-      // IMPORTANTE:
-      //
       // NÃO retiramos progresso já conquistado.
       //
-      // Porém CustomerCycle.purchaseDays funciona
-      // como um cursor de dias já processados.
-      //
-      // Se apagarmos o único registro de um dia
-      // já processado e não corrigirmos esse contador,
-      // um novo dia futuro poderia deixar de gerar
-      // progresso.
-      //
-      // Por isso reduzimos APENAS purchaseDays quando:
-      //
-      // - o ciclo ainda está OPEN;
-      // - aquele dia já havia sido processado;
-      // - esta é a única venda daquele dia.
-      //
-      // CustomerJourney.progress e
-      // CustomerCycle.progressEarned NÃO são alterados.
+      // CustomerCycle.purchaseDays funciona como
+      // cursor dos dias já processados.
       // ===============================================
 
       const cycle =
@@ -531,8 +572,6 @@ export async function deletePurchase(
           });
 
 
-        // Só precisamos mexer no cursor
-        // se essa for a única venda daquele dia.
         if (
           purchasesOnSameDay === 1
         ) {
@@ -655,11 +694,6 @@ export async function deletePurchase(
 
       // ===============================================
       // ESTORNAR CONTRIBUIÇÃO DA VENDA
-      //
-      // Utilizamos exatamente o valor registrado
-      // na própria venda.
-      //
-      // NÃO recalculamos 0,5%.
       // ===============================================
 
       const rewardFundContribution =

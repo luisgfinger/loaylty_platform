@@ -9,163 +9,521 @@ import {
 import { ApiError } from '../../api/client'
 import { useAuth } from '../../auth/useAuth'
 import type { Customer } from '../../types/customer'
-import type { CompanyPurchaseHistory, CustomerPurchaseHistory, Purchase } from '../../types/purchase'
+import type {
+  CompanyPurchaseHistory,
+  CustomerPurchaseHistory,
+  Purchase,
+} from '../../types/purchase'
 import {
   formatCpf,
   getCpfValidationError,
 } from '../../utils/cpf'
 import { toast } from 'react-toastify'
 
+
 export function PurchaseRegistrationPage() {
   const { session } = useAuth()
 
-  return <PurchaseRegistrationForm key={`${session?.company.idCompany}:${session?.employee.idCompanyEmployee}`} />
+  return (
+    <PurchaseRegistrationForm
+      key={`${session?.company.idCompany}:${session?.employee.idCompanyEmployee}`}
+    />
+  )
 }
 
-type LastPurchase = Pick<Purchase, 'idPurchase' | 'amount' | 'fiscalDocumentNumber' | 'purchaseDate'>
 
-const cancellationWindow = 30 * 60 * 1000
+type LastPurchase =
+  Pick<
+    Purchase,
+    | 'idPurchase'
+    | 'amount'
+    | 'fiscalDocumentNumber'
+    | 'purchaseDate'
+  > & {
+    cancelExpiresAt: number
+  }
 
-function isExpired(purchase: LastPurchase) {
-  return Date.now() - new Date(purchase.purchaseDate).getTime() > cancellationWindow
+
+const cancellationWindow =
+  30 * 60 * 1000
+
+
+function isExpired(
+  purchase: LastPurchase,
+) {
+  return (
+    Date.now() >
+    purchase.cancelExpiresAt
+  )
 }
 
-function isLastPurchase(value: unknown): value is LastPurchase {
-  if (typeof value !== 'object' || value === null) return false
 
-  return 'idPurchase' in value && typeof value.idPurchase === 'string' && value.idPurchase.trim() !== ''
-    && 'amount' in value && typeof value.amount === 'string' && value.amount.trim() !== '' && Number.isFinite(Number(value.amount))
-    && 'fiscalDocumentNumber' in value && (value.fiscalDocumentNumber === null || typeof value.fiscalDocumentNumber === 'string')
-    && 'purchaseDate' in value && typeof value.purchaseDate === 'string' && Number.isFinite(Date.parse(value.purchaseDate))
+function isLastPurchase(
+  value: unknown,
+): value is LastPurchase {
+  if (
+    typeof value !== 'object' ||
+    value === null
+  ) {
+    return false
+  }
+
+  return (
+    'idPurchase' in value &&
+    typeof value.idPurchase ===
+      'string' &&
+    value.idPurchase.trim() !== '' &&
+
+    'amount' in value &&
+    typeof value.amount ===
+      'string' &&
+    value.amount.trim() !== '' &&
+    Number.isFinite(
+      Number(value.amount),
+    ) &&
+
+    'fiscalDocumentNumber' in value &&
+    (
+      value.fiscalDocumentNumber ===
+        null ||
+      typeof value.fiscalDocumentNumber ===
+        'string'
+    ) &&
+
+    'purchaseDate' in value &&
+    typeof value.purchaseDate ===
+      'string' &&
+    Number.isFinite(
+      Date.parse(
+        value.purchaseDate,
+      ),
+    ) &&
+
+    'cancelExpiresAt' in value &&
+    typeof value.cancelExpiresAt ===
+      'number' &&
+    Number.isFinite(
+      value.cancelExpiresAt,
+    )
+  )
 }
 
-// Storage is a convenience only; failures must not interrupt purchase operations.
-function storeLastPurchase(key: string, purchase: LastPurchase | null) {
+
+// Storage serve apenas para lembrar
+// a última compra no navegador.
+//
+// A autorização verdadeira continua
+// sendo feita no backend.
+function storeLastPurchase(
+  key: string,
+  purchase: LastPurchase | null,
+) {
   try {
-    if (purchase) localStorage.setItem(key, JSON.stringify(purchase))
-    else localStorage.removeItem(key)
+    if (purchase) {
+      localStorage.setItem(
+        key,
+        JSON.stringify(
+          purchase,
+        ),
+      )
+    } else {
+      localStorage.removeItem(
+        key,
+      )
+    }
   } catch {
-    // The page still works when browser storage is unavailable.
+    // A página continua funcionando
+    // mesmo sem localStorage.
   }
 }
+
 
 function PurchaseRegistrationForm() {
   const { session } = useAuth()
 
-  const [cpf, setCpf] = useState('')
-  const [amount, setAmount] = useState('')
-  const [fiscalDocumentNumber, setFiscalDocumentNumber] = useState('')
-  const [customer, setCustomer] = useState<Customer | null>(null)
-  const [error, setError] = useState('')
-  const [cpfError, setCpfError] = useState('')
-  const [fiscalDocumentError, setFiscalDocumentError] = useState('')
-  const [amountError, setAmountError] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [lastPurchase, setLastPurchase] = useState<LastPurchase | null>(null)
-  const [isCancelling, setIsCancelling] = useState(false)
+  const [
+    cpf,
+    setCpf,
+  ] = useState('')
 
-  const companyId = session?.company.idCompany ?? 0
-  const token = session?.token ?? ''
-  const employeeId = session?.employee.idCompanyEmployee
-  const role = session?.employee.role
-  const storageKey = companyId && employeeId
-    ? `loyalty:last-purchase:${companyId}:${employeeId}`
-    : null
+  const [
+    amount,
+    setAmount,
+  ] = useState('')
+
+  const [
+    fiscalDocumentNumber,
+    setFiscalDocumentNumber,
+  ] = useState('')
+
+  const [
+    customer,
+    setCustomer,
+  ] =
+    useState<Customer | null>(
+      null,
+    )
+
+  const [
+    error,
+    setError,
+  ] = useState('')
+
+  const [
+    cpfError,
+    setCpfError,
+  ] = useState('')
+
+  const [
+    fiscalDocumentError,
+    setFiscalDocumentError,
+  ] = useState('')
+
+  const [
+    amountError,
+    setAmountError,
+  ] = useState('')
+
+  const [
+    isSearching,
+    setIsSearching,
+  ] = useState(false)
+
+  const [
+    isSubmitting,
+    setIsSubmitting,
+  ] = useState(false)
+
+  const [
+    lastPurchase,
+    setLastPurchase,
+  ] =
+    useState<LastPurchase | null>(
+      null,
+    )
+
+  const [
+    isCancelling,
+    setIsCancelling,
+  ] = useState(false)
+
+
+  const companyId =
+    session?.company.idCompany ??
+    0
+
+  const token =
+    session?.token ??
+    ''
+
+  const employeeId =
+    session?.employee
+      .idCompanyEmployee
+
+  const role =
+    session?.employee.role
+
+  const storageKey =
+    companyId &&
+    employeeId
+      ? `loyalty:last-purchase:${companyId}:${employeeId}`
+      : null
+
+
+  // ===================================================
+  // RECUPERAR ÚLTIMA COMPRA
+  // ===================================================
 
   useEffect(() => {
-    setLastPurchase(null)
-    if (!storageKey) return
+    setLastPurchase(
+      null,
+    )
+
+    if (!storageKey) {
+      return
+    }
 
     try {
-      const saved = localStorage.getItem(storageKey)
-      if (saved === null) return
-      const parsed: unknown = JSON.parse(saved)
-      if (!isLastPurchase(parsed) || (role === 'CAIXA' && isExpired(parsed))) {
-        storeLastPurchase(storageKey, null)
+      const saved =
+        localStorage.getItem(
+          storageKey,
+        )
+
+      if (
+        saved === null
+      ) {
         return
       }
+
+      const parsed: unknown =
+        JSON.parse(
+          saved,
+        )
+
+      if (
+        !isLastPurchase(
+          parsed,
+        ) ||
+        (
+          role === 'CAIXA' &&
+          isExpired(
+            parsed,
+          )
+        )
+      ) {
+        storeLastPurchase(
+          storageKey,
+          null,
+        )
+
+        return
+      }
+
       setLastPurchase({
-        idPurchase: parsed.idPurchase,
-        amount: parsed.amount,
-        fiscalDocumentNumber: parsed.fiscalDocumentNumber,
-        purchaseDate: parsed.purchaseDate,
+        idPurchase:
+          parsed.idPurchase,
+
+        amount:
+          parsed.amount,
+
+        fiscalDocumentNumber:
+          parsed.fiscalDocumentNumber,
+
+        purchaseDate:
+          parsed.purchaseDate,
+
+        cancelExpiresAt:
+          parsed.cancelExpiresAt,
       })
     } catch {
-      storeLastPurchase(storageKey, null)
+      storeLastPurchase(
+        storageKey,
+        null,
+      )
     }
-  }, [storageKey, role])
+  }, [
+    storageKey,
+    role,
+  ])
+
+
+  // ===================================================
+  // EXPIRAR BOTÃO DO CAIXA
+  // ===================================================
 
   useEffect(() => {
-    if (role !== 'CAIXA' || !lastPurchase || !storageKey) return
+    if (
+      role !== 'CAIXA' ||
+      !lastPurchase ||
+      !storageKey
+    ) {
+      return
+    }
 
     function checkExpiration() {
-      if (lastPurchase && isExpired(lastPurchase)) {
-        setLastPurchase(null)
-        storeLastPurchase(storageKey!, null)
+      if (
+        lastPurchase &&
+        isExpired(
+          lastPurchase,
+        )
+      ) {
+        setLastPurchase(
+          null,
+        )
+
+        storeLastPurchase(
+          storageKey!,
+          null,
+        )
       }
     }
 
     checkExpiration()
-    const timer = window.setInterval(checkExpiration, 15_000)
-    return () => window.clearInterval(timer)
-  }, [lastPurchase, role, storageKey])
+
+    const timer =
+      window.setInterval(
+        checkExpiration,
+        15_000,
+      )
+
+    return () =>
+      window.clearInterval(
+        timer,
+      )
+  }, [
+    lastPurchase,
+    role,
+    storageKey,
+  ])
+
+
+  // ===================================================
+  // CANCELAR ÚLTIMA COMPRA
+  // ===================================================
 
   async function cancelLastPurchase() {
-    if (!lastPurchase || !storageKey || isCancelling || isSubmitting) return
-    if (!window.confirm(
-      `Tem certeza que deseja cancelar a última compra?\n\nValor: ${formatCurrency(lastPurchase.amount)}\nNota/Cupom: ${lastPurchase.fiscalDocumentNumber ?? 'Não informado'}\n\nA venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\nO progresso de fidelidade já concedido não será alterado.`,
-    )) return
+    if (
+      !lastPurchase ||
+      !storageKey ||
+      isCancelling ||
+      isSubmitting
+    ) {
+      return
+    }
 
-    setIsCancelling(true)
+    const confirmed =
+      window.confirm(
+        `Tem certeza que deseja cancelar a última compra?\n\n` +
+        `Valor: ${formatCurrency(lastPurchase.amount)}\n` +
+        `Nota/Cupom: ${lastPurchase.fiscalDocumentNumber ?? 'Não informado'}\n\n` +
+        `A venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\n` +
+        `O progresso de fidelidade já concedido não será alterado.`,
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+    setIsCancelling(
+      true,
+    )
+
     try {
-      await deletePurchase(companyId, lastPurchase.idPurchase, token)
-      setLastPurchase(null)
-      storeLastPurchase(storageKey, null)
-      toast.success('Última compra cancelada com sucesso.')
-    } catch (requestError) {
-      if (requestError instanceof ApiError && requestError.status === 404) {
-        setLastPurchase(null)
-        storeLastPurchase(storageKey, null)
-        toast.error('A compra não foi encontrada.')
-      } else if (requestError instanceof ApiError && requestError.status === 403) {
-        toast.error('Não foi possível cancelar esta compra. O prazo pode ter expirado ou você não possui permissão.')
-        if (role === 'CAIXA' && isExpired(lastPurchase)) {
-          setLastPurchase(null)
-          storeLastPurchase(storageKey, null)
+      await deletePurchase(
+        companyId,
+        lastPurchase.idPurchase,
+        token,
+      )
+
+      setLastPurchase(
+        null,
+      )
+
+      storeLastPurchase(
+        storageKey,
+        null,
+      )
+
+      toast.success(
+        'Última compra cancelada com sucesso.',
+      )
+    } catch (
+      requestError
+    ) {
+      if (
+        requestError instanceof
+          ApiError &&
+        requestError.status ===
+          404
+      ) {
+        setLastPurchase(
+          null,
+        )
+
+        storeLastPurchase(
+          storageKey,
+          null,
+        )
+
+        toast.error(
+          'A compra não foi encontrada.',
+        )
+
+      } else if (
+        requestError instanceof
+          ApiError &&
+        requestError.status ===
+          403
+      ) {
+        toast.error(
+          requestError.message ||
+          'Não foi possível cancelar esta compra.',
+        )
+
+        if (
+          role === 'CAIXA' &&
+          isExpired(
+            lastPurchase,
+          )
+        ) {
+          setLastPurchase(
+            null,
+          )
+
+          storeLastPurchase(
+            storageKey,
+            null,
+          )
         }
+
       } else {
-        toast.error('Não foi possível cancelar a última compra.')
+        toast.error(
+          'Não foi possível cancelar a última compra.',
+        )
       }
+
     } finally {
-      setIsCancelling(false)
+      setIsCancelling(
+        false,
+      )
     }
   }
 
-  function changeCpf(value: string) {
-    setCpf(formatCpf(value))
+
+  // ===================================================
+  // ALTERAR CPF
+  // ===================================================
+
+  function changeCpf(
+    value: string,
+  ) {
+    setCpf(
+      formatCpf(
+        value,
+      ),
+    )
+
     setCpfError('')
     setCustomer(null)
     setError('')
   }
 
+
+  // ===================================================
+  // LOCALIZAR CLIENTE
+  // ===================================================
+
   async function searchCustomer(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault()
 
     setError('')
     setCpfError('')
 
-    const validationError = getCpfValidationError(cpf)
+    const validationError =
+      getCpfValidationError(
+        cpf,
+      )
 
-    if (validationError) {
-      setCpfError(validationError)
+    if (
+      validationError
+    ) {
+      setCpfError(
+        validationError,
+      )
+
       return
     }
 
-    setIsSearching(true)
-    setCustomer(null)
+    setIsSearching(
+      true,
+    )
+
+    setCustomer(
+      null,
+    )
 
     try {
       setCustomer(
@@ -175,24 +533,40 @@ function PurchaseRegistrationForm() {
           token,
         ),
       )
-    } catch (requestError) {
+
+    } catch (
+      requestError
+    ) {
       setError(
         getPurchaseError(
           requestError,
           'search',
         ),
       )
+
     } finally {
-      setIsSearching(false)
+      setIsSearching(
+        false,
+      )
     }
   }
 
+
+  // ===================================================
+  // REGISTRAR COMPRA
+  // ===================================================
+
   async function submitPurchase(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault()
 
-    if (!customer || isCancelling || isSubmitting) {
+    if (
+      !customer ||
+      isCancelling ||
+      isSubmitting
+    ) {
       return
     }
 
@@ -203,56 +577,106 @@ function PurchaseRegistrationForm() {
     const normalizedFiscalDocumentNumber =
       fiscalDocumentNumber.trim()
 
-    if (!normalizedFiscalDocumentNumber) {
+    if (
+      !normalizedFiscalDocumentNumber
+    ) {
       setFiscalDocumentError(
         'Informe o número da nota ou cupom fiscal.',
       )
+
       return
     }
 
     if (
-      normalizedFiscalDocumentNumber.length >
-      60
+      normalizedFiscalDocumentNumber
+        .length > 60
     ) {
       setFiscalDocumentError(
         'O número da nota ou cupom fiscal deve possuir no máximo 60 caracteres.',
       )
+
       return
     }
 
     const purchaseAmount =
-      amountToNumber(amount)
+      amountToNumber(
+        amount,
+      )
 
-    if (purchaseAmount <= 0) {
+    if (
+      purchaseAmount <= 0
+    ) {
       setAmountError(
         'Informe um valor de compra maior que zero.',
       )
+
       return
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(
+      true,
+    )
 
     try {
       const purchase =
         await registerPurchase(
           companyId,
           {
-            cpf: customer.person.cpf,
+            cpf:
+              customer.person.cpf,
+
             fiscalDocumentNumber:
               normalizedFiscalDocumentNumber,
-            amount: purchaseAmount,
+
+            amount:
+              purchaseAmount,
           },
           token,
         )
 
-      const latest: LastPurchase = {
-        idPurchase: purchase.idPurchase,
-        amount: purchase.amount,
-        fiscalDocumentNumber: purchase.fiscalDocumentNumber,
-        purchaseDate: purchase.purchaseDate,
+
+      // O prazo visual de 30 minutos começa
+      // no momento em que o frontend recebe
+      // confirmação da venda.
+      //
+      // A segurança real continua sendo
+      // validada pelo backend.
+
+      const latest:
+        LastPurchase = {
+          idPurchase:
+            purchase.idPurchase,
+
+          amount:
+            purchase.amount,
+
+          fiscalDocumentNumber:
+            purchase
+              .fiscalDocumentNumber,
+
+          purchaseDate:
+            purchase.purchaseDate,
+
+          cancelExpiresAt:
+            Date.now() +
+            cancellationWindow,
+        }
+
+
+      setLastPurchase(
+        latest,
+      )
+
+
+      if (
+        storageKey
+      ) {
+        storeLastPurchase(
+          storageKey,
+          latest,
+        )
       }
-      setLastPurchase(latest)
-      if (storageKey) storeLastPurchase(storageKey, latest)
+
 
       toast.success(
         `Compra registrada com sucesso. Nota/cupom: ${
@@ -261,19 +685,27 @@ function PurchaseRegistrationForm() {
         }.`,
       )
 
+
       setAmount('')
       setFiscalDocumentNumber('')
-    } catch (requestError) {
+
+    } catch (
+      requestError
+    ) {
       toast.error(
         getPurchaseError(
           requestError,
           'create',
         ),
       )
+
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(
+        false,
+      )
     }
   }
+
 
   return (
     <section
@@ -282,15 +714,25 @@ function PurchaseRegistrationForm() {
     >
       <div className="page-intro">
         <div className="purchase-page-title-row">
-          <h1 id="purchase-registration-title">Registrar compra</h1>
+          <h1 id="purchase-registration-title">
+            Registrar compra
+          </h1>
+
           {lastPurchase && (
             <button
               className="secondary-button cancel-last-purchase-button"
               type="button"
-              onClick={cancelLastPurchase}
-              disabled={isCancelling || isSubmitting}
+              onClick={
+                cancelLastPurchase
+              }
+              disabled={
+                isCancelling ||
+                isSubmitting
+              }
             >
-              {isCancelling ? 'Cancelando…' : 'Cancelar última compra'}
+              {isCancelling
+                ? 'Cancelando…'
+                : 'Cancelar última compra'}
             </button>
           )}
         </div>
@@ -301,6 +743,7 @@ function PurchaseRegistrationForm() {
         </p>
       </div>
 
+
       {error && (
         <p
           className="form-error"
@@ -310,9 +753,12 @@ function PurchaseRegistrationForm() {
         </p>
       )}
 
+
       <form
         className="purchase-search"
-        onSubmit={searchCustomer}
+        onSubmit={
+          searchCustomer
+        }
         noValidate
       >
         <div className="form-field">
@@ -323,8 +769,14 @@ function PurchaseRegistrationForm() {
           <input
             id="purchase-cpf"
             value={cpf}
-            onChange={(event) =>
-              changeCpf(event.target.value)
+            onChange={(
+              event
+            ) =>
+              changeCpf(
+                event
+                  .target
+                  .value,
+              )
             }
             inputMode="numeric"
             placeholder="000.000.000-00"
@@ -333,7 +785,11 @@ function PurchaseRegistrationForm() {
               isSubmitting
             }
             required
-            aria-invalid={Boolean(cpfError)}
+            aria-invalid={
+              Boolean(
+                cpfError,
+              )
+            }
             aria-describedby={
               cpfError
                 ? 'purchase-cpf-error'
@@ -365,6 +821,7 @@ function PurchaseRegistrationForm() {
         </button>
       </form>
 
+
       {customer && (
         <>
           <article
@@ -386,9 +843,12 @@ function PurchaseRegistrationForm() {
             </p>
           </article>
 
+
           <form
             className="purchase-form"
-            onSubmit={submitPurchase}
+            onSubmit={
+              submitPurchase
+            }
             noValidate
           >
             <div className="form-field">
@@ -401,19 +861,27 @@ function PurchaseRegistrationForm() {
                 value={
                   fiscalDocumentNumber
                 }
-                onChange={(event) => {
+                onChange={(
+                  event
+                ) => {
                   setFiscalDocumentNumber(
                     event.target.value,
                   )
+
                   setFiscalDocumentError(
                     '',
                   )
                 }}
-                disabled={isSubmitting || isCancelling}
+                disabled={
+                  isSubmitting ||
+                  isCancelling
+                }
                 required
-                aria-invalid={Boolean(
-                  fiscalDocumentError,
-                )}
+                aria-invalid={
+                  Boolean(
+                    fiscalDocumentError,
+                  )
+                }
                 aria-describedby={
                   fiscalDocumentError
                     ? 'purchase-fiscal-document-error'
@@ -431,6 +899,7 @@ function PurchaseRegistrationForm() {
               )}
             </div>
 
+
             <div className="form-field">
               <label htmlFor="purchase-amount">
                 Valor da compra
@@ -443,22 +912,32 @@ function PurchaseRegistrationForm() {
 
                 <input
                   id="purchase-amount"
-                  value={amount}
-                  onChange={(event) => {
+                  value={
+                    amount
+                  }
+                  onChange={(
+                    event
+                  ) => {
                     setAmount(
                       formatAmountInput(
                         event.target.value,
                       ),
                     )
+
                     setAmountError('')
                   }}
                   inputMode="decimal"
                   placeholder="0,00"
-                  disabled={isSubmitting || isCancelling}
+                  disabled={
+                    isSubmitting ||
+                    isCancelling
+                  }
                   required
-                  aria-invalid={Boolean(
-                    amountError,
-                  )}
+                  aria-invalid={
+                    Boolean(
+                      amountError,
+                    )
+                  }
                   aria-describedby={
                     amountError
                       ? 'purchase-amount-help purchase-amount-error'
@@ -485,7 +964,10 @@ function PurchaseRegistrationForm() {
             <button
               className="primary-button"
               type="submit"
-              disabled={isSubmitting || isCancelling}
+              disabled={
+                isSubmitting ||
+                isCancelling
+              }
             >
               {isSubmitting
                 ? 'Registrando compra…'
@@ -494,6 +976,7 @@ function PurchaseRegistrationForm() {
           </form>
         </>
       )}
+
 
       {!customer &&
         error.includes(
@@ -514,155 +997,437 @@ function PurchaseRegistrationForm() {
   )
 }
 
-type PurchaseHistoryResult =
-  | { kind: 'company'; data: CompanyPurchaseHistory }
-  | { kind: 'customer'; data: CustomerPurchaseHistory }
 
-type CancellablePurchase = Pick<Purchase, 'idPurchase' | 'amount' | 'purchaseDate'>
+// =====================================================
+// HISTÓRICO
+// =====================================================
+
+type PurchaseHistoryResult =
+  | {
+      kind: 'company'
+      data: CompanyPurchaseHistory
+    }
+  | {
+      kind: 'customer'
+      data: CustomerPurchaseHistory
+    }
+
+
+type CancellablePurchase =
+  Pick<
+    Purchase,
+    | 'idPurchase'
+    | 'amount'
+    | 'purchaseDate'
+  >
+
 
 export function PurchaseHistoryPage() {
   const { session } = useAuth()
-  const role = session?.employee.role
-  const isAdmin = role === 'ADMIN'
-  const [cancellingPurchaseIds, setCancellingPurchaseIds] = useState<Set<string>>(() => new Set())
 
-  const [cpf, setCpf] = useState('')
-  const [history, setHistory] =
+  const role =
+    session?.employee.role
+
+  const isAdmin =
+    role === 'ADMIN'
+
+  const [
+    cancellingPurchaseIds,
+    setCancellingPurchaseIds,
+  ] =
+    useState<Set<string>>(
+      () =>
+        new Set(),
+    )
+
+  const [
+    cpf,
+    setCpf,
+  ] = useState('')
+
+  const [
+    history,
+    setHistory,
+  ] =
     useState<PurchaseHistoryResult | null>(
       null,
     )
 
-  const [error, setError] = useState('')
-  const [cpfError, setCpfError] =
-    useState('')
+  const [
+    error,
+    setError,
+  ] = useState('')
 
-  const [isLoading, setIsLoading] =
-    useState(false)
+  const [
+    cpfError,
+    setCpfError,
+  ] = useState('')
+
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(false)
 
   const companyId =
-    session?.company.idCompany ?? 0
+    session?.company.idCompany ??
+    0
 
   const token =
-    session?.token ?? ''
+    session?.token ??
+    ''
+
 
   useEffect(() => {
-    if (!companyId || !token) return
+    if (
+      !companyId ||
+      !token
+    ) {
+      return
+    }
 
-    let cancelled = false
-    setIsLoading(true)
-    setHistory(null)
+    let cancelled =
+      false
+
+    setIsLoading(
+      true,
+    )
+
+    setHistory(
+      null,
+    )
+
     setError('')
 
-    getPurchases(companyId, token)
-      .then((data) => {
-        if (!cancelled) setHistory({ kind: 'company', data })
-      })
-      .catch((requestError: unknown) => {
-        if (!cancelled) setError(getHistoryError(requestError))
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false)
-      })
+    getPurchases(
+      companyId,
+      token,
+    )
+      .then(
+        (
+          data,
+        ) => {
+          if (
+            !cancelled
+          ) {
+            setHistory({
+              kind:
+                'company',
+
+              data,
+            })
+          }
+        },
+      )
+      .catch(
+        (
+          requestError:
+            unknown,
+        ) => {
+          if (
+            !cancelled
+          ) {
+            setError(
+              getHistoryError(
+                requestError,
+              ),
+            )
+          }
+        },
+      )
+      .finally(
+        () => {
+          if (
+            !cancelled
+          ) {
+            setIsLoading(
+              false,
+            )
+          }
+        },
+      )
 
     return () => {
-      cancelled = true
+      cancelled =
+        true
     }
-  }, [companyId, token])
+  }, [
+    companyId,
+    token,
+  ])
 
-  function removePurchase(purchaseId: string) {
-    setHistory((current) => {
-      if (!current) return current
 
-      if (current.kind === 'company') {
+  function removePurchase(
+    purchaseId: string,
+  ) {
+    setHistory(
+      (
+        current,
+      ) => {
+        if (
+          !current
+        ) {
+          return current
+        }
+
+        if (
+          current.kind ===
+          'company'
+        ) {
+          return {
+            ...current,
+
+            data: {
+              ...current.data,
+
+              purchases:
+                current
+                  .data
+                  .purchases
+                  .filter(
+                    (
+                      purchase,
+                    ) =>
+                      purchase
+                        .idPurchase !==
+                      purchaseId,
+                  ),
+            },
+          }
+        }
+
         return {
           ...current,
+
           data: {
             ...current.data,
-            purchases: current.data.purchases.filter((purchase) => purchase.idPurchase !== purchaseId),
+
+            purchases:
+              current
+                .data
+                .purchases
+                .filter(
+                  (
+                    purchase,
+                  ) =>
+                    purchase
+                      .idPurchase !==
+                    purchaseId,
+                ),
           },
         }
-      }
-
-      return {
-        ...current,
-        data: {
-          ...current.data,
-          purchases: current.data.purchases.filter((purchase) => purchase.idPurchase !== purchaseId),
-        },
-      }
-    })
+      },
+    )
   }
 
-  async function cancelPurchase(purchase: CancellablePurchase, customerName: string) {
-    if (!isAdmin || !companyId || !token || cancellingPurchaseIds.has(purchase.idPurchase)) return
 
-    if (!window.confirm(
-      `Tem certeza que deseja cancelar esta venda?\n\nCliente: ${customerName}\nValor: ${formatCurrency(purchase.amount)}\nData: ${formatDateTime(purchase.purchaseDate)}\n\nA venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\nO progresso de fidelidade já concedido não será alterado.`,
-    )) return
+  async function cancelPurchase(
+    purchase:
+      CancellablePurchase,
+    customerName:
+      string,
+  ) {
+    if (
+      !isAdmin ||
+      !companyId ||
+      !token ||
+      cancellingPurchaseIds
+        .has(
+          purchase
+            .idPurchase,
+        )
+    ) {
+      return
+    }
 
-    setCancellingPurchaseIds((current) => new Set(current).add(purchase.idPurchase))
+    const confirmed =
+      window.confirm(
+        `Tem certeza que deseja cancelar esta venda?\n\n` +
+        `Cliente: ${customerName}\n` +
+        `Valor: ${formatCurrency(purchase.amount)}\n` +
+        `Data: ${formatDateTime(purchase.purchaseDate)}\n\n` +
+        `A venda será excluída e a contribuição ao fundo de recompensas será estornada.\n\n` +
+        `O progresso de fidelidade já concedido não será alterado.`,
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+    setCancellingPurchaseIds(
+      (
+        current,
+      ) =>
+        new Set(
+          current,
+        ).add(
+          purchase
+            .idPurchase,
+        ),
+    )
+
     try {
-      await deletePurchase(companyId, purchase.idPurchase, token)
-      removePurchase(purchase.idPurchase)
-      toast.success('Venda cancelada com sucesso.')
-    } catch (requestError) {
-      if (requestError instanceof ApiError && requestError.status === 404) {
-        removePurchase(purchase.idPurchase)
-        toast.error('A venda não foi encontrada.')
-      } else if (requestError instanceof ApiError && requestError.status === 403) {
-        toast.error('Você não possui permissão para cancelar esta venda.')
-      } else if (requestError instanceof ApiError && requestError.status === 401) {
-        toast.error('Sua sessão expirou. Entre novamente.')
+      await deletePurchase(
+        companyId,
+        purchase.idPurchase,
+        token,
+      )
+
+      removePurchase(
+        purchase.idPurchase,
+      )
+
+      toast.success(
+        'Venda cancelada com sucesso.',
+      )
+
+    } catch (
+      requestError
+    ) {
+      if (
+        requestError instanceof
+          ApiError &&
+        requestError.status ===
+          404
+      ) {
+        removePurchase(
+          purchase.idPurchase,
+        )
+
+        toast.error(
+          'A venda não foi encontrada.',
+        )
+
+      } else if (
+        requestError instanceof
+          ApiError &&
+        requestError.status ===
+          403
+      ) {
+        toast.error(
+          'Você não possui permissão para cancelar esta venda.',
+        )
+
+      } else if (
+        requestError instanceof
+          ApiError &&
+        requestError.status ===
+          401
+      ) {
+        toast.error(
+          'Sua sessão expirou. Entre novamente.',
+        )
+
       } else {
-        toast.error('Não foi possível cancelar a venda.')
+        toast.error(
+          'Não foi possível cancelar a venda.',
+        )
       }
+
     } finally {
-      setCancellingPurchaseIds((current) => {
-        const next = new Set(current)
-        next.delete(purchase.idPurchase)
-        return next
-      })
+      setCancellingPurchaseIds(
+        (
+          current,
+        ) => {
+          const next =
+            new Set(
+              current,
+            )
+
+          next.delete(
+            purchase
+              .idPurchase,
+          )
+
+          return next
+        },
+      )
     }
   }
 
+
   async function searchHistory(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault()
 
     setError('')
     setCpfError('')
 
-    const validationError = cpf.trim()
-      ? getCpfValidationError(cpf)
-      : ''
+    const validationError =
+      cpf.trim()
+        ? getCpfValidationError(
+            cpf,
+          )
+        : ''
 
-    if (validationError) {
-      setCpfError(validationError)
+    if (
+      validationError
+    ) {
+      setCpfError(
+        validationError,
+      )
+
       return
     }
 
-    setIsLoading(true)
-    setHistory(null)
+    setIsLoading(
+      true,
+    )
+
+    setHistory(
+      null,
+    )
 
     try {
-      if (cpf.trim()) {
-        const data = await getCustomerPurchases(companyId, cpf, token)
-        setHistory({ kind: 'customer', data })
+      if (
+        cpf.trim()
+      ) {
+        const data =
+          await getCustomerPurchases(
+            companyId,
+            cpf,
+            token,
+          )
+
+        setHistory({
+          kind:
+            'customer',
+
+          data,
+        })
+
       } else {
-        const data = await getPurchases(companyId, token)
-        setHistory({ kind: 'company', data })
+        const data =
+          await getPurchases(
+            companyId,
+            token,
+          )
+
+        setHistory({
+          kind:
+            'company',
+
+          data,
+        })
       }
-    } catch (requestError) {
+
+    } catch (
+      requestError
+    ) {
       setError(
         getHistoryError(
           requestError,
         ),
       )
+
     } finally {
-      setIsLoading(false)
+      setIsLoading(
+        false,
+      )
     }
   }
+
 
   return (
     <section
@@ -683,6 +1448,7 @@ export function PurchaseHistoryPage() {
         </p>
       </div>
 
+
       {error && (
         <p
           className="form-error"
@@ -692,9 +1458,12 @@ export function PurchaseHistoryPage() {
         </p>
       )}
 
+
       <form
         className="purchase-search"
-        onSubmit={searchHistory}
+        onSubmit={
+          searchHistory
+        }
         noValidate
       >
         <div className="form-field">
@@ -705,22 +1474,31 @@ export function PurchaseHistoryPage() {
           <input
             id="purchase-history-cpf"
             value={cpf}
-            onChange={(event) => {
+            onChange={(
+              event
+            ) => {
               setCpf(
                 formatCpf(
-                  event.target.value,
+                  event
+                    .target
+                    .value,
                 ),
               )
+
               setCpfError('')
               setHistory(null)
               setError('')
             }}
             inputMode="numeric"
             placeholder="000.000.000-00"
-            disabled={isLoading}
-            aria-invalid={Boolean(
-              cpfError,
-            )}
+            disabled={
+              isLoading
+            }
+            aria-invalid={
+              Boolean(
+                cpfError,
+              )
+            }
             aria-describedby={
               cpfError
                 ? 'purchase-history-cpf-error'
@@ -741,7 +1519,9 @@ export function PurchaseHistoryPage() {
         <button
           className="primary-button"
           type="submit"
-          disabled={isLoading}
+          disabled={
+            isLoading
+          }
         >
           {isLoading
             ? 'Consultando…'
@@ -749,31 +1529,64 @@ export function PurchaseHistoryPage() {
         </button>
       </form>
 
+
       <PurchaseHistory
-        history={history}
-        isLoading={isLoading}
-        isAdmin={isAdmin}
-        cancellingPurchaseIds={cancellingPurchaseIds}
-        onCancelPurchase={cancelPurchase}
+        history={
+          history
+        }
+        isLoading={
+          isLoading
+        }
+        isAdmin={
+          isAdmin
+        }
+        cancellingPurchaseIds={
+          cancellingPurchaseIds
+        }
+        onCancelPurchase={
+          cancelPurchase
+        }
       />
     </section>
   )
 }
 
+
 function PurchaseHistory({
-  history: result,
+  history:
+    result,
+
   isLoading,
+
   isAdmin,
+
   cancellingPurchaseIds,
+
   onCancelPurchase,
 }: {
-  history: PurchaseHistoryResult | null
-  isLoading: boolean
-  isAdmin: boolean
-  cancellingPurchaseIds: ReadonlySet<string>
-  onCancelPurchase: (purchase: CancellablePurchase, customerName: string) => Promise<void>
+  history:
+    PurchaseHistoryResult | null
+
+  isLoading:
+    boolean
+
+  isAdmin:
+    boolean
+
+  cancellingPurchaseIds:
+    ReadonlySet<string>
+
+  onCancelPurchase: (
+    purchase:
+      CancellablePurchase,
+
+    customerName:
+      string,
+  ) => Promise<void>
 }) {
-  if (isLoading) {
+  if (
+    isLoading
+  ) {
     return (
       <p
         className="loading-state purchase-history-loading"
@@ -784,62 +1597,159 @@ function PurchaseHistory({
     )
   }
 
-  if (!result) {
+
+  if (
+    !result
+  ) {
     return null
   }
 
-  if (result.kind === 'company') {
+
+  if (
+    result.kind ===
+    'company'
+  ) {
     return (
-      <section className="purchase-history" aria-label="Compras da empresa">
-        {result.data.purchases.length === 0 ? (
-          <p className="empty-state">Nenhuma compra registrada até o momento.</p>
-        ) : (
-          <div className="purchase-table-wrapper">
-            <table>
-              <caption>Compras da empresa</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Data e hora</th>
-                  <th scope="col">Cliente</th>
-                  <th scope="col">Valor</th>
-                  <th scope="col">Registrada por</th>
-                  {isAdmin && <th scope="col">Ações</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {result.data.purchases.map((purchase) => (
-                  <tr key={purchase.idPurchase}>
-                    <td>
-                      <time dateTime={purchase.purchaseDate}>
-                        {formatDateTime(purchase.purchaseDate)}
-                      </time>
-                    </td>
-                    <td>{purchase.customer.name}</td>
-                    <td>{formatCurrency(purchase.amount)}</td>
-                    <td>{purchase.registeredBy?.name ?? 'Não informado'}</td>
+      <section
+        className="purchase-history"
+        aria-label="Compras da empresa"
+      >
+        {result.data
+          .purchases
+          .length === 0
+          ? (
+            <p className="empty-state">
+              Nenhuma compra registrada até o momento.
+            </p>
+          )
+          : (
+            <div className="purchase-table-wrapper">
+              <table>
+                <caption>
+                  Compras da empresa
+                </caption>
+
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      Data e hora
+                    </th>
+
+                    <th scope="col">
+                      Cliente
+                    </th>
+
+                    <th scope="col">
+                      Valor
+                    </th>
+
+                    <th scope="col">
+                      Registrada por
+                    </th>
+
                     {isAdmin && (
-                      <td>
-                        <button
-                          className="danger-button purchase-cancel-button"
-                          type="button"
-                          disabled={cancellingPurchaseIds.has(purchase.idPurchase)}
-                          onClick={() => onCancelPurchase(purchase, purchase.customer.name)}
-                        >
-                          {cancellingPurchaseIds.has(purchase.idPurchase) ? 'Cancelando…' : 'Cancelar venda'}
-                        </button>
-                      </td>
+                      <th scope="col">
+                        Ações
+                      </th>
                     )}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+
+                <tbody>
+                  {result
+                    .data
+                    .purchases
+                    .map(
+                      (
+                        purchase,
+                      ) => (
+                        <tr
+                          key={
+                            purchase
+                              .idPurchase
+                          }
+                        >
+                          <td>
+                            <time
+                              dateTime={
+                                purchase
+                                  .purchaseDate
+                              }
+                            >
+                              {formatDateTime(
+                                purchase
+                                  .purchaseDate,
+                              )}
+                            </time>
+                          </td>
+
+                          <td>
+                            {purchase
+                              .customer
+                              .name}
+                          </td>
+
+                          <td>
+                            {formatCurrency(
+                              purchase
+                                .amount,
+                            )}
+                          </td>
+
+                          <td>
+                            {purchase
+                              .registeredBy
+                              ?.name ??
+                              'Não informado'}
+                          </td>
+
+                          {isAdmin && (
+                            <td>
+                              <button
+                                className="danger-button purchase-cancel-button"
+                                type="button"
+                                disabled={
+                                  cancellingPurchaseIds
+                                    .has(
+                                      purchase
+                                        .idPurchase,
+                                    )
+                                }
+                                onClick={
+                                  () =>
+                                    onCancelPurchase(
+                                      purchase,
+                                      purchase
+                                        .customer
+                                        .name,
+                                    )
+                                }
+                              >
+                                {cancellingPurchaseIds
+                                  .has(
+                                    purchase
+                                      .idPurchase,
+                                  )
+                                  ? 'Cancelando…'
+                                  : 'Cancelar venda'}
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      ),
+                    )}
+                </tbody>
+              </table>
+            </div>
+          )}
       </section>
     )
   }
 
-  const history = result.data
+
+  const history =
+    result.data
+
 
   return (
     <section
@@ -862,129 +1772,191 @@ function PurchaseHistory({
         </p>
       </div>
 
-      {history.purchases.length ===
-        0 && (
-        <p className="empty-state">
-          Este cliente ainda não
-          possui compras registradas.
-        </p>
-      )}
 
-      {history.purchases.length >
-        0 && (
-        <div className="purchase-table-wrapper">
-          <table>
-            <caption>
-              Compras de{' '}
-              {history.customer.name}
-            </caption>
+      {history
+        .purchases
+        .length === 0 && (
+          <p className="empty-state">
+            Este cliente ainda não possui compras registradas.
+          </p>
+        )}
 
-            <thead>
-              <tr>
-                <th scope="col">
-                  Data
-                </th>
-                <th scope="col">
-                  Nota/Cupom
-                </th>
-                <th scope="col">
-                  Valor
-                </th>
-                <th scope="col">
-                  Registrada por
-                </th>
-                {isAdmin && <th scope="col">Ações</th>}
-              </tr>
-            </thead>
 
-            <tbody>
-              {history.purchases.map(
-                (purchase) => (
-                  <tr
-                    key={
-                      purchase.idPurchase
-                    }
-                  >
-                    <td>
-                      <time
-                        dateTime={
-                          purchase.purchaseDate
+      {history
+        .purchases
+        .length > 0 && (
+          <div className="purchase-table-wrapper">
+            <table>
+              <caption>
+                Compras de{' '}
+                {history
+                  .customer
+                  .name}
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">
+                    Data
+                  </th>
+
+                  <th scope="col">
+                    Nota/Cupom
+                  </th>
+
+                  <th scope="col">
+                    Valor
+                  </th>
+
+                  <th scope="col">
+                    Registrada por
+                  </th>
+
+                  {isAdmin && (
+                    <th scope="col">
+                      Ações
+                    </th>
+                  )}
+                </tr>
+              </thead>
+
+              <tbody>
+                {history
+                  .purchases
+                  .map(
+                    (
+                      purchase,
+                    ) => (
+                      <tr
+                        key={
+                          purchase
+                            .idPurchase
                         }
                       >
-                        {formatDateTime(
-                          purchase.purchaseDate,
+                        <td>
+                          <time
+                            dateTime={
+                              purchase
+                                .purchaseDate
+                            }
+                          >
+                            {formatDateTime(
+                              purchase
+                                .purchaseDate,
+                            )}
+                          </time>
+                        </td>
+
+                        <td>
+                          {purchase
+                            .fiscalDocumentNumber ??
+                            'Não informado'}
+                        </td>
+
+                        <td>
+                          {formatCurrency(
+                            purchase
+                              .amount,
+                          )}
+                        </td>
+
+                        <td>
+                          {purchase
+                            .registeredBy
+                            ?.name ??
+                            'Não informado'}
+                        </td>
+
+                        {isAdmin && (
+                          <td>
+                            <button
+                              className="danger-button purchase-cancel-button"
+                              type="button"
+                              disabled={
+                                cancellingPurchaseIds
+                                  .has(
+                                    purchase
+                                      .idPurchase,
+                                  )
+                              }
+                              onClick={
+                                () =>
+                                  onCancelPurchase(
+                                    purchase,
+                                    history
+                                      .customer
+                                      .name,
+                                  )
+                              }
+                            >
+                              {cancellingPurchaseIds
+                                .has(
+                                  purchase
+                                    .idPurchase,
+                                )
+                                ? 'Cancelando…'
+                                : 'Cancelar venda'}
+                            </button>
+                          </td>
                         )}
-                      </time>
-                    </td>
-
-                    <td>
-                      {purchase.fiscalDocumentNumber ??
-                        'Não informado'}
-                    </td>
-
-                    <td>
-                      {formatCurrency(
-                        purchase.amount,
-                      )}
-                    </td>
-
-                    <td>
-                      {purchase.registeredBy
-                        ?.name ??
-                        'Não informado'}
-                    </td>
-                    {isAdmin && (
-                      <td>
-                        <button
-                          className="danger-button purchase-cancel-button"
-                          type="button"
-                          disabled={cancellingPurchaseIds.has(purchase.idPurchase)}
-                          onClick={() => onCancelPurchase(purchase, history.customer.name)}
-                        >
-                          {cancellingPurchaseIds.has(purchase.idPurchase) ? 'Cancelando…' : 'Cancelar venda'}
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ),
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      </tr>
+                    ),
+                  )}
+              </tbody>
+            </table>
+          </div>
+        )}
     </section>
   )
 }
+
 
 function formatAmountInput(
   value: string,
 ) {
   const digits =
-    value.replace(/\D/g, '')
+    value.replace(
+      /\D/g,
+      '',
+    )
 
   return digits
     ? new Intl.NumberFormat(
         'pt-BR',
         {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+          minimumFractionDigits:
+            2,
+
+          maximumFractionDigits:
+            2,
         },
       ).format(
-        Number(digits) / 100,
+        Number(
+          digits,
+        ) /
+        100,
       )
     : ''
 }
+
 
 function amountToNumber(
   value: string,
 ) {
   const digits =
-    value.replace(/\D/g, '')
+    value.replace(
+      /\D/g,
+      '',
+    )
 
   return digits
-    ? Number(digits) / 100
+    ? Number(
+        digits,
+      ) /
+      100
     : 0
 }
+
 
 function formatCurrency(
   value: string,
@@ -992,11 +1964,19 @@ function formatCurrency(
   return new Intl.NumberFormat(
     'pt-BR',
     {
-      style: 'currency',
-      currency: 'BRL',
+      style:
+        'currency',
+
+      currency:
+        'BRL',
     },
-  ).format(Number(value))
+  ).format(
+    Number(
+      value,
+    ),
+  )
 }
+
 
 function formatDateTime(
   value: string,
@@ -1004,32 +1984,58 @@ function formatDateTime(
   return new Intl.DateTimeFormat(
     'pt-BR',
     {
-      dateStyle: 'short',
-      timeStyle: 'short',
+      dateStyle:
+        'short',
+
+      timeStyle:
+        'short',
     },
-  ).format(new Date(value))
+  ).format(
+    new Date(
+      value,
+    ),
+  )
 }
+
 
 function getPurchaseError(
   error: unknown,
-  action: 'search' | 'create',
+  action:
+    'search' |
+    'create',
 ) {
-  if (error instanceof ApiError) {
-    if (error.status === 400) {
-      return action === 'create'
+  if (
+    error instanceof
+    ApiError
+  ) {
+    if (
+      error.status ===
+      400
+    ) {
+      return action ===
+        'create'
         ? 'Revise o CPF e o valor informado.'
         : 'Informe um CPF válido.'
     }
 
-    if (error.status === 401) {
+    if (
+      error.status ===
+      401
+    ) {
       return 'Sua sessão expirou. Entre novamente.'
     }
 
-    if (error.status === 403) {
+    if (
+      error.status ===
+      403
+    ) {
       return 'Você não possui permissão para registrar compras nesta empresa.'
     }
 
-    if (error.status === 404) {
+    if (
+      error.status ===
+      404
+    ) {
       return 'Cliente não encontrado nesta empresa.'
     }
   }
@@ -1037,19 +2043,32 @@ function getPurchaseError(
   return 'Não foi possível concluir a operação agora. Verifique sua conexão e tente novamente.'
 }
 
+
 function getHistoryError(
   error: unknown,
 ) {
-  if (error instanceof ApiError) {
-    if (error.status === 401) {
+  if (
+    error instanceof
+    ApiError
+  ) {
+    if (
+      error.status ===
+      401
+    ) {
       return 'Sua sessão expirou. Entre novamente.'
     }
 
-    if (error.status === 403) {
+    if (
+      error.status ===
+      403
+    ) {
       return 'Você não possui permissão para consultar compras nesta empresa.'
     }
 
-    if (error.status === 404) {
+    if (
+      error.status ===
+      404
+    ) {
       return 'Cliente não encontrado nesta empresa.'
     }
   }
