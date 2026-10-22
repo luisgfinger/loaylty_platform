@@ -2052,3 +2052,4 @@
 {"level":30,"time":1792496367267,"pid":13440,"hostname":"SUPORTE","reqId":"req-1k","res":{"statusCode":200},"responseTime":12.99430000782013,"msg":"request completed"}
 {"level":30,"time":1792496399141,"pid":13440,"hostname":"SUPORTE","reqId":"req-1l","req":{"method":"GET","url":"/companies/1","host":"localhost","remoteAddress":"127.0.0.1","remotePort":62467},"msg":"incoming request"}
 {"level":30,"time":1792496399149,"pid":13440,"hostname":"SUPORTE","reqId":"req-1l","res":{"statusCode":200},"responseTime":7.494300007820129,"msg":"request completed"}
+{"level":30,"time":1792497271761,"pid":13440,"hostname":"SUPORTE","msg":"Processamento de fidelidade concluído"}

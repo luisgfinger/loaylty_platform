@@ -7,10 +7,10 @@ const frequencyRank = {
 // FREQUÊNCIA
 // =====================================================
 export function calculateFrequencyLevel(purchaseDays) {
-    if (purchaseDays >= 10) {
+    if (purchaseDays >= 6) {
         return "HIGH";
     }
-    if (purchaseDays >= 5) {
+    if (purchaseDays >= 3) {
         return "MEDIUM";
     }
     return "LOW";
@@ -43,12 +43,12 @@ export function calculateDailyProgress(frequency, value) {
     // Baixo valor + baixa frequência.
     if (frequency === "LOW" &&
         value === "LOW") {
-        return 0.5;
+        return 1;
     }
     // Frequência alta + valor médio ou alto.
     if (frequency === "HIGH" &&
         value !== "LOW") {
-        return 2.5;
+        return 3;
     }
     // Frequência média + valor alto.
     if (frequency === "MEDIUM" &&
@@ -56,7 +56,7 @@ export function calculateDailyProgress(frequency, value) {
         return 2.5;
     }
     // Demais combinações.
-    return 1;
+    return 1.5;
 }
 // =====================================================
 // MEDIANA
